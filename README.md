@@ -1,36 +1,104 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🚗 PneuServis - Profesionální pneuservis
 
-## Getting Started
+Moderní webová aplikace pro pneuservis vytvořená s Next.js 15, React 19, TypeScript a Tailwind CSS.
 
-First, run the development server:
+## ✨ Funkce
+
+- 🏠 **Homepage** - Přehledná domovská stránka s informacemi o službách
+- ⭐ **Recenze** - Interaktivní stránka s recenzemi zákazníků a možností přidat vlastní recenzi
+- 📅 **Online rezervace** - Vícekapový rezervační formulář s výběrem služby, data a času
+- 📸 **Fotogalerie** - Galerie s lightboxem a filtrováním podle kategorií
+- 🍪 **Cookie consent** - GDPR-compliant cookie banner
+- 🔍 **SEO optimalizace** - Metadata, strukturovaná data (Schema.org), sitemap, robots.txt
+
+## 🎨 Design
+
+Aplikace využívá konzistentní barevné schéma:
+- **Oranžová** (#FF6B35) - Primární barva
+- **Červená** (#DC2626) - Sekundární barva
+- **Hnědá** (#8B4513) - Akcentová barva
+- **Tmavé pozadí** - Moderní dark mode design
+
+## 🚀 Spuštění projektu
 
 ```bash
+# Instalace závislostí
+npm install
+
+# Spuštění vývojového serveru
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
+# Build pro produkci
+npm run build
+
+# Spuštění produkční verze
+npm start
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Aplikace běží na [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 📁 Struktura projektu
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+src/
+├── app/                    # Next.js 15 App Router
+│   ├── page.tsx           # Homepage
+│   ├── recenze/           # Stránka recenzí
+│   ├── rezervace/         # Online rezervace
+│   ├── galerie/           # Fotogalerie
+│   ├── layout.tsx         # Root layout
+│   ├── globals.css        # Globální styly
+│   └── sitemap.ts         # Dynamický sitemap
+├── components/            # React komponenty
+│   ├── Navigation.tsx     # Hlavní navigace
+│   ├── Footer.tsx         # Footer
+│   ├── CookieBanner.tsx   # Cookie consent
+│   └── StructuredData.tsx # SEO strukturovaná data
+├── constants/             # Konstanty a konfigurace
+│   ├── colors.ts          # Barevná paleta
+│   └── metadata.ts        # SEO metadata
+└── hooks/                 # React hooks
+    └── useCookieConsent.ts
+```
 
-## Learn More
+## 🛠️ Technologie
 
-To learn more about Next.js, take a look at the following resources:
+- **Framework:** Next.js 15 (App Router)
+- **UI Library:** React 19
+- **Language:** TypeScript
+- **Styling:** Tailwind CSS
+- **Fonts:** Inter (Google Fonts)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 📱 Responzivita
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Aplikace je plně responzivní a optimalizovaná pro:
+- 📱 Mobilní zařízení
+- 📱 Tablety
+- 💻 Desktop
 
-## Deploy on Vercel
+## 🔍 SEO Features
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- ✅ Metadata pro všechny stránky
+- ✅ Strukturovaná data (Schema.org)
+- ✅ Sitemap.xml
+- ✅ Robots.txt
+- ✅ Open Graph tagy
+- ✅ Twitter Card
+- ✅ Sémantické HTML
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🎯 Komponenty
+
+### Interaktivní prvky
+- **Hover efekty** - Plynulé animace při najetí myší
+- **Animace** - Custom CSS animace (fadeIn, slideUp, scaleIn)
+- **Formuláře** - Validované formuláře s user-friendly UX
+- **Lightbox** - Plnohodnotná galerie s lightboxem a navigací
+
+### Mobilní menu
+- Responsivní hamburger menu
+- Plynulé animace
+- Touch-friendly ovládání
+
+## 📄 Licence
+
+© 2024 PneuServis. Všechna práva vyhrazena.
