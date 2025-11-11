@@ -1,0 +1,7 @@
+# Ignorovat všechny nahrané soubory
+*
+
+# Kromě tohoto .gitignore
+!.gitignore
+!.gitkeep
+

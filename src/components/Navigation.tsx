@@ -16,16 +16,20 @@ export default function Navigation() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-40 bg-neutral-900/95 backdrop-blur-md border-b border-orange-500/20 animate-fadeInDown">
+    <nav className="fixed top-0 left-0 right-0 z-40 bg-[#3D1F1F]/95 backdrop-blur-md border-b border-orange-500/30 animate-fadeInDown">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2 group">
-            <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-600 rounded-lg flex items-center justify-center transform group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 shadow-lg group-hover:shadow-orange-500/50">
-              <span className="text-white font-bold text-xl">P</span>
+          <Link href="/" className="flex items-center space-x-3 group">
+            <div className="relative w-12 h-12 transform group-hover:scale-110 transition-all duration-300">
+              <img 
+                src="/logoWeb.png" 
+                alt="PneuservisVMK Logo" 
+                className="w-full h-full object-contain drop-shadow-lg"
+              />
             </div>
-            <span className="text-xl font-bold bg-gradient-to-r from-orange-500 to-red-600 bg-clip-text text-transparent group-hover:tracking-wider transition-all duration-300">
-              PneuServis
+            <span className="text-xl font-bold text-white group-hover:text-orange-500 transition-all duration-300">
+              PneuservisVMK
             </span>
           </Link>
 
@@ -50,7 +54,7 @@ export default function Navigation() {
           <div className="hidden md:block">
             <a
               href="tel:+420123456789"
-              className="px-5 py-2 bg-brown-600 hover:bg-brown-700 text-white rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 shadow-lg hover:shadow-brown-600/50"
+              className="px-5 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 shadow-lg hover:shadow-orange-500/50"
             >
               +420 123 456 789
             </a>
@@ -82,7 +86,7 @@ export default function Navigation() {
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-neutral-800 border-t border-orange-500/20 animate-slideDown">
+        <div className="md:hidden bg-[#2A1414] border-t border-orange-500/30 animate-slideDown">
           <div className="px-2 pt-2 pb-3 space-y-1">
             {navItems.map((item) => (
               <Link
@@ -100,7 +104,7 @@ export default function Navigation() {
             ))}
             <a
               href="tel:+420123456789"
-              className="block px-3 py-2 mt-2 bg-brown-600 text-white rounded-lg font-semibold text-center"
+              className="block px-3 py-2 mt-2 bg-orange-500 text-white rounded-lg font-semibold text-center hover:bg-orange-600 transition-colors"
             >
               +420 123 456 789
             </a>

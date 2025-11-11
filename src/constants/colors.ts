@@ -1,28 +1,28 @@
 export const COLORS = {
   primary: {
-    orange: '#FF6B35',
-    orangeLight: '#FF8C61',
-    orangeDark: '#E85A2A',
+    orange: '#FF8C00',      // Hlavní oranžová z loga
+    orangeLight: '#FFA500',
+    orangeDark: '#CC7000',
   },
   secondary: {
-    red: '#DC2626',
-    redLight: '#EF4444',
-    redDark: '#B91C1C',
+    brown: '#3D1F1F',       // Tmavá hnědá z pozadí loga
+    brownLight: '#5C2E2E',
+    brownDark: '#2A1414',
   },
   accent: {
-    brown: '#8B4513',
-    brownLight: '#A0522D',
-    brownDark: '#654321',
+    white: '#FFFFFF',       // Bílá z textu loga
+    cream: '#F5F5DC',
+    lightGray: '#E8E8E8',
   },
   neutral: {
-    black: '#1F1F1F',
+    black: '#0A0000',       // Velmi tmavá hnědá/černá
     gray: '#6B7280',
     grayLight: '#E5E7EB',
     white: '#FFFFFF',
   },
   background: {
     light: '#FFF8F5',
-    dark: '#2D2D2D',
+    dark: '#3D1F1F',        // Tmavá hnědá jako hlavní pozadí
   }
 } as const;
 

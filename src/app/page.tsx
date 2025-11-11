@@ -11,23 +11,30 @@ export default function HomePage() {
     <div className="min-h-screen">
       {/* Hero Section */}
       <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
-        {/* Background with gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-neutral-900 via-neutral-800 to-neutral-900">
-          <div className="absolute inset-0 opacity-20">
+        {/* Background Image */}
+        <div className="absolute inset-0">
+          <img 
+            src="/uploads/HomePageBackground.png" 
+            alt="PneuservisVMK Workshop" 
+            className="w-full h-full object-cover"
+          />
+          {/* Dark overlay pro čitelnost textu */}
+          <div className="absolute inset-0 bg-gradient-to-b from-[#3D1F1F]/80 via-[#2A1414]/70 to-[#3D1F1F]/90"></div>
+          {/* Barevné akcenty */}
+          <div className="absolute inset-0 opacity-10">
             <div className="absolute top-20 left-20 w-72 h-72 bg-orange-500 rounded-full blur-3xl"></div>
-            <div className="absolute bottom-20 right-20 w-96 h-96 bg-red-600 rounded-full blur-3xl"></div>
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-brown-600 rounded-full blur-3xl"></div>
+            <div className="absolute bottom-20 right-20 w-96 h-96 bg-orange-600 rounded-full blur-3xl"></div>
           </div>
         </div>
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-5xl md:text-7xl font-black mb-6 animate-fadeInUp">
-            <span className="gradient-text">PneuServis</span>
+            <span className="gradient-text">PneuservisVMK</span>
             <br />
-            <span className="text-white">Profesionální péče o vaše pneumatiky</span>
+            <span className="text-white">Vždy nám na každém kole záleží</span>
           </h1>
           <p className="text-xl md:text-2xl text-gray-300 mb-12 max-w-3xl mx-auto animate-fadeInUp stagger-2">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            Profesionální péče o vaše pneumatiky s důrazem na kvalitu a zákaznický servis.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fadeInUp stagger-3">
             <Link href="/rezervace" className="btn-primary text-lg hover-lift">

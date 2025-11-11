@@ -1,0 +1,9 @@
+# Ignorovat všechny data soubory
+*.json
+*.xlsx
+*.xls
+*.csv
+
+# Kromě tohoto .gitignore
+!.gitignore
+

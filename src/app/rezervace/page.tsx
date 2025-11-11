@@ -32,21 +32,46 @@ export default function BookingPage() {
 
   const [bookedSlots] = useState(['09:00', '10:30', '14:00']); // Demo booked slots
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    alert('Rezervace byla úspěšně odeslána! Budeme vás kontaktovat.');
-    // Reset form
-    setFormData({
-      service: '',
-      date: '',
-      time: '',
-      name: '',
-      email: '',
-      phone: '',
-      car: '',
-      note: '',
-    });
-    setStep(1);
+    setSubmitting(true);
+
+    try {
+      const response = await fetch('/api/rezervace', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert(`✅ Rezervace byla úspěšně odeslána!\n\nID rezervace: ${data.reservation.id}\n\nBudeme vás kontaktovat na emailu ${formData.email} nebo telefonu ${formData.phone}.`);
+        // Reset form
+        setFormData({
+          service: '',
+          date: '',
+          time: '',
+          name: '',
+          email: '',
+          phone: '',
+          car: '',
+          note: '',
+        });
+        setStep(1);
+      } else {
+        alert(`❌ Chyba: ${data.error || 'Nepodařilo se vytvořit rezervaci'}`);
+      }
+    } catch (error) {
+      console.error('Chyba při odesílání rezervace:', error);
+      alert('❌ Nastala chyba při odesílání rezervace. Zkuste to prosím znovu.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const canProceed = (currentStep: number) => {
@@ -331,8 +356,12 @@ export default function BookingPage() {
                   Pokračovat
                 </button>
               ) : (
-                <button type="submit" className="flex-1 btn-primary">
-                  Potvrdit rezervaci
+                <button 
+                  type="submit" 
+                  disabled={submitting}
+                  className={`flex-1 btn-primary ${submitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+                >
+                  {submitting ? 'Odesílám...' : 'Potvrdit rezervaci'}
                 </button>
               )}
             </div>

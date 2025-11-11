@@ -1,62 +1,23 @@
 'use client';
 
-import { useState } from 'react';
-import type { Metadata } from 'next';
+import { useState, useEffect } from 'react';
 
-const reviews = [
-  {
-    id: 1,
-    name: 'Jan Novák',
-    rating: 5,
-    date: '15. 10. 2024',
-    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Výborná obsluha, rychlé jednání.',
-    avatar: '👨',
-  },
-  {
-    id: 2,
-    name: 'Petra Svobodová',
-    rating: 5,
-    date: '8. 10. 2024',
-    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Profesionální přístup, férové ceny. Určitě doporučuji!',
-    avatar: '👩',
-  },
-  {
-    id: 3,
-    name: 'Martin Dvořák',
-    rating: 4,
-    date: '2. 10. 2024',
-    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore. Rychlá výměna, ale trochu delší čekací doba.',
-    avatar: '👨',
-  },
-  {
-    id: 4,
-    name: 'Lucie Procházková',
-    rating: 5,
-    date: '25. 9. 2024',
-    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut enim ad minim veniam. Skvělý servis, milá obsluha, rychlé vyřízení.',
-    avatar: '👩',
-  },
-  {
-    id: 5,
-    name: 'Tomáš Kučera',
-    rating: 5,
-    date: '18. 9. 2024',
-    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quis nostrud exercitation ullamco laboris. Nejlepší pneuservis v okolí!',
-    avatar: '👨',
-  },
-  {
-    id: 6,
-    name: 'Michaela Veselá',
-    rating: 4,
-    date: '10. 9. 2024',
-    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis aute irure dolor in reprehenderit. Rychlé a kvalitní provedení.',
-    avatar: '👩',
-  },
-];
+interface Review {
+  id: string;
+  name: string;
+  email: string;
+  rating: number;
+  text: string;
+  createdAt: string;
+  status: string;
+}
 
 export default function ReviewsPage() {
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [loading, setLoading] = useState(true);
   const [selectedRating, setSelectedRating] = useState<number | null>(null);
   const [showReviewForm, setShowReviewForm] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -64,17 +25,94 @@ export default function ReviewsPage() {
     text: '',
   });
 
+  useEffect(() => {
+    loadReviews();
+  }, []);
+
+  const loadReviews = async () => {
+    try {
+      const response = await fetch('/api/recenze?approved=true');
+      const data = await response.json();
+      setReviews(data.reviews || []);
+    } catch (error) {
+      console.error('Chyba při načítání recenzí:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!formData.name || !formData.email || !formData.text) {
+      alert('Vyplňte prosím všechna pole');
+      return;
+    }
+
+    setSubmitting(true);
+
+    try {
+      const response = await fetch('/api/recenze', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert(`✅ Děkujeme za recenzi!\n\nVaše recenze byla odeslána a čeká na schválení správcem. Po schválení se zobrazí na webu.`);
+        setFormData({
+          name: '',
+          email: '',
+          rating: 5,
+          text: '',
+        });
+        setShowReviewForm(false);
+      } else {
+        alert(`❌ Chyba: ${data.error || 'Nepodařilo se odeslat recenzi'}`);
+      }
+    } catch (error) {
+      console.error('Chyba při odesílání recenze:', error);
+      alert('❌ Nastala chyba při odesílání recenze. Zkuste to prosím znovu.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   const filteredReviews = selectedRating
     ? reviews.filter(r => r.rating === selectedRating)
     : reviews;
 
-  const averageRating = (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1);
+  const averageRating = reviews.length > 0 
+    ? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1)
+    : '0.0';
 
   const ratingDistribution = [5, 4, 3, 2, 1].map(rating => ({
     rating,
     count: reviews.filter(r => r.rating === rating).length,
-    percentage: (reviews.filter(r => r.rating === rating).length / reviews.length) * 100,
+    percentage: reviews.length > 0 
+      ? (reviews.filter(r => r.rating === rating).length / reviews.length) * 100
+      : 0,
   }));
+
+  const getAvatar = (name: string) => {
+    const firstLetter = name.charAt(0).toUpperCase();
+    return firstLetter;
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-neutral-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-orange-500 mx-auto mb-4"></div>
+          <p className="text-gray-300 text-lg">Načítám recenze...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-neutral-900">
@@ -163,7 +201,7 @@ export default function ReviewsPage() {
             {showReviewForm && (
               <div className="card animate-scaleIn">
                 <h3 className="text-2xl font-bold mb-6 gradient-text">Napište recenzi</h3>
-                <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+                <form className="space-y-4" onSubmit={handleSubmit}>
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-2">
                       Jméno
@@ -224,8 +262,12 @@ export default function ReviewsPage() {
                   </div>
 
                   <div className="flex gap-3">
-                    <button type="submit" className="btn-primary flex-1">
-                      Odeslat recenzi
+                    <button 
+                      type="submit" 
+                      disabled={submitting}
+                      className={`btn-primary flex-1 ${submitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    >
+                      {submitting ? 'Odesílám...' : 'Odeslat recenzi'}
                     </button>
                     <button
                       type="button"
@@ -239,21 +281,48 @@ export default function ReviewsPage() {
               </div>
             )}
 
-            {filteredReviews.map((review, index) => (
-              <div
-                key={review.id}
-                className={`card hover-lift hover-glow animate-fadeInUp stagger-${(index % 6) + 1}`}
-              >
-                <div className="flex items-start gap-4">
-                  <div className="w-14 h-14 bg-gradient-to-br from-orange-500 to-red-600 rounded-full flex items-center justify-center text-3xl flex-shrink-0">
-                    {review.avatar}
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-start justify-between mb-2">
-                      <div>
-                        <h3 className="font-bold text-lg text-white">{review.name}</h3>
-                        <p className="text-sm text-gray-400">{review.date}</p>
-                      </div>
+            {filteredReviews.length === 0 ? (
+              <div className="card text-center py-12">
+                <div className="text-6xl mb-4">⭐</div>
+                <h3 className="text-2xl font-bold text-white mb-2">
+                  {selectedRating ? 'Žádné recenze s tímto hodnocením' : 'Zatím žádné recenze'}
+                </h3>
+                <p className="text-gray-400 mb-6">
+                  {selectedRating 
+                    ? 'Zkuste zobrazit všechny recenze' 
+                    : 'Buďte první, kdo napíše recenzi!'}
+                </p>
+                <button
+                  onClick={() => {
+                    if (selectedRating) {
+                      setSelectedRating(null);
+                    } else {
+                      setShowReviewForm(true);
+                    }
+                  }}
+                  className="btn-primary"
+                >
+                  {selectedRating ? 'Zobrazit vše' : 'Napsat recenzi'}
+                </button>
+              </div>
+            ) : (
+              filteredReviews.map((review, index) => (
+                <div
+                  key={review.id}
+                  className={`card hover-lift hover-glow animate-fadeInUp stagger-${(index % 6) + 1}`}
+                >
+                  <div className="flex items-start gap-4">
+                    <div className="w-14 h-14 bg-gradient-to-br from-orange-500 to-red-600 rounded-full flex items-center justify-center text-2xl font-bold text-white flex-shrink-0">
+                      {getAvatar(review.name)}
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-start justify-between mb-2">
+                        <div>
+                          <h3 className="font-bold text-lg text-white">{review.name}</h3>
+                          <p className="text-sm text-gray-400">
+                            {new Date(review.createdAt).toLocaleDateString('cs-CZ')}
+                          </p>
+                        </div>
                       <div className="flex">
                         {[...Array(5)].map((_, i) => (
                           <span
@@ -267,11 +336,12 @@ export default function ReviewsPage() {
                         ))}
                       </div>
                     </div>
-                    <p className="text-gray-300 leading-relaxed">{review.text}</p>
+                      <p className="text-gray-300 leading-relaxed">{review.text}</p>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </div>
       </div>
