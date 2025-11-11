@@ -6,9 +6,12 @@ import { useState } from 'react';
 
 const navItems = [
   { href: '/', label: 'Domů' },
+  { href: '/o-nas', label: 'O nás' },
+  { href: '/sluzby', label: 'Služby' },
   { href: '/recenze', label: 'Recenze' },
   { href: '/rezervace', label: 'Rezervace' },
   { href: '/galerie', label: 'Galerie' },
+  { href: '/kontakty', label: 'Kontakty' },
 ];
 
 export default function Navigation() {

@@ -54,45 +54,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Services Section */}
-      <section className="section-padding bg-neutral-900">
-        <div className="max-w-7xl mx-auto">
-          <h2 className="text-4xl md:text-5xl font-bold text-center mb-4">
-            <span className="gradient-text">Naše služby</span>
-          </h2>
-          <p className="text-gray-400 text-center mb-16 max-w-2xl mx-auto">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore.
-          </p>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {services.map((service, index) => (
-              <div
-                key={index}
-                className={`card group hover-lift hover-glow cursor-pointer animate-fadeInUp stagger-${(index % 6) + 1}`}
-              >
-                <div className="text-5xl mb-4 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
-                  {service.icon}
-                </div>
-                <h3 className="text-2xl font-bold mb-3 gradient-text group-hover:tracking-wide transition-all duration-300">
-                  {service.title}
-                </h3>
-                <p className="text-gray-400 mb-4 group-hover:text-gray-300 transition-colors duration-300">
-                  {service.description}
-                </p>
-                <ul className="space-y-2">
-                  {service.features.map((feature, idx) => (
-                    <li key={idx} className="flex items-center text-gray-300 text-sm transform group-hover:translate-x-1 transition-transform duration-300" style={{ transitionDelay: `${idx * 50}ms` }}>
-                      <span className="text-orange-500 mr-2 group-hover:scale-125 transition-transform duration-300">✓</span>
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* Why Choose Us Section */}
       <section className="section-padding bg-gradient-to-b from-neutral-900 to-neutral-800">
         <div className="max-w-7xl mx-auto">
@@ -160,67 +121,9 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-
-      {/* Opening Hours */}
-      <section className="section-padding bg-neutral-900">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-4xl font-bold text-center mb-12">
-            <span className="gradient-text">Otevírací doba</span>
-          </h2>
-          <div className="card max-w-2xl mx-auto">
-            <div className="space-y-4">
-              {openingHours.map((day, index) => (
-                <div key={index} className="flex justify-between items-center py-3 border-b border-gray-700 last:border-0">
-                  <span className="font-semibold text-white">{day.day}</span>
-                  <span className="text-gray-400">{day.hours}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
     </div>
   );
 }
-
-const services = [
-  {
-    icon: '🔧',
-    title: 'Výměna pneumatik',
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Rychlá a profesionální výměna.',
-    features: ['Osobní auta', 'SUV a dodávky', 'Motocykly'],
-  },
-  {
-    icon: '⚖️',
-    title: 'Vyvážení kol',
-    description: 'Lorem ipsum dolor sit amet. Precizní vyvážení na moderním zařízení pro klidnou jízdu.',
-    features: ['Dynamické vyvážení', 'Statické vyvážení', 'Kontrola geometrie'],
-  },
-  {
-    icon: '📦',
-    title: 'Uskladnění pneu',
-    description: 'Lorem ipsum dolor sit amet. Skladujeme vaše pneumatiky v optimálních podmínkách.',
-    features: ['Suché prostory', 'Označení a evidence', 'Pojištění'],
-  },
-  {
-    icon: '🔨',
-    title: 'Oprava pneumatik',
-    description: 'Lorem ipsum dolor sit amet. Odborná oprava defektů a poškozených pneumatik.',
-    features: ['Oprava propíchnutí', 'Těsnění ventilků', 'Kontrola tlaku'],
-  },
-  {
-    icon: '🛒',
-    title: 'Prodej pneumatik',
-    description: 'Lorem ipsum dolor sit amet. Široký sortiment pneumatik všech značek a rozměrů.',
-    features: ['Letní pneumatiky', 'Zimní pneumatiky', 'Celoroční pneumatiky'],
-  },
-  {
-    icon: '🚗',
-    title: 'Kompletní servis',
-    description: 'Lorem ipsum dolor sit amet. Kompletní péče o vaše kola a pneumatiky.',
-    features: ['Kontrola opotřebení', 'Dohuštění', 'Poradenství'],
-  },
-];
 
 const reasons = [
   {
@@ -250,14 +153,4 @@ const stats = [
   { value: '10K+', label: 'Spokojených zákazníků' },
   { value: '25K+', label: 'Vyměněných pneumatik' },
   { value: '4.9', label: 'Hodnocení' },
-];
-
-const openingHours = [
-  { day: 'Pondělí', hours: '8:00 - 18:00' },
-  { day: 'Úterý', hours: '8:00 - 18:00' },
-  { day: 'Středa', hours: '8:00 - 18:00' },
-  { day: 'Čtvrtek', hours: '8:00 - 18:00' },
-  { day: 'Pátek', hours: '8:00 - 18:00' },
-  { day: 'Sobota', hours: '9:00 - 14:00' },
-  { day: 'Neděle', hours: 'Zavřeno' },
 ];
