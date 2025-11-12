@@ -1,14 +1,19 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
-const services = [
-  { id: 'vymena', name: 'Výměna pneumatik', duration: '30 min', price: 'od 400 Kč' },
-  { id: 'vyvazeni', name: 'Vyvážení kol', duration: '20 min', price: 'od 200 Kč' },
-  { id: 'uskladneni', name: 'Uskladnění pneu', duration: '15 min', price: 'od 800 Kč/sezóna' },
-  { id: 'oprava', name: 'Oprava pneumatik', duration: '45 min', price: 'od 300 Kč' },
-  { id: 'prodej', name: 'Prodej + montáž', duration: '45 min', price: 'individuálně' },
-];
+interface Service {
+  id: string;
+  nazev: string;
+  popis: string;
+  ikona: string;
+  cenaOsobni: string;
+  cenaSUV: string;
+  features: string;
+  kategorie?: string;
+  aktivni: boolean;
+  poradi?: number;
+}
 
 const timeSlots = [
   '08:00', '08:30', '09:00', '09:30', '10:00', '10:30',
@@ -30,9 +35,27 @@ export default function BookingPage() {
     note: '',
   });
 
+  const [services, setServices] = useState<Service[]>([]);
+  const [loading, setLoading] = useState(true);
   const [bookedSlots] = useState(['09:00', '10:30', '14:00']); // Demo booked slots
 
   const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    loadServices();
+  }, []);
+
+  const loadServices = async () => {
+    try {
+      const response = await fetch('/api/sluzby');
+      const data = await response.json();
+      setServices(data.services || []);
+    } catch (error) {
+      console.error('Chyba při načítání služeb:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -82,9 +105,18 @@ export default function BookingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-neutral-900">
+    <div className="min-h-screen bg-neutral-900 relative">
+      {/* Background blur effect - celá stránka */}
+      <div className="fixed inset-0 pointer-events-none z-0">
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-20 left-20 w-72 h-72 bg-orange-500 rounded-full blur-3xl"></div>
+          <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-orange-600 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-1/4 left-1/3 w-80 h-80 bg-yellow-500/60 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-20 right-20 w-96 h-96 bg-orange-600 rounded-full blur-3xl"></div>
+        </div>
+      </div>
       {/* Hero Section */}
-      <section className="section-padding bg-gradient-to-b from-neutral-800 to-neutral-900">
+      <section className="section-padding bg-gradient-to-b from-neutral-800 via-neutral-800/80 to-neutral-900">
         <div className="max-w-7xl mx-auto text-center">
           <h1 className="text-5xl md:text-6xl font-black mb-6">
             <span className="gradient-text">Online rezervace</span>
@@ -95,7 +127,7 @@ export default function BookingPage() {
         </div>
       </section>
 
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16 bg-gradient-to-b from-neutral-900 via-neutral-900 to-neutral-900/95">
         {/* Progress Steps */}
         <div className="mb-12">
           <div className="flex items-center justify-center">
@@ -133,24 +165,43 @@ export default function BookingPage() {
             {step === 1 && (
               <div className="space-y-6">
                 <h2 className="text-3xl font-bold gradient-text mb-6">Vyberte službu</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {services.map((service) => (
-                    <button
-                      key={service.id}
-                      type="button"
-                      onClick={() => setFormData({ ...formData, service: service.id })}
-                      className={`p-6 rounded-xl border-2 transition-all text-left hover-lift ${
-                        formData.service === service.id
-                          ? 'border-orange-500 bg-orange-500/10 shadow-lg shadow-orange-500/30'
-                          : 'border-gray-700 hover:border-orange-500/50'
-                      }`}
-                    >
-                      <h3 className="text-xl font-bold text-white mb-2">{service.name}</h3>
-                      <p className="text-gray-400 text-sm mb-1">⏱️ {service.duration}</p>
-                      <p className="text-orange-500 font-semibold">{service.price}</p>
-                    </button>
-                  ))}
-                </div>
+                {loading ? (
+                  <div className="text-center py-8">
+                    <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-orange-500 mx-auto"></div>
+                    <p className="text-gray-400 mt-4">Načítám služby...</p>
+                  </div>
+                ) : services.length === 0 ? (
+                  <div className="text-center py-8">
+                    <p className="text-gray-400">Žádné služby nejsou k dispozici</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {services
+                      .filter(s => s.aktivni)
+                      .sort((a, b) => (a.poradi || 0) - (b.poradi || 0))
+                      .map((service) => (
+                        <button
+                          key={service.id}
+                          type="button"
+                          onClick={() => setFormData({ ...formData, service: service.id })}
+                          className={`p-6 rounded-xl border-2 transition-all text-left hover-lift ${
+                            formData.service === service.id
+                              ? 'border-orange-500 bg-orange-500/10 shadow-lg shadow-orange-500/30'
+                              : 'border-gray-700 hover:border-orange-500/50'
+                          }`}
+                        >
+                          <div className="flex items-start gap-3">
+                            <span className="text-3xl">{service.ikona}</span>
+                            <div className="flex-1">
+                              <h3 className="text-xl font-bold text-white mb-2">{service.nazev}</h3>
+                              <p className="text-gray-400 text-sm mb-1">{service.popis}</p>
+                              <p className="text-orange-500 font-semibold">{service.cenaOsobni}</p>
+                            </div>
+                          </div>
+                        </button>
+                      ))}
+                  </div>
+                )}
               </div>
             )}
 
@@ -244,7 +295,7 @@ export default function BookingPage() {
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     className="w-full px-4 py-3 bg-neutral-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
-                    placeholder="+420 123 456 789"
+                    placeholder="+420 602 299 090"
                     required
                   />
                 </div>
@@ -374,10 +425,10 @@ export default function BookingPage() {
             Preferujete telefonickou rezervaci?
           </p>
           <a
-            href="tel:+420123456789"
+            href="tel:+420602299090"
             className="inline-block btn-secondary"
           >
-            📞 +420 123 456 789
+            📞 +420 602 299 090
           </a>
         </div>
       </div>

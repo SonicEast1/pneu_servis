@@ -28,6 +28,24 @@ http://localhost:3000/admin/upload
 - Galerie nahraných obrázků
 - Kopírování URL obrázků
 
+### 🔧 **Správa služeb a ceníku**
+```
+http://localhost:3000/admin/sluzby
+```
+- Přidávání nových služeb
+- Úprava názvů, popisů a cen služeb
+- Aktivace/deaktivace služeb
+- Správa ceníku přes Excel
+
+### 🕐 **Správa otevírací doby**
+```
+http://localhost:3000/admin/oteviraci-doba
+```
+- Úprava otevírací doby pro jednotlivé dny
+- Přidávání nových dnů
+- Aktivace/deaktivace dnů
+- Správa přes Excel
+
 ---
 
 ## 🌐 Veřejné stránky:
@@ -52,6 +70,11 @@ http://localhost:3000/recenze
 http://localhost:3000/galerie
 ```
 
+### 🔧 **Služby**
+```
+http://localhost:3000/sluzby
+```
+
 ---
 
 ## 📊 Stažení dat:
@@ -71,6 +94,8 @@ Stáhne se soubor `rezervace_all.xlsx` - přímo otevřitelný v Excelu!
 |--------|------|
 | `data/rezervace_all.xlsx` | Excel soubor se všemi rezervacemi |
 | `data/recenze_all.xlsx` | Excel soubor se všemi recenzemi |
+| `data/cenik_sluzby.xlsx` | Excel soubor se službami a ceníkem |
+| `data/oteviraci_doby.xlsx` | Excel soubor s otevírací dobou |
 | `public/uploads/` | Nahrané obrázky |
 | `public/logoWeb.png` | Logo webu |
 
@@ -95,5 +120,7 @@ Web běží na: **http://localhost:3000**
 
 ---
 
-Pro více informací viz `REZERVACE_SYSTEM.md`
+Pro více informací viz:
+- `REZERVACE_SYSTEM.md` - Systém rezervací
+- `CENIK_SLUZBY_INFO.md` - Systém správy služeb a ceníku
 

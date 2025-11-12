@@ -17,14 +17,6 @@ interface Reservation {
   status: 'pending' | 'confirmed' | 'cancelled';
 }
 
-const serviceNames: Record<string, string> = {
-  'vymena': 'Výměna pneumatik',
-  'vyvazeni': 'Vyvážení kol',
-  'uskladneni': 'Uskladnění pneu',
-  'oprava': 'Oprava pneumatik',
-  'prodej': 'Prodej + montáž',
-};
-
 const statusLabels: Record<string, string> = {
   'pending': 'Čeká na potvrzení',
   'confirmed': 'Potvrzeno',
@@ -37,15 +29,45 @@ const statusColors: Record<string, string> = {
   'cancelled': 'bg-red-500/20 text-red-500 border-red-500',
 };
 
+interface Service {
+  id: string;
+  nazev: string;
+  popis: string;
+  ikona: string;
+  cenaOsobni: string;
+  cenaSUV: string;
+  features: string;
+  kategorie?: string;
+  aktivni: boolean;
+  poradi?: number;
+}
+
 export default function AdminReservationsPage() {
   const [reservations, setReservations] = useState<Reservation[]>([]);
+  const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'all' | 'pending' | 'confirmed' | 'cancelled'>('all');
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     loadReservations();
+    loadServices();
   }, []);
+
+  const loadServices = async () => {
+    try {
+      const response = await fetch('/api/sluzby');
+      const data = await response.json();
+      setServices(data.services || []);
+    } catch (error) {
+      console.error('Chyba při načítání služeb:', error);
+    }
+  };
+
+  const getServiceName = (serviceId: string): string => {
+    const service = services.find(s => s.id === serviceId);
+    return service ? service.nazev : serviceId;
+  };
 
   const loadReservations = async () => {
     try {
@@ -279,7 +301,7 @@ export default function AdminReservationsPage() {
                       <div>
                         <span className="text-gray-500">📋 Služba:</span>
                         <span className="ml-2 font-medium text-gray-800">
-                          {serviceNames[reservation.service] || reservation.service}
+                          {getServiceName(reservation.service)}
                         </span>
                       </div>
                       <div>

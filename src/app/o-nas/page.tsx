@@ -76,9 +76,18 @@ const team = [
 
 export default function ONasPage() {
   return (
-    <div className="min-h-screen bg-neutral-900">
+    <div className="min-h-screen bg-neutral-900 relative">
+      {/* Background blur effect - celá stránka */}
+      <div className="fixed inset-0 pointer-events-none z-0">
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-20 left-20 w-72 h-72 bg-orange-500 rounded-full blur-3xl"></div>
+          <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-orange-600 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-1/4 left-1/3 w-80 h-80 bg-yellow-500/60 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-20 right-20 w-96 h-96 bg-orange-600 rounded-full blur-3xl"></div>
+        </div>
+      </div>
       {/* Hero Section */}
-      <section className="relative py-20 overflow-hidden bg-gradient-to-b from-neutral-800 to-neutral-900">
+      <section className="relative py-20 overflow-hidden bg-gradient-to-b from-neutral-800 via-neutral-800/80 to-neutral-900/98">
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-20 left-20 w-72 h-72 bg-orange-500 rounded-full blur-3xl"></div>
           <div className="absolute bottom-20 right-20 w-96 h-96 bg-orange-600 rounded-full blur-3xl"></div>
@@ -95,7 +104,7 @@ export default function ONasPage() {
       </section>
 
       {/* Story Section */}
-      <section className="section-padding bg-neutral-900">
+      <section className="section-padding bg-gradient-to-b from-neutral-900/98 via-neutral-900 to-neutral-900/95">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="animate-fadeInUp">
@@ -128,7 +137,7 @@ export default function ONasPage() {
       </section>
 
       {/* Stats Section */}
-      <section className="section-padding bg-gradient-to-b from-neutral-900 to-neutral-800">
+      <section className="section-padding bg-gradient-to-b from-neutral-900/95 via-neutral-900/90 to-neutral-800/95">
         <div className="max-w-7xl mx-auto">
           <h2 className="text-4xl md:text-5xl font-bold text-center mb-16">
             <span className="gradient-text">Naše úspěchy</span>
@@ -147,7 +156,7 @@ export default function ONasPage() {
       </section>
 
       {/* Why Choose Us Section */}
-      <section className="section-padding bg-neutral-800">
+      <section className="section-padding bg-gradient-to-b from-neutral-800/95 via-neutral-800 to-neutral-800/90">
         <div className="max-w-7xl mx-auto">
           <h2 className="text-4xl md:text-5xl font-bold text-center mb-4">
             <span className="gradient-text">Proč si vybrat nás?</span>
@@ -171,7 +180,7 @@ export default function ONasPage() {
       </section>
 
       {/* Values Section */}
-      <section className="section-padding bg-neutral-900">
+      <section className="section-padding bg-gradient-to-b from-neutral-800/90 via-neutral-800/95 to-neutral-900">
         <div className="max-w-7xl mx-auto">
           <h2 className="text-4xl md:text-5xl font-bold text-center mb-16">
             <span className="gradient-text">Naše hodnoty</span>
@@ -252,7 +261,7 @@ export default function ONasPage() {
               Rezervovat termín
             </a>
             <a
-              href="tel:+420123456789"
+              href="tel:+420602299090"
               className="px-8 py-4 bg-neutral-900 text-white rounded-lg font-bold text-lg hover:bg-neutral-800 transition-all duration-300 shadow-xl"
             >
               Zavolat nyní

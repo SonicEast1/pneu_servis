@@ -56,10 +56,10 @@ export default function Navigation() {
           {/* Contact Button */}
           <div className="hidden md:block">
             <a
-              href="tel:+420123456789"
+              href="tel:+420602299090"
               className="px-5 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 shadow-lg hover:shadow-orange-500/50"
             >
-              +420 123 456 789
+              +420 602 299 090
             </a>
           </div>
 
@@ -106,10 +106,10 @@ export default function Navigation() {
               </Link>
             ))}
             <a
-              href="tel:+420123456789"
+              href="tel:+420602299090"
               className="block px-3 py-2 mt-2 bg-orange-500 text-white rounded-lg font-semibold text-center hover:bg-orange-600 transition-colors"
             >
-              +420 123 456 789
+              +420 602 299 090
             </a>
           </div>
         </div>

@@ -17,13 +17,51 @@ interface Reservation {
   status: 'pending' | 'confirmed' | 'cancelled';
 }
 
-const serviceNames: Record<string, string> = {
-  'vymena': 'Výměna pneumatik',
-  'vyvazeni': 'Vyvážení kol',
-  'uskladneni': 'Uskladnění pneu',
-  'oprava': 'Oprava pneumatik',
-  'prodej': 'Prodej + montáž',
-};
+// Načíst názvy služeb z Excelu
+async function getServiceNames(): Promise<Record<string, string>> {
+  try {
+    const servicesFile = path.join(process.cwd(), 'data', 'cenik_sluzby.xlsx');
+    const exists = await fileExists(servicesFile);
+    if (!exists) {
+      // Fallback na výchozí hodnoty, pokud soubor neexistuje
+      return {
+        'vymena': 'Výměna pneumatik',
+        'vyvazeni': 'Vyvážení kol',
+        'uskladneni': 'Uskladnění pneu',
+        'oprava': 'Oprava pneumatik',
+        'prodej': 'Prodej + montáž',
+      };
+    }
+
+    const fileBuffer = await readFile(servicesFile);
+    const workbook = XLSX.read(fileBuffer, { type: 'buffer' });
+    const sheetName = workbook.SheetNames[0];
+    const worksheet = workbook.Sheets[sheetName];
+    const data = XLSX.utils.sheet_to_json(worksheet);
+
+    // Vytvořit mapování ID -> Název služby
+    const serviceMap: Record<string, string> = {};
+    data.forEach((row: any) => {
+      const id = row['ID'] || '';
+      const nazev = row['Název služby'] || '';
+      if (id && nazev) {
+        serviceMap[id] = nazev;
+      }
+    });
+
+    return serviceMap;
+  } catch (error) {
+    console.error('Chyba při načítání názvů služeb:', error);
+    // Fallback
+    return {
+      'vymena': 'Výměna pneumatik',
+      'vyvazeni': 'Vyvážení kol',
+      'uskladneni': 'Uskladnění pneu',
+      'oprava': 'Oprava pneumatik',
+      'prodej': 'Prodej + montáž',
+    };
+  }
+}
 
 const statusLabels: Record<string, string> = {
   'pending': 'Čeká na potvrzení',
@@ -67,10 +105,17 @@ async function getReservations(): Promise<Reservation[]> {
     const worksheet = workbook.Sheets[sheetName];
     const data = XLSX.utils.sheet_to_json(worksheet);
 
+    // Načíst názvy služeb z Excelu
+    const serviceNamesMap = await getServiceNames();
+    const reverseServiceMap: Record<string, string> = {};
+    Object.entries(serviceNamesMap).forEach(([id, nazev]) => {
+      reverseServiceMap[nazev] = id;
+    });
+
     // Převést zpět na interní formát
     return data.map((row: any) => ({
       id: row['ID'],
-      service: Object.keys(serviceNames).find(key => serviceNames[key] === row['Služba']) || row['Služba'],
+      service: reverseServiceMap[row['Služba']] || row['Služba'] || '',
       date: row['Datum'] ? new Date(row['Datum']).toISOString().split('T')[0] : '',
       time: row['Čas'],
       name: row['Jméno'],
@@ -92,10 +137,13 @@ async function getReservations(): Promise<Reservation[]> {
 async function saveReservations(reservations: Reservation[]) {
   await ensureDataDir();
 
+  // Načíst názvy služeb z Excelu
+  const serviceNamesMap = await getServiceNames();
+
   // Převést rezervace na formát pro Excel
   const excelData = reservations.map(r => ({
     'ID': r.id,
-    'Služba': serviceNames[r.service] || r.service,
+    'Služba': serviceNamesMap[r.service] || r.service,
     'Datum': r.date,
     'Čas': r.time,
     'Jméno': r.name,

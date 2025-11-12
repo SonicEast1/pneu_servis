@@ -8,20 +8,24 @@ export const metadata: Metadata = {
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen relative">
+      {/* Background blur effect - celá stránka */}
+      <div className="fixed inset-0 pointer-events-none z-0">
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-20 left-20 w-72 h-72 bg-orange-500 rounded-full blur-3xl"></div>
+          <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-orange-600 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-1/4 left-1/3 w-80 h-80 bg-yellow-500/60 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-20 right-20 w-96 h-96 bg-orange-600 rounded-full blur-3xl"></div>
+        </div>
+      </div>
       {/* Hero Section */}
       <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
-        {/* Background Image */}
+        {/* Background */}
         <div className="absolute inset-0">
-          <img 
-            src="/uploads/HomePageBackground.png" 
-            alt="PneuservisVMK Workshop" 
-            className="w-full h-full object-cover"
-          />
-          {/* Dark overlay pro čitelnost textu */}
-          <div className="absolute inset-0 bg-gradient-to-b from-[#3D1F1F]/80 via-[#2A1414]/70 to-[#3D1F1F]/90"></div>
+          {/* Gradient background */}
+          <div className="absolute inset-0 bg-gradient-to-b from-[#3D1F1F] via-[#2A1414] to-[#3D1F1F]"></div>
           {/* Barevné akcenty */}
-          <div className="absolute inset-0 opacity-10">
+          <div className="absolute inset-0 opacity-20">
             <div className="absolute top-20 left-20 w-72 h-72 bg-orange-500 rounded-full blur-3xl"></div>
             <div className="absolute bottom-20 right-20 w-96 h-96 bg-orange-600 rounded-full blur-3xl"></div>
           </div>
@@ -40,8 +44,8 @@ export default function HomePage() {
             <Link href="/rezervace" className="btn-primary text-lg hover-lift">
               Rezervovat termín
             </Link>
-            <a href="tel:+420123456789" className="btn-secondary text-lg hover-lift">
-              +420 123 456 789
+            <a href="tel:+420602299090" className="btn-secondary text-lg hover-lift">
+              +420 602 299 090
             </a>
           </div>
 
@@ -55,7 +59,7 @@ export default function HomePage() {
       </section>
 
       {/* Why Choose Us Section */}
-      <section className="section-padding bg-gradient-to-b from-neutral-900 to-neutral-800">
+      <section className="section-padding bg-gradient-to-b from-neutral-900 via-neutral-900 to-neutral-800/95">
         <div className="max-w-7xl mx-auto">
           <h2 className="text-4xl md:text-5xl font-bold text-center mb-16">
             <span className="gradient-text">Proč si vybrat nás?</span>
@@ -63,12 +67,12 @@ export default function HomePage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {reasons.map((reason, index) => (
-              <div key={index} className={`text-center p-6 hover-lift cursor-pointer animate-fadeInUp stagger-${index + 1}`}>
-                <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl flex items-center justify-center text-4xl transform hover:rotate-12 transition-all duration-300 shadow-lg hover:shadow-orange-500/50">
+              <div key={index} className={`text-center p-6 animate-fadeInUp stagger-${index + 1}`}>
+                <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl flex items-center justify-center text-4xl transform hover:rotate-12 hover:scale-110 transition-all duration-300 shadow-lg hover:shadow-orange-500/50 cursor-pointer">
                   {reason.icon}
                 </div>
-                <h3 className="text-xl font-bold mb-2 text-white hover:gradient-text transition-all duration-300">{reason.title}</h3>
-                <p className="text-gray-400 text-sm hover:text-gray-300 transition-colors duration-300">{reason.description}</p>
+                <h3 className="text-xl font-bold mb-2 text-white transition-all duration-300">{reason.title}</h3>
+                <p className="text-gray-400 text-sm transition-colors duration-300">{reason.description}</p>
               </div>
             ))}
           </div>
@@ -76,7 +80,7 @@ export default function HomePage() {
       </section>
 
       {/* Stats Section */}
-      <section className="section-padding bg-neutral-800">
+      <section className="section-padding bg-gradient-to-b from-neutral-800/95 via-neutral-800 to-neutral-800/90">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {stats.map((stat, index) => (
@@ -113,7 +117,7 @@ export default function HomePage() {
               Rezervovat online
             </Link>
             <a
-              href="tel:+420123456789"
+              href="tel:+420602299090"
               className="px-8 py-4 bg-neutral-900 text-white rounded-lg font-bold text-lg hover:bg-neutral-800 transition-all duration-300 shadow-xl"
             >
               Zavolat nyní

@@ -7,8 +7,8 @@ export default function StructuredData() {
     name: SITE_CONFIG.name,
     description: SITE_CONFIG.description,
     url: SITE_CONFIG.url,
-    telephone: '+420123456789',
-    email: 'info@pneuservis.cz',
+    telephone: '+420602299090',
+    email: 'info@pneuservisvmk.cz',
     address: {
       '@type': 'PostalAddress',
       streetAddress: 'Lorem Ipsum 123',

@@ -1,8 +1,45 @@
+'use client';
+
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
+
+interface Service {
+  id: string;
+  nazev: string;
+  popis: string;
+  ikona: string;
+  cenaOsobni: string;
+  cenaSUV: string;
+  features: string;
+  kategorie?: string;
+  aktivni: boolean;
+  poradi?: number;
+}
 
 export default function Footer() {
+  const [services, setServices] = useState<Service[]>([]);
+
+  useEffect(() => {
+    loadServices();
+  }, []);
+
+  const loadServices = async () => {
+    try {
+      const response = await fetch('/api/sluzby');
+      const data = await response.json();
+      // Zobrazit pouze prvních 5 aktivních služeb
+      const activeServices = (data.services || [])
+        .filter((s: Service) => s.aktivni)
+        .sort((a: Service, b: Service) => (a.poradi || 0) - (b.poradi || 0))
+        .slice(0, 5);
+      setServices(activeServices);
+    } catch (error) {
+      console.error('Chyba při načítání služeb:', error);
+    }
+  };
+
   return (
-    <footer className="bg-[#3D1F1F] border-t border-orange-500/30 animate-fadeInUp">
+    <footer className="relative z-10 bg-[#3D1F1F] border-t border-orange-500/30 animate-fadeInUp">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Company Info */}
@@ -54,13 +91,17 @@ export default function Footer() {
           {/* Services */}
           <div>
             <h3 className="text-white font-semibold mb-4">Naše služby</h3>
-            <ul className="space-y-2 text-gray-400 text-sm">
-              <li>Výměna pneumatik</li>
-              <li>Vyvážení kol</li>
-              <li>Uskladnění pneu</li>
-              <li>Oprava pneumatik</li>
-              <li>Prodej pneumatik</li>
-            </ul>
+            {services.length > 0 ? (
+              <ul className="space-y-2 text-gray-400 text-sm">
+                {services.map((service) => (
+                  <li key={service.id}>{service.nazev}</li>
+                ))}
+              </ul>
+            ) : (
+              <ul className="space-y-2 text-gray-400 text-sm">
+                <li>Načítání služeb...</li>
+              </ul>
+            )}
           </div>
 
           {/* Contact */}
@@ -69,12 +110,12 @@ export default function Footer() {
             <ul className="space-y-2 text-gray-400 text-sm">
               <li className="flex items-start space-x-2">
                 <span>📍</span>
-                <span>Lorem Ipsum 123<br />123 45 Praha</span>
+                <span>Osady Ležáků 835<br />538 51 Chrast</span>
               </li>
               <li className="flex items-center space-x-2">
                 <span>📞</span>
-                <a href="tel:+420123456789" className="hover:text-orange-500 transition-colors">
-                  +420 123 456 789
+                <a href="tel:+420602299090" className="hover:text-orange-500 transition-colors">
+                  +420 602 299 090
                 </a>
               </li>
               <li className="flex items-center space-x-2">
@@ -104,4 +145,3 @@ export default function Footer() {
     </footer>
   );
 }
-
