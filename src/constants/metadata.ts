@@ -1,7 +1,7 @@
 export const SITE_CONFIG = {
   name: 'PneuservisVMK',
   description: 'PneuservisVMK - Vždy nám na každém kole záleží. Profesionální výměna pneumatik, vyvážení, uskladnění a kompletní péče o vaše pneumatiky.',
-  url: 'https://pneuservisvmk.cz',
+  url: 'https://www.pneuservisvmk.cz',
   keywords: [
     'pneuservis',
     'výměna pneumatik',

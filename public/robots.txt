@@ -3,5 +3,5 @@ User-agent: *
 Allow: /
 
 # Sitemap location
-Sitemap: https://pneuservis.cz/sitemap.xml
+Sitemap: https://www.pneuservisvmk.cz/sitemap.xml
 
