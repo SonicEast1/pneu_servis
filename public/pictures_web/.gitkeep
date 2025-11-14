@@ -1,0 +1,7 @@
+# Tato složka obsahuje obrázky pro web
+# Přidejte sem obrázky (JPG, PNG, GIF, WEBP) a upravte cesty v kódu
+
+# Obrázek s pneumatikou pro domovskou stránku:
+# - Název: pneumatika.png (nebo .jpg)
+# - Cesta v kódu: src/app/page.tsx (řádek s komentářem "ZDE MŮŽETE ZMĚNIT OBRÁZEK")
+

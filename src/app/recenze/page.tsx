@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 
 interface Review {
   id: string;
@@ -105,7 +106,7 @@ export default function ReviewsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-neutral-900 flex items-center justify-center">
+      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-orange-500 mx-auto mb-4"></div>
           <p className="text-gray-300 text-lg">Načítám recenze...</p>
@@ -115,33 +116,48 @@ export default function ReviewsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-neutral-900 relative">
+    <div className="min-h-screen bg-[#0a0a0a] relative">
       {/* Background blur effect - celá stránka */}
       <div className="fixed inset-0 pointer-events-none z-0">
         <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-20 left-20 w-72 h-72 bg-orange-500 rounded-full blur-3xl"></div>
-          <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-orange-600 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-1/4 left-1/3 w-80 h-80 bg-yellow-500/60 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-20 right-20 w-96 h-96 bg-orange-600 rounded-full blur-3xl"></div>
+          <div className="absolute top-20 left-20 w-72 h-72 bg-orange-500 rounded-full blur-3xl animate-bg-float"></div>
+          <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-orange-600 rounded-full blur-3xl animate-bg-float-delayed"></div>
+          <div className="absolute bottom-1/4 left-1/3 w-80 h-80 bg-yellow-500/60 rounded-full blur-3xl animate-bg-float"></div>
+          <div className="absolute bottom-20 right-20 w-96 h-96 bg-red-600/40 rounded-full blur-3xl animate-bg-float-delayed"></div>
         </div>
       </div>
       {/* Hero Section */}
-      <section className="section-padding bg-gradient-to-b from-neutral-800 via-neutral-800/80 to-neutral-900">
-        <div className="max-w-7xl mx-auto text-center">
+      <section className="section-padding bg-gradient-to-b from-[#1a1a1a] via-[#0f0f0f]/80 to-[#0f0f0f] relative overflow-hidden">
+        {/* Obrázek s pneumatikou přes celou šířku - lze změnit v kódu */}
+        {/* ============================================ */}
+        {/* ZDE MŮŽETE ZMĚNIT OBRÁZEK: přepište '/pictures_web/upImg2.jpg' na váš obrázek */}
+        {/* ============================================ */}
+        <div className="absolute inset-0 w-full h-full opacity-20 md:opacity-30 pointer-events-none z-5">
+          <Image
+            src="/pictures_web/upImg2.jpg"
+            alt="Pneumatika"
+            fill
+            className="object-cover"
+            sizes="100vw"
+            priority
+          />
+        </div>
+        <div className="relative z-10 max-w-7xl mx-auto text-center">
           <h1 className="text-5xl md:text-6xl font-black mb-6">
             <span className="gradient-text">Recenze zákazníků</span>
           </h1>
           <p className="text-xl text-gray-300 max-w-2xl mx-auto">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Přečtěte si, co o nás říkají naši spokojení zákazníci.
+            Přečtěte si, co o nás říkají naši spokojení zákazníci.
           </p>
         </div>
       </section>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 bg-gradient-to-b from-neutral-900 via-neutral-900 to-neutral-900/95">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Stats Sidebar */}
-          <div className="lg:col-span-1">
-            <div className="card sticky top-24 animate-fadeInLeft">
+      <div className="w-full py-16 bg-gradient-to-b from-[#0a0a0a] via-[#1a1a1a] to-[#0f0f0f]/95">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+            {/* Stats Sidebar */}
+            <div className="lg:col-span-1">
+              <div className="card animate-fadeInLeft">
               <h2 className="text-2xl font-bold mb-6 text-white">Celkové hodnocení</h2>
               
               <div className="text-center mb-8">
@@ -158,7 +174,7 @@ export default function ReviewsPage() {
                 {ratingDistribution.map(({ rating, count, percentage }) => (
                   <div key={rating} className="flex items-center gap-2">
                     <span className="text-sm text-gray-300 w-8">{rating}★</span>
-                    <div className="flex-1 h-3 bg-neutral-700 rounded-full overflow-hidden">
+                    <div className="flex-1 h-3 bg-[#1a1a1a] rounded-full overflow-hidden">
                       <div
                         className="h-full bg-gradient-to-r from-orange-500 to-red-600 transition-all duration-500"
                         style={{ width: `${percentage}%` }}
@@ -175,8 +191,8 @@ export default function ReviewsPage() {
                   onClick={() => setSelectedRating(null)}
                   className={`px-4 py-2 rounded-lg font-medium transition-all ${
                     selectedRating === null
-                      ? 'bg-gradient-to-r from-orange-500 to-red-600 text-white'
-                      : 'bg-neutral-700 text-gray-300 hover:bg-neutral-600'
+                      ? 'bg-gradient-to-r from-orange-500 to-red-600 text-white border-2 border-orange-500'
+                      : 'bg-transparent text-orange-500 border-2 border-orange-500 hover:bg-gradient-to-r hover:from-orange-500 hover:to-red-600 hover:text-white'
                   }`}
                 >
                   Vše
@@ -187,8 +203,8 @@ export default function ReviewsPage() {
                     onClick={() => setSelectedRating(rating)}
                     className={`px-4 py-2 rounded-lg font-medium transition-all ${
                       selectedRating === rating
-                        ? 'bg-gradient-to-r from-orange-500 to-red-600 text-white'
-                        : 'bg-neutral-700 text-gray-300 hover:bg-neutral-600'
+                        ? 'bg-gradient-to-r from-orange-500 to-red-600 text-white border-2 border-orange-500'
+                        : 'bg-transparent text-orange-500 border-2 border-orange-500 hover:bg-gradient-to-r hover:from-orange-500 hover:to-red-600 hover:text-white'
                     }`}
                   >
                     {rating}★
@@ -219,7 +235,7 @@ export default function ReviewsPage() {
                       type="text"
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      className="w-full px-4 py-3 bg-neutral-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-4 py-3 bg-[#1a1a1a] border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
                       placeholder="Vaše jméno"
                     />
                   </div>
@@ -232,7 +248,7 @@ export default function ReviewsPage() {
                       type="email"
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      className="w-full px-4 py-3 bg-neutral-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-4 py-3 bg-[#1a1a1a] border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
                       placeholder="vas@email.cz"
                     />
                   </div>
@@ -249,7 +265,7 @@ export default function ReviewsPage() {
                           onClick={() => setFormData({ ...formData, rating })}
                           className={`text-4xl transition-all ${
                             rating <= formData.rating ? 'text-orange-500' : 'text-gray-600'
-                          } hover:scale-110`}
+                          }`}
                         >
                           ★
                         </button>
@@ -265,7 +281,7 @@ export default function ReviewsPage() {
                       value={formData.text}
                       onChange={(e) => setFormData({ ...formData, text: e.target.value })}
                       rows={4}
-                      className="w-full px-4 py-3 bg-neutral-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      className="w-full px-4 py-3 bg-[#1a1a1a] border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
                       placeholder="Napište svou recenzi..."
                     />
                   </div>
@@ -281,7 +297,7 @@ export default function ReviewsPage() {
                     <button
                       type="button"
                       onClick={() => setShowReviewForm(false)}
-                      className="px-6 py-3 bg-neutral-700 text-white rounded-lg hover:bg-neutral-600 transition-colors"
+                      className="px-6 py-3 bg-transparent text-orange-500 border-2 border-orange-500 rounded-lg hover:bg-gradient-to-r hover:from-orange-500 hover:to-red-600 hover:text-white transition-all duration-300"
                     >
                       Zrušit
                     </button>
@@ -318,7 +334,7 @@ export default function ReviewsPage() {
               filteredReviews.map((review, index) => (
                 <div
                   key={review.id}
-                  className={`card hover-lift hover-glow animate-fadeInUp stagger-${(index % 6) + 1}`}
+                  className={`card hover-glow animate-fadeInUp stagger-${(index % 6) + 1}`}
                 >
                   <div className="flex items-start gap-4">
                     <div className="w-14 h-14 bg-gradient-to-br from-orange-500 to-red-600 rounded-full flex items-center justify-center text-2xl font-bold text-white flex-shrink-0">
@@ -352,8 +368,12 @@ export default function ReviewsPage() {
               ))
             )}
           </div>
+          </div>
         </div>
       </div>
+      
+      {/* Spacer pro odsazení od footeru */}
+      <div className="mb-16"></div>
     </div>
   );
 }

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 
 interface Service {
   id: string;
@@ -105,44 +106,59 @@ export default function BookingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-neutral-900 relative">
+    <div className="min-h-screen bg-[#0a0a0a] relative">
       {/* Background blur effect - celá stránka */}
       <div className="fixed inset-0 pointer-events-none z-0">
         <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-20 left-20 w-72 h-72 bg-orange-500 rounded-full blur-3xl"></div>
-          <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-orange-600 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-1/4 left-1/3 w-80 h-80 bg-yellow-500/60 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-20 right-20 w-96 h-96 bg-orange-600 rounded-full blur-3xl"></div>
+          <div className="absolute top-20 left-20 w-72 h-72 bg-orange-500 rounded-full blur-3xl animate-bg-float"></div>
+          <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-orange-600 rounded-full blur-3xl animate-bg-float-delayed"></div>
+          <div className="absolute bottom-1/4 left-1/3 w-80 h-80 bg-yellow-500/60 rounded-full blur-3xl animate-bg-float"></div>
+          <div className="absolute bottom-20 right-20 w-96 h-96 bg-red-600/40 rounded-full blur-3xl animate-bg-float-delayed"></div>
         </div>
       </div>
       {/* Hero Section */}
-      <section className="section-padding bg-gradient-to-b from-neutral-800 via-neutral-800/80 to-neutral-900">
-        <div className="max-w-7xl mx-auto text-center">
+      <section className="section-padding bg-gradient-to-b from-[#0a0a0a] via-[#1a1a1a] to-[#0f0f0f] relative overflow-hidden">
+        {/* Obrázek s pneumatikou přes celou šířku - lze změnit v kódu */}
+        {/* ============================================ */}
+        {/* ZDE MŮŽETE ZMĚNIT OBRÁZEK: přepište '/pictures_web/upImg2.jpg' na váš obrázek */}
+        {/* ============================================ */}
+        <div className="absolute inset-0 w-full h-full opacity-20 md:opacity-30 pointer-events-none z-5">
+          <Image
+            src="/pictures_web/upImg2.jpg"
+            alt="Pneumatika"
+            fill
+            className="object-cover"
+            sizes="100vw"
+            priority
+          />
+        </div>
+        <div className="relative z-10 max-w-7xl mx-auto text-center">
           <h1 className="text-5xl md:text-6xl font-black mb-6">
             <span className="gradient-text">Online rezervace</span>
           </h1>
           <p className="text-xl text-gray-300 max-w-2xl mx-auto">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Rezervujte si termín jednoduše online v několika krocích.
+            Rezervujte si termín jednoduše online!
           </p>
         </div>
       </section>
 
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16 bg-gradient-to-b from-neutral-900 via-neutral-900 to-neutral-900/95">
-        {/* Progress Steps */}
-        <div className="mb-12">
+      <div className="w-full py-16 bg-gradient-to-b from-[#0a0a0a] via-[#1a1a1a] to-[#0f0f0f]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Progress Steps */}
+          <div className="mb-12">
           <div className="flex items-center justify-center">
             {[1, 2, 3, 4].map((s, index) => (
               <div key={s} className="flex items-center">
                 <div className={`flex items-center justify-center w-12 h-12 rounded-full font-bold transition-all ${
                   step >= s 
-                    ? 'bg-gradient-to-r from-orange-500 to-red-600 text-white shadow-lg scale-110' 
-                    : 'bg-neutral-700 text-gray-400'
+                    ? 'bg-gradient-to-r from-orange-500 to-red-600 text-white shadow-lg' 
+                    : 'bg-[#1a1a1a] text-gray-400'
                 }`}>
                   {step > s ? '✓' : s}
                 </div>
                 {index < 3 && (
                   <div className={`w-16 md:w-32 h-1 mx-2 transition-all ${
-                    step > s ? 'bg-gradient-to-r from-orange-500 to-red-600' : 'bg-neutral-700'
+                    step > s ? 'bg-gradient-to-r from-orange-500 to-red-600' : 'bg-[#1a1a1a]'
                   }`}></div>
                 )}
               </div>
@@ -159,7 +175,7 @@ export default function BookingPage() {
         </div>
 
         {/* Form Steps */}
-        <div className="card max-w-3xl mx-auto animate-fadeInUp hover-glow">
+        <div className="card max-w-4xl mx-auto animate-fadeInUp hover-glow">
           <form onSubmit={handleSubmit}>
             {/* Step 1: Service Selection */}
             {step === 1 && (
@@ -184,10 +200,10 @@ export default function BookingPage() {
                           key={service.id}
                           type="button"
                           onClick={() => setFormData({ ...formData, service: service.id })}
-                          className={`p-6 rounded-xl border-2 transition-all text-left hover-lift ${
+                          className={`p-6 rounded-xl border-2 transition-all text-left ${
                             formData.service === service.id
                               ? 'border-orange-500 bg-orange-500/10 shadow-lg shadow-orange-500/30'
-                              : 'border-gray-700 hover:border-orange-500/50'
+                              : 'border-orange-500/50 bg-transparent hover:border-orange-500 hover:bg-orange-500/5'
                           }`}
                         >
                           <div className="flex items-start gap-3">
@@ -219,7 +235,7 @@ export default function BookingPage() {
                     value={formData.date}
                     onChange={(e) => setFormData({ ...formData, date: e.target.value })}
                     min={new Date().toISOString().split('T')[0]}
-                    className="w-full px-4 py-3 bg-neutral-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="w-full px-4 py-3 bg-[#1a1a1a] border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
                   />
                 </div>
 
@@ -238,10 +254,10 @@ export default function BookingPage() {
                           onClick={() => setFormData({ ...formData, time })}
                           className={`py-3 rounded-lg font-medium transition-all ${
                             isBooked
-                              ? 'bg-neutral-700 text-gray-600 cursor-not-allowed'
+                              ? 'bg-transparent text-gray-600 border-2 border-gray-600 cursor-not-allowed'
                               : formData.time === time
-                              ? 'bg-gradient-to-r from-orange-500 to-red-600 text-white'
-                              : 'bg-neutral-700 text-gray-300 hover:bg-neutral-600'
+                              ? 'bg-gradient-to-r from-orange-500 to-red-600 text-white border-2 border-orange-500'
+                              : 'bg-transparent text-orange-500 border-2 border-orange-500 hover:bg-gradient-to-r hover:from-orange-500 hover:to-red-600 hover:text-white'
                           }`}
                         >
                           {time}
@@ -266,7 +282,7 @@ export default function BookingPage() {
                     type="text"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full px-4 py-3 bg-neutral-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="w-full px-4 py-3 bg-[#1a1a1a] border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
                     placeholder="Jan Novák"
                     required
                   />
@@ -280,7 +296,7 @@ export default function BookingPage() {
                     type="email"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full px-4 py-3 bg-neutral-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="w-full px-4 py-3 bg-[#1a1a1a] border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
                     placeholder="jan@email.cz"
                     required
                   />
@@ -294,7 +310,7 @@ export default function BookingPage() {
                     type="tel"
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="w-full px-4 py-3 bg-neutral-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="w-full px-4 py-3 bg-[#1a1a1a] border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
                     placeholder="+420 602 299 090"
                     required
                   />
@@ -308,7 +324,7 @@ export default function BookingPage() {
                     type="text"
                     value={formData.car}
                     onChange={(e) => setFormData({ ...formData, car: e.target.value })}
-                    className="w-full px-4 py-3 bg-neutral-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="w-full px-4 py-3 bg-[#1a1a1a] border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
                     placeholder="Škoda Octavia"
                   />
                 </div>
@@ -321,7 +337,7 @@ export default function BookingPage() {
                     value={formData.note}
                     onChange={(e) => setFormData({ ...formData, note: e.target.value })}
                     rows={3}
-                    className="w-full px-4 py-3 bg-neutral-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="w-full px-4 py-3 bg-[#1a1a1a] border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
                     placeholder="Jakékoliv speciální požadavky..."
                   />
                 </div>
@@ -333,37 +349,37 @@ export default function BookingPage() {
               <div className="space-y-6">
                 <h2 className="text-3xl font-bold gradient-text mb-6">Potvrzení rezervace</h2>
                 
-                <div className="bg-neutral-700 rounded-lg p-6 space-y-4">
-                  <div className="flex justify-between py-2 border-b border-gray-600">
+                <div className="bg-[#1a1a1a] rounded-lg p-6 space-y-4">
+                  <div className="flex justify-between py-2 border-b border-gray-700">
                     <span className="text-gray-400">Služba:</span>
                     <span className="font-semibold text-white">
-                      {services.find(s => s.id === formData.service)?.name}
+                      {services.find(s => s.id === formData.service)?.nazev}
                     </span>
                   </div>
-                  <div className="flex justify-between py-2 border-b border-gray-600">
+                  <div className="flex justify-between py-2 border-b border-gray-700">
                     <span className="text-gray-400">Datum:</span>
                     <span className="font-semibold text-white">
                       {new Date(formData.date).toLocaleDateString('cs-CZ')}
                     </span>
                   </div>
-                  <div className="flex justify-between py-2 border-b border-gray-600">
+                  <div className="flex justify-between py-2 border-b border-gray-700">
                     <span className="text-gray-400">Čas:</span>
                     <span className="font-semibold text-white">{formData.time}</span>
                   </div>
-                  <div className="flex justify-between py-2 border-b border-gray-600">
+                  <div className="flex justify-between py-2 border-b border-gray-700">
                     <span className="text-gray-400">Jméno:</span>
                     <span className="font-semibold text-white">{formData.name}</span>
                   </div>
-                  <div className="flex justify-between py-2 border-b border-gray-600">
+                  <div className="flex justify-between py-2 border-b border-gray-700">
                     <span className="text-gray-400">Email:</span>
                     <span className="font-semibold text-white">{formData.email}</span>
                   </div>
-                  <div className="flex justify-between py-2 border-b border-gray-600">
+                  <div className="flex justify-between py-2 border-b border-gray-700">
                     <span className="text-gray-400">Telefon:</span>
                     <span className="font-semibold text-white">{formData.phone}</span>
                   </div>
                   {formData.car && (
-                    <div className="flex justify-between py-2 border-b border-gray-600">
+                    <div className="flex justify-between py-2 border-b border-gray-700">
                       <span className="text-gray-400">Vozidlo:</span>
                       <span className="font-semibold text-white">{formData.car}</span>
                     </div>
@@ -390,7 +406,7 @@ export default function BookingPage() {
                 <button
                   type="button"
                   onClick={() => setStep(step - 1)}
-                  className="px-6 py-3 bg-neutral-700 text-white rounded-lg hover:bg-neutral-600 transition-colors"
+                  className="px-6 py-3 bg-transparent text-orange-500 border-2 border-orange-500 rounded-lg hover:bg-gradient-to-r hover:from-orange-500 hover:to-red-600 hover:text-white transition-all duration-300"
                 >
                   Zpět
                 </button>
@@ -419,19 +435,23 @@ export default function BookingPage() {
           </form>
         </div>
 
-        {/* Contact Info */}
-        <div className="mt-12 text-center">
-          <p className="text-gray-400 mb-4">
-            Preferujete telefonickou rezervaci?
-          </p>
-          <a
-            href="tel:+420602299090"
-            className="inline-block btn-secondary"
-          >
-            📞 +420 602 299 090
-          </a>
+          {/* Contact Info */}
+          <div className="mt-12 text-center">
+            <p className="text-gray-400 mb-4">
+              Preferujete telefonickou rezervaci?
+            </p>
+            <a
+              href="tel:+420602299090"
+              className="inline-block btn-secondary"
+            >
+              📞 +420 602 299 090
+            </a>
+          </div>
         </div>
       </div>
+      
+      {/* Spacer pro odsazení od footeru */}
+      <div className="mb-16"></div>
     </div>
   );
 }

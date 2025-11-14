@@ -28,6 +28,12 @@ http://localhost:3000/admin/upload
 - Galerie nahraných obrázků
 - Kopírování URL obrázků
 
+### 🖼️ **Galerie obrázků**
+Obrázky pro galerii se přidávají do složky `public/gallery/` a jejich metadata se upravují v JSON souboru `data/gallery_data.json`.
+- Přidejte obrázky (JPG, PNG, GIF, WEBP) do složky `public/gallery/`
+- Upravte texty, kategorie a URL obrázků v JSON souboru `data/gallery_data.json`
+- Více informací: `GALERIE_NAVOD.md`
+
 ### 🔧 **Správa služeb a ceníku**
 ```
 http://localhost:3000/admin/sluzby
@@ -96,7 +102,9 @@ Stáhne se soubor `rezervace_all.xlsx` - přímo otevřitelný v Excelu!
 | `data/recenze_all.xlsx` | Excel soubor se všemi recenzemi |
 | `data/cenik_sluzby.xlsx` | Excel soubor se službami a ceníkem |
 | `data/oteviraci_doby.xlsx` | Excel soubor s otevírací dobou |
+| `data/gallery_data.json` | JSON soubor s metadaty obrázků galerie (texty, kategorie, URL) |
 | `public/uploads/` | Nahrané obrázky |
+| `public/gallery/` | Obrázky pro galerii |
 | `public/logoWeb.png` | Logo webu |
 
 ---
@@ -123,4 +131,5 @@ Web běží na: **http://localhost:3000**
 Pro více informací viz:
 - `REZERVACE_SYSTEM.md` - Systém rezervací
 - `CENIK_SLUZBY_INFO.md` - Systém správy služeb a ceníku
+- `GALERIE_NAVOD.md` - Návod pro správu galerie obrázků
 

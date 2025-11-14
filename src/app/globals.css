@@ -27,7 +27,7 @@
 }
 
 body {
-  background: #3d1f1f;  /* Tmavá hnědá z loga */
+  background: #0a0a0a;  /* Téměř černá */
   color: rgb(255 255 255);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -40,34 +40,35 @@ html {
 
 .btn-primary {
   padding: 0.75rem 1.5rem;
-  background: linear-gradient(to right, #ff8c00, #ffa500);  /* Oranžová z loga */
-  color: white;
+  background: transparent;
+  color: #ff8c00;
+  border: 2px solid #ff8c00;
   border-radius: 0.5rem;
   font-weight: 600;
-  transition: all 0.3s;
-  box-shadow: 0 10px 15px -3px rgb(255 140 0 / 0.3);
-  transform: scale(1);
+  transition: all 0.3s ease;
+  position: relative;
 }
 
 .btn-primary:hover {
-  box-shadow: 0 20px 25px -5px rgb(255 140 0 / 0.5);
-  transform: scale(1.05);
-  background: linear-gradient(to right, #ffa500, #ff8c00);
+  background: linear-gradient(135deg, #ff8c00, #ff6b00, #cc5500);
+  color: white;
+  border-color: #ff8c00;
 }
 
 .btn-secondary {
   padding: 0.75rem 1.5rem;
-  background: #3d1f1f;  /* Tmavá hnědá z loga */
-  color: white;
+  background: transparent;
+  color: #ff8c00;
+  border: 2px solid #ff8c00;
   border-radius: 0.5rem;
   font-weight: 600;
-  transition: all 0.3s;
-  border: 2px solid #ff8c00;
+  transition: all 0.3s ease;
 }
 
 .btn-secondary:hover {
-  background: #5c2e2e;
-  border-color: #ffa500;
+  background: linear-gradient(135deg, #ff8c00, #ff6b00, #cc5500);
+  color: white;
+  border-color: #ff8c00;
 }
 
 .section-padding {
@@ -87,23 +88,43 @@ html {
 }
 
 .card {
-  background: #2a1414;  /* Nejtmavší hnědá */
+  background: linear-gradient(135deg, #1a1a1a, #0f0f0f, #1a0f0f);  /* Tmavá šedá s jemným červeným nádechem */
   border-radius: 0.75rem;
   padding: 1.5rem;
-  border: 1px solid rgb(255 140 0 / 0.2);
-  transition: all 0.3s;
+  border: 1px solid rgba(255, 140, 0, 0.3);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 140, 0, 0.05), transparent);
+  transition: left 0.6s;
+}
+
+.card:hover::before {
+  left: 100%;
 }
 
 .card:hover {
-  border-color: rgb(255 140 0 / 0.5);
-  box-shadow: 0 0 20px rgb(255 140 0 / 0.1);
+  border-color: rgba(255, 140, 0, 0.8);
+  box-shadow: 0 0 30px rgba(255, 140, 0, 0.4), 0 0 50px rgba(255, 140, 0, 0.2);
+  background: linear-gradient(135deg, #2a1a0f, #1f0f0a, #1a0f0f);  /* Teplý oranžovo-hnědý nádech */
 }
 
 .gradient-text {
-  background: linear-gradient(to right, #ff8c00, #ffa500);  /* Oranžová z loga */
+  background: linear-gradient(135deg, #ff8c00, #ff6b00, #cc5500, #b36200, #995400);  /* Oranžová, červená, hnědá */
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+  background-size: 200% 200%;
+  animation: gradient-shift 3s ease infinite;
 }
 
 .text-balance {
@@ -223,6 +244,87 @@ html {
   }
 }
 
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes float-reverse {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(10px);
+  }
+}
+
+@keyframes glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(255, 140, 0, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(255, 140, 0, 0.6), 0 0 60px rgba(255, 140, 0, 0.3);
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 10px 25px -5px rgb(255 140 0 / 0.4), 0 0 20px rgb(255 140 0 / 0.2);
+  }
+  50% {
+    box-shadow: 0 20px 40px -5px rgb(255 140 0 / 0.6), 0 0 30px rgb(255 140 0 / 0.4);
+  }
+}
+
+@keyframes gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes slide-in-left {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slide-in-right {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes rotate-in {
+  from {
+    transform: rotate(-10deg) scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: rotate(0deg) scale(1);
+    opacity: 1;
+  }
+}
+
 .animate-slideUp {
   animation: slideUp 0.5s ease-out;
 }
@@ -263,43 +365,66 @@ html {
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-float-reverse {
+  animation: float-reverse 3s ease-in-out infinite;
+}
+
+.animate-glow {
+  animation: glow 2s ease-in-out infinite;
+}
+
+.animate-slide-in-left {
+  animation: slide-in-left 0.6s ease-out;
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right 0.6s ease-out;
+}
+
+.animate-rotate-in {
+  animation: rotate-in 0.6s ease-out;
+}
+
 /* Hover effects */
 .hover-lift {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: box-shadow 0.4s ease;
 }
 
 .hover-lift:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 30px rgba(255, 140, 0, 0.4), 0 0 50px rgba(255, 140, 0, 0.2);
 }
 
 .hover-scale {
-  transition: transform 0.3s ease;
+  transition: box-shadow 0.4s ease;
 }
 
 .hover-scale:hover {
-  transform: scale(1.05);
+  box-shadow: 0 0 30px rgba(255, 140, 0, 0.4), 0 0 50px rgba(255, 140, 0, 0.2);
 }
 
 .hover-glow {
   position: relative;
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .hover-glow::before {
   content: '';
   position: absolute;
   inset: -2px;
-  background: linear-gradient(45deg, #ff8c00, #ffa500, #3d1f1f);  /* Barvy z loga */
+  background: linear-gradient(45deg, #ff8c00, #ffa500, #ffd700, #ff6b00, #cc5500);
   border-radius: inherit;
   opacity: 0;
-  transition: opacity 0.3s ease;
+  transition: opacity 0.4s ease;
   z-index: -1;
-  filter: blur(10px);
+  filter: blur(12px);
 }
 
 .hover-glow:hover::before {
-  opacity: 0.7;
+  opacity: 0.8;
 }
 
 /* Stagger animation delays */
@@ -309,3 +434,18 @@ html {
 .stagger-4 { animation-delay: 0.4s; }
 .stagger-5 { animation-delay: 0.5s; }
 .stagger-6 { animation-delay: 0.6s; }
+
+/* Smooth transitions for all interactive elements */
+* {
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Animated background elements */
+.animate-bg-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-bg-float-delayed {
+  animation: float-reverse 8s ease-in-out infinite;
+  animation-delay: 2s;
+}

@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useEffect, useState } from 'react';
 
 interface Service {
@@ -66,7 +67,7 @@ export default function SluzbyPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-neutral-900 flex items-center justify-center">
+      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-orange-500 mx-auto mb-4"></div>
           <p className="text-gray-300 text-lg">Načítám služby...</p>
@@ -76,18 +77,32 @@ export default function SluzbyPage() {
   }
 
   return (
-    <div className="min-h-screen bg-neutral-900 relative">
+    <div className="min-h-screen bg-[#0a0a0a] relative">
       {/* Background blur effect - celá stránka */}
       <div className="fixed inset-0 pointer-events-none z-0">
         <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-20 left-20 w-72 h-72 bg-orange-500 rounded-full blur-3xl"></div>
-          <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-orange-600 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-1/4 left-1/3 w-80 h-80 bg-yellow-500/60 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-20 right-20 w-96 h-96 bg-orange-600 rounded-full blur-3xl"></div>
+          <div className="absolute top-20 left-20 w-72 h-72 bg-orange-500 rounded-full blur-3xl animate-bg-float"></div>
+          <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-orange-600 rounded-full blur-3xl animate-bg-float-delayed"></div>
+          <div className="absolute bottom-1/4 left-1/3 w-80 h-80 bg-yellow-500/60 rounded-full blur-3xl animate-bg-float"></div>
+          <div className="absolute bottom-20 right-20 w-96 h-96 bg-red-600/40 rounded-full blur-3xl animate-bg-float-delayed"></div>
         </div>
       </div>
       {/* Hero Section */}
-      <section className="relative py-20 overflow-hidden bg-gradient-to-b from-neutral-800 via-neutral-800/80 to-neutral-900/98">
+      <section className="relative py-20 overflow-hidden bg-gradient-to-b from-[#0a0a0a] via-[#1a1a1a] to-[#0f0f0f]">
+        {/* Obrázek s pneumatikou přes celou šířku - lze změnit v kódu */}
+        {/* ============================================ */}
+        {/* ZDE MŮŽETE ZMĚNIT OBRÁZEK: přepište '/pictures_web/upImg2.jpg' na váš obrázek */}
+        {/* ============================================ */}
+        <div className="absolute inset-0 w-full h-full opacity-20 md:opacity-30 pointer-events-none z-5">
+          <Image
+            src="/pictures_web/upImg2.jpg"
+            alt="Pneumatika"
+            fill
+            className="object-cover"
+            sizes="100vw"
+            priority
+          />
+        </div>
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-20 left-20 w-72 h-72 bg-orange-500 rounded-full blur-3xl"></div>
           <div className="absolute bottom-20 right-20 w-96 h-96 bg-orange-600 rounded-full blur-3xl"></div>
@@ -105,15 +120,15 @@ export default function SluzbyPage() {
 
       {/* Main Services Section */}
       {services.length > 0 ? (
-        <section className="section-padding bg-gradient-to-b from-neutral-900/98 via-neutral-900 to-neutral-900/95">
+        <section className="section-padding bg-gradient-to-b from-[#0a0a0a] via-[#1a1a1a] to-[#0f0f0f]">
           <div className="max-w-7xl mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {services.map((service, index) => (
                 <div
                   key={service.id}
-                  className={`card group hover-lift hover-glow cursor-pointer animate-fadeInUp stagger-${(index % 6) + 1}`}
+                  className={`card group hover-glow cursor-pointer animate-fadeInUp stagger-${(index % 6) + 1}`}
                 >
-                  <div className="text-5xl mb-4 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
+                  <div className="text-5xl mb-4 transition-all duration-300">
                     {service.ikona}
                   </div>
                   <h3 className="text-2xl font-bold mb-3 gradient-text group-hover:tracking-wide transition-all duration-300">
@@ -130,7 +145,7 @@ export default function SluzbyPage() {
                           className="flex items-center text-gray-300 text-sm transform group-hover:translate-x-1 transition-transform duration-300"
                           style={{ transitionDelay: `${idx * 50}ms` }}
                         >
-                          <span className="text-orange-500 mr-2 group-hover:scale-125 transition-transform duration-300">✓</span>
+                          <span className="text-orange-500 mr-2 transition-all duration-300">✓</span>
                           {feature.trim()}
                         </li>
                       ))}
@@ -148,7 +163,7 @@ export default function SluzbyPage() {
           </div>
         </section>
       ) : (
-        <section className="section-padding bg-gradient-to-b from-neutral-900 via-neutral-900 to-neutral-900/95">
+        <section className="section-padding bg-gradient-to-b from-[#0a0a0a] via-[#1a1a1a] to-[#0f0f0f]">
           <div className="max-w-7xl mx-auto text-center">
             <div className="text-6xl mb-4">🔧</div>
             <h2 className="text-2xl font-bold text-gray-300 mb-2">
@@ -162,7 +177,7 @@ export default function SluzbyPage() {
       )}
 
       {/* Process Section */}
-      <section className="section-padding bg-gradient-to-b from-neutral-900/95 via-neutral-800/95 to-neutral-800">
+      <section className="section-padding bg-gradient-to-b from-[#0a0a0a] via-[#1a1a1a] to-[#0f0f0f]">
         <div className="max-w-7xl mx-auto">
           <h2 className="text-4xl md:text-5xl font-bold text-center mb-4">
             <span className="gradient-text">Jak to funguje?</span>
@@ -175,7 +190,7 @@ export default function SluzbyPage() {
             {process.map((step, index) => (
               <div key={index} className={`text-center animate-fadeInUp stagger-${index + 1}`}>
                 <div className="relative mb-6">
-                  <div className="w-20 h-20 mx-auto bg-gradient-to-br from-orange-500 to-red-600 rounded-full flex items-center justify-center text-3xl font-bold text-white shadow-lg hover:shadow-orange-500/50 transform hover:scale-110 transition-all duration-300">
+                  <div className="w-20 h-20 mx-auto bg-gradient-to-br from-orange-500 to-red-600 rounded-full flex items-center justify-center text-3xl font-bold text-white shadow-lg hover:shadow-orange-500/50 transition-all duration-300">
                     {index + 1}
                   </div>
                   {index < process.length - 1 && (
@@ -196,7 +211,7 @@ export default function SluzbyPage() {
 
       {/* Pricing Table Section */}
       {pricingTable.length > 0 && (
-        <section className="section-padding bg-gradient-to-b from-neutral-800 via-neutral-800/95 to-neutral-900">
+        <section className="section-padding bg-gradient-to-b from-[#1a1a1a] via-[#0f0f0f] to-[#0a0a0a]">
           <div className="max-w-6xl mx-auto">
             <h2 className="text-4xl md:text-5xl font-bold text-center mb-4">
               <span className="gradient-text">Ceník služeb</span>
@@ -236,7 +251,7 @@ export default function SluzbyPage() {
       )}
 
       {/* CTA Section */}
-      <section className="section-padding bg-gradient-to-r from-orange-500 via-red-600 to-brown-600 relative overflow-hidden">
+      <section className="section-padding mb-16 bg-gradient-to-r from-orange-500 via-red-600 via-yellow-500 to-orange-600 relative overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-0 left-0 w-96 h-96 bg-white rounded-full blur-3xl"></div>
           <div className="absolute bottom-0 right-0 w-96 h-96 bg-white rounded-full blur-3xl"></div>
@@ -252,13 +267,13 @@ export default function SluzbyPage() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               href="/rezervace"
-              className="px-8 py-4 bg-white text-orange-600 rounded-lg font-bold text-lg hover:bg-gray-100 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:scale-105"
+              className="px-8 py-4 bg-white text-orange-600 rounded-lg font-bold text-lg hover:bg-gray-100 transition-all duration-300 shadow-xl"
             >
               Rezervovat termín
             </Link>
             <a
               href="tel:+420602299090"
-              className="px-8 py-4 bg-neutral-900 text-white rounded-lg font-bold text-lg hover:bg-neutral-800 transition-all duration-300 shadow-xl"
+              className="px-8 py-4 bg-[#0a0a0a] text-white rounded-lg font-bold text-lg hover:bg-[#1a1a1a] transition-all duration-300 shadow-xl border-2 border-white/30 hover:border-white/50"
             >
               Zavolat nyní
             </a>

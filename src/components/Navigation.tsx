@@ -19,7 +19,7 @@ export default function Navigation() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-40 bg-[#3D1F1F]/95 backdrop-blur-md border-b border-orange-500/30 animate-fadeInDown">
+    <nav className="fixed top-0 left-0 right-0 z-40 bg-[#0a0a0a]/95 backdrop-blur-md border-b border-orange-500/30 animate-fadeInDown">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
@@ -89,7 +89,7 @@ export default function Navigation() {
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-[#2A1414] border-t border-orange-500/30 animate-slideDown">
+        <div className="md:hidden bg-[#0a0a0a] border-t border-orange-500/30 animate-slideDown">
           <div className="px-2 pt-2 pb-3 space-y-1">
             {navItems.map((item) => (
               <Link

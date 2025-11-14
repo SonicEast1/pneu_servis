@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 
 interface OpeningHour {
   id: string;
@@ -30,18 +31,32 @@ export default function KontaktyPage() {
     }
   };
   return (
-    <div className="min-h-screen bg-neutral-900 relative">
+    <div className="min-h-screen bg-[#0a0a0a] relative">
       {/* Background blur effect - celá stránka */}
       <div className="fixed inset-0 pointer-events-none z-0">
         <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-20 left-20 w-72 h-72 bg-orange-500 rounded-full blur-3xl"></div>
-          <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-orange-600 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-1/4 left-1/3 w-80 h-80 bg-yellow-500/60 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-20 right-20 w-96 h-96 bg-orange-600 rounded-full blur-3xl"></div>
+          <div className="absolute top-20 left-20 w-72 h-72 bg-orange-500 rounded-full blur-3xl animate-bg-float"></div>
+          <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-orange-600 rounded-full blur-3xl animate-bg-float-delayed"></div>
+          <div className="absolute bottom-1/4 left-1/3 w-80 h-80 bg-yellow-500/60 rounded-full blur-3xl animate-bg-float"></div>
+          <div className="absolute bottom-20 right-20 w-96 h-96 bg-red-600/40 rounded-full blur-3xl animate-bg-float-delayed"></div>
         </div>
       </div>
       {/* Hero Section */}
       <section className="relative py-20 overflow-hidden">
+        {/* Obrázek s pneumatikou přes celou šířku - lze změnit v kódu */}
+        {/* ============================================ */}
+        {/* ZDE MŮŽETE ZMĚNIT OBRÁZEK: přepište '/pictures_web/upImg2.jpg' na váš obrázek */}
+        {/* ============================================ */}
+        <div className="absolute inset-0 w-full h-full opacity-20 md:opacity-30 pointer-events-none z-5">
+          <Image
+            src="/pictures_web/upImg2.jpg"
+            alt="Pneumatika"
+            fill
+            className="object-cover"
+            sizes="100vw"
+            priority
+          />
+        </div>
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-20 left-20 w-72 h-72 bg-orange-500 rounded-full blur-3xl"></div>
           <div className="absolute bottom-20 right-20 w-96 h-96 bg-orange-600 rounded-full blur-3xl"></div>
@@ -58,13 +73,13 @@ export default function KontaktyPage() {
       </section>
 
       {/* Contact Info Section */}
-      <section className="section-padding bg-gradient-to-b from-neutral-900 via-neutral-900 to-neutral-900/95">
+      <section className="section-padding bg-gradient-to-b from-[#0a0a0a] via-[#1a1a1a] to-[#0f0f0f]">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
             {/* Phone Card */}
-            <div className="card hover-lift hover-glow group animate-fadeInUp stagger-1 p-4">
+            <div className="card hover-glow group animate-fadeInUp stagger-1 p-4">
               <div className="flex items-center space-x-3">
-                <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center text-2xl transform group-hover:rotate-12 transition-all duration-300 shadow-lg group-hover:shadow-orange-500/50 flex-shrink-0">
+                <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center text-2xl transition-all duration-300 shadow-lg group-hover:shadow-orange-500/50 flex-shrink-0">
                   📞
                 </div>
                 <div className="flex-1">
@@ -83,9 +98,9 @@ export default function KontaktyPage() {
             </div>
 
             {/* Email Card */}
-            <div className="card hover-lift hover-glow group animate-fadeInUp stagger-2 p-4">
+            <div className="card hover-glow group animate-fadeInUp stagger-2 p-4">
               <div className="flex items-center space-x-3">
-                <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center text-2xl transform group-hover:rotate-12 transition-all duration-300 shadow-lg group-hover:shadow-orange-500/50 flex-shrink-0">
+                <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center text-2xl transition-all duration-300 shadow-lg group-hover:shadow-orange-500/50 flex-shrink-0">
                   ✉️
                 </div>
                 <div className="flex-1">
@@ -202,7 +217,7 @@ export default function KontaktyPage() {
       </section>
 
       {/* Opening Hours Section */}
-      <section className="py-12 pb-16 bg-gradient-to-b from-neutral-900 to-neutral-800/50">
+      <section className="py-12 pb-16 bg-gradient-to-b from-[#0a0a0a] to-[#1a1a1a]/50">
         <div className="max-w-4xl mx-auto">
           <div className="card hover-glow animate-fadeInUp">
             <div className="flex items-start space-x-4">
@@ -237,7 +252,7 @@ export default function KontaktyPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="section-padding bg-gradient-to-r from-orange-500 via-red-600 to-brown-600 relative overflow-hidden">
+      <section className="section-padding mb-16 bg-gradient-to-r from-orange-500 via-red-600 via-yellow-500 to-orange-600 relative overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-0 left-0 w-96 h-96 bg-white rounded-full blur-3xl"></div>
           <div className="absolute bottom-0 right-0 w-96 h-96 bg-white rounded-full blur-3xl"></div>
@@ -253,13 +268,13 @@ export default function KontaktyPage() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a
               href="tel:+420602299090"
-              className="px-8 py-4 bg-white text-orange-600 rounded-lg font-bold text-lg hover:bg-gray-100 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:scale-105"
+              className="px-8 py-4 bg-white text-orange-600 rounded-lg font-bold text-lg hover:bg-gray-100 transition-all duration-300 shadow-xl"
             >
               📞 Zavolat nyní
             </a>
             <a
               href="mailto:info@pneuservisvmk.cz"
-              className="px-8 py-4 bg-neutral-900 text-white rounded-lg font-bold text-lg hover:bg-neutral-800 transition-all duration-300 shadow-xl"
+              className="px-8 py-4 bg-[#0a0a0a] text-white rounded-lg font-bold text-lg hover:bg-[#1a1a1a] transition-all duration-300 shadow-xl border-2 border-white/30 hover:border-white/50"
             >
               ✉️ Napsat email
             </a>
