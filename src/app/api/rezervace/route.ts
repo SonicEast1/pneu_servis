@@ -220,7 +220,7 @@ export async function POST(request: NextRequest) {
     await saveReservations(reservations);
 
     // Volitelně - odeslat email správci
-    // await sendEmailToAdmin(newReservation);
+   // await sendEmailToAdmin(newReservation);
 
     return NextResponse.json({
       success: true,

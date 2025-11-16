@@ -141,8 +141,8 @@ export default function ONasPage() {
             <div className="animate-fadeInUp stagger-2">
               <div className="card p-0 overflow-hidden hover-glow">
                 <img 
-                  src="/uploads/HomePageBackground.png" 
-                  alt="PneuservisVMK Workshop" 
+                  src="/pictures_web/VMKLogo.png" 
+                  alt="PneuservisVMK" 
                   className="w-full h-full object-cover"
                 />
               </div>

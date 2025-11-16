@@ -26,9 +26,10 @@ export default function Navigation() {
           <Link href="/" className="flex items-center space-x-3 group">
             <div className="relative w-12 h-12 transform group-hover:scale-110 transition-all duration-300">
               <img 
-                src="/logoWeb.png" 
+                src="/pictures_web/VMKLogo_Icona.ico" 
                 alt="PneuservisVMK Logo" 
                 className="w-full h-full object-contain drop-shadow-lg"
+                style={{ display: 'block' }}
               />
             </div>
             <span className="text-xl font-bold text-white group-hover:text-orange-500 transition-all duration-300">
@@ -59,7 +60,7 @@ export default function Navigation() {
               href="tel:+420602299090"
               className="px-5 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 shadow-lg hover:shadow-orange-500/50"
             >
-              +420 602 299 090
+              Zavolejte nám !
             </a>
           </div>
 
@@ -109,7 +110,7 @@ export default function Navigation() {
               href="tel:+420602299090"
               className="block px-3 py-2 mt-2 bg-orange-500 text-white rounded-lg font-semibold text-center hover:bg-orange-600 transition-colors"
             >
-              +420 602 299 090
+              Zavolejte nám
             </a>
           </div>
         </div>
