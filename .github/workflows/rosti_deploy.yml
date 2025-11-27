@@ -31,14 +31,32 @@ jobs:
       - name: Build application
         run: npm run build
 
-      - name: Deploy to Rosti
-        # TODO: Add your deployment steps here
-        # Examples:
-        # - SSH deployment
-        # - FTP upload
-        # - API call to deployment service
-        # - Docker build and push
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Add server to known hosts
         run: |
-          echo "Deployment steps for Rosti platform"
-          # Add your deployment commands here
+          mkdir -p ~/.ssh
+          ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Deploy to Rosti
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+        run: |
+          # Create deployment directory
+          ssh $SSH_USER@$SSH_HOST "mkdir -p $DEPLOY_PATH"
+          
+          # Copy built files to server
+          scp -r .next $SSH_USER@$SSH_HOST:$DEPLOY_PATH/
+          scp -r public $SSH_USER@$SSH_HOST:$DEPLOY_PATH/
+          scp -r package*.json $SSH_USER@$SSH_HOST:$DEPLOY_PATH/
+          scp -r next.config.ts $SSH_USER@$SSH_HOST:$DEPLOY_PATH/
+          scp -r tsconfig.json $SSH_USER@$SSH_HOST:$DEPLOY_PATH/
+          
+          # Install dependencies and restart on server
+          ssh $SSH_USER@$SSH_HOST "cd $DEPLOY_PATH && npm ci --production && pm2 restart pneu_servis || pm2 start npm --name pneu_servis -- start"
 
