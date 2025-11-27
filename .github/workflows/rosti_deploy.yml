@@ -1,62 +1,86 @@
-name: Deploy to Rosti
+name: Deploy into Roští.cz
 
 on:
-  push:
-    branches:
-      - main
-      - master
-  workflow_dispatch:
+    push:
+      branches: [main]
 
 jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
+    deploy:
+      runs-on: ubuntu-latest
+      env:
+        HOST: ssh.rosti.cz
+        USER: app
+        PORT: 12029
+        NODE_VERSION: 24.4.1
+      steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "v24.4.1"
+      - uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.ROSTI_DEPLOY_SSH_KEY }}
+      - name: Setup hostkey
+        run: |
+          echo "ssh.rosti.cz ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDMtxwKLEjaYXISb27/6S/B5NOVr3oi478magnatQcZVJYVr3Hn/Kqj5Jc+w4TfKoUTJ0f9FVkaSxDjGUM6FQgGPwnFfRPqZDfzCfkjcMaR/OYJ8OD57VTfHE/I/FQVg/J5Tj9GS7EpiW9Shgze5UrElK/WyY5AskVWgUmDs6URCDb33tl6zMUnKVraPxCRkSj1loXoIpoQsVQHsVMECF3qb20kyicQ4FPlRXJuW3oeQNUz7aWj/Q2rvIJzP+KX2OGfcO3BLVl77Xw16Ja7EVAg1A2ywoDZX/7s8jFclSTjPCh8BdN7yiUkAyX3Kg7JfdgKB+/YIu88mJ2BA3kn706H" > ./known_hosts
+      - name: env
+        run: |
+          cat << EOF > .env
+          ${{ secrets.ENV }}
+          EOF
+      - name: Dependencies
+        run: |
+          npm install
+      - name: Build
+        run: |
+          npm run build
       - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run linter
-        run: npm run lint
-        continue-on-error: true
-
-      - name: Build application
-        run: npm run build
-
-      - name: Setup SSH
-        uses: webfactory/ssh-agent@v0.9.0
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-
-      - name: Add server to known hosts
         run: |
-          mkdir -p ~/.ssh
-          ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
-
-      - name: Deploy to Rosti
-        env:
-          SSH_HOST: ${{ secrets.SSH_HOST }}
-          SSH_USER: ${{ secrets.SSH_USER }}
-          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+          ssh -o UserKnownHostsFile=./known_hosts -p $PORT $USER@$HOST /usr/local/bin/rosti node $NODE_VERSION
+      - name: Setup Supervisord
         run: |
-          # Create deployment directory
-          ssh $SSH_USER@$SSH_HOST "mkdir -p $DEPLOY_PATH"
-          
-          # Copy built files to server
-          scp -r .next $SSH_USER@$SSH_HOST:$DEPLOY_PATH/
-          scp -r public $SSH_USER@$SSH_HOST:$DEPLOY_PATH/
-          scp -r package*.json $SSH_USER@$SSH_HOST:$DEPLOY_PATH/
-          scp -r next.config.ts $SSH_USER@$SSH_HOST:$DEPLOY_PATH/
-          scp -r tsconfig.json $SSH_USER@$SSH_HOST:$DEPLOY_PATH/
-          
-          # Install dependencies and restart on server
-          ssh $SSH_USER@$SSH_HOST "cd $DEPLOY_PATH && npm ci --production && pm2 restart pneu_servis || pm2 start npm --name pneu_servis -- start"
-
+          cat << EOF > rosti.app.conf
+          [program:app]
+          command=/srv/bin/primary_tech/npm start
+          environment=PATH="/srv/bin/primary_tech:/usr/local/bin:/usr/bin:/bin:/srv/.npm-packages/bin"
+          stopasgroup=true
+          directory=/srv/app
+          process_name=app
+          autostart=true
+          autorestart=true
+          stdout_logfile=/srv/log/node.log
+          stdout_logfile_maxbytes=2MB
+          stdout_logfile_backups=5
+          stdout_capture_maxbytes=2MB
+          stdout_events_enabled=false
+          redirect_stderr=true
+          EOF
+          scp -o UserKnownHostsFile=./known_hosts -P $PORT rosti.app.conf $USER@$HOST:/srv/conf/supervisor.d/app.conf
+          rm rosti.app.conf
+      - name: Setup Nginx
+        run: |
+          cat << EOF > rosti.nginx.conf
+          server {
+              listen       0.0.0.0:8000;
+              listen       [::]:8000;
+              location / {
+                      proxy_pass         http://127.0.0.1:8080/;
+                      proxy_redirect     default;
+                      proxy_set_header   X-Real-IP  \$remote_addr;
+                      proxy_set_header   Host       \$host;
+              }
+              location /static/ {
+                      alias /srv/app/public/;
+              }
+          }        
+          EOF
+          scp -o UserKnownHostsFile=./known_hosts -P $PORT rosti.nginx.conf $USER@$HOST:/srv/conf/nginx.d/app.conf
+          rm rosti.nginx.conf
+      - name: Copy code
+        run: |
+          rsync -ae "ssh -o UserKnownHostsFile=./known_hosts -p $PORT" --delete-after --exclude=.git ./ $USER@$HOST:/srv/app/
+      - name: Apply changes
+        run: |
+          ssh -o UserKnownHostsFile=./known_hosts -p $PORT $USER@$HOST supervisorctl reread
+          ssh -o UserKnownHostsFile=./known_hosts -p $PORT $USER@$HOST supervisorctl restart app
+          ssh -o UserKnownHostsFile=./known_hosts -p $PORT $USER@$HOST supervisorctl restart nginx
