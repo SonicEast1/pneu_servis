@@ -1,3 +1,5 @@
+# .github/workflows/rosti_deploy.yml
+
 name: Deploy into Roští.cz
 
 on:
@@ -10,19 +12,19 @@ jobs:
       env:
         HOST: ssh.rosti.cz
         USER: app
-        PORT: 12029
-        NODE_VERSION: 24.4.1
+        PORT: 12110
+        NODE_VERSION: 20
       steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
-          node-version: "v24.4.1"
+          node-version: "20"
       - uses: webfactory/ssh-agent@v0.8.0
         with:
           ssh-private-key: ${{ secrets.ROSTI_DEPLOY_SSH_KEY }}
       - name: Setup hostkey
         run: |
-          echo "ssh.rosti.cz ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDMtxwKLEjaYXISb27/6S/B5NOVr3oi478magnatQcZVJYVr3Hn/Kqj5Jc+w4TfKoUTJ0f9FVkaSxDjGUM6FQgGPwnFfRPqZDfzCfkjcMaR/OYJ8OD57VTfHE/I/FQVg/J5Tj9GS7EpiW9Shgze5UrElK/WyY5AskVWgUmDs6URCDb33tl6zMUnKVraPxCRkSj1loXoIpoQsVQHsVMECF3qb20kyicQ4FPlRXJuW3oeQNUz7aWj/Q2rvIJzP+KX2OGfcO3BLVl77Xw16Ja7EVAg1A2ywoDZX/7s8jFclSTjPCh8BdN7yiUkAyX3Kg7JfdgKB+/YIu88mJ2BA3kn706H" > ./known_hosts
+          echo "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCBHz8JoEeMU/7volcrP8AYtKPjNpkQebeLSxzkMGjJMXvzKPnmE78agXqZN82KWzFXx/NQvkCDsVJ7twi5HdV+pEOzQ8dHCMAaS3opwFC/p3oTkgQTy/70wpjMqvrSqBiziVnRvT/+Gkxya4Mb1anbNZWjzTNnJag/8kI11n1kaplrrMIppCsYYbdrqvnn0uSsPen0NpPMbOaUDEjjleFsq2Nz4g1fRSwdo3el4wfeI9AvFA16bnEQZ5a6dBHVpbZtAnCcL/zCOqiyc4lkPR1gYEWHNAKrtihMnMovijCTBLlNj3lk9/ydsaxQkbvutlLJgqNmE7bqS4dCqONpBWyf" > ./known_hosts
       - name: env
         run: |
           cat << EOF > .env
