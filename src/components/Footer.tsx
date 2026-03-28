@@ -27,11 +27,11 @@ export default function Footer() {
     try {
       const response = await fetch('/api/sluzby');
       const data = await response.json();
-      // Zobrazit pouze prvních 5 aktivních služeb
+      // Zobrazit pouze prvních 6 aktivních služeb
       const activeServices = (data.services || [])
         .filter((s: Service) => s.aktivni)
         .sort((a: Service, b: Service) => (a.poradi || 0) - (b.poradi || 0))
-        .slice(0, 5);
+        .slice(0, 6);
       setServices(activeServices);
     } catch (error) {
       console.error('Chyba při načítání služeb:', error);
