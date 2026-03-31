@@ -3,10 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 8080",
+    "dev": "next dev -p 8080 $PORT ",
     "build": "cross-env NEXT_DISABLE_TURBOPACK=1 next build",
-    "start": "next start -p 8080",
-    "start:prod": "next start -p $PORT",
+    "start": "next start -p 8080 $PORT",
+    "start:prod": "next start -p 8080 $PORT",
     "lint": "eslint"
   },
   "dependencies": {
