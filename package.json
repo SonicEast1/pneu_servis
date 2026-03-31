@@ -4,10 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 8080",
-    "build": "cross-env NEXT_DISABLE_TURBOPACK=1 next build",
-    "start": "next start -p 8080",
-    "start:prod": "next start -p 8080",
-    "lint": "eslint"
+  "build": "cross-env NEXT_DISABLE_TURBOPACK=1 next build",
+  "start": "next start -p $PORT",
+  "lint": "eslint"
   },
   "dependencies": {
     "cross-env": "^10.1.0",
