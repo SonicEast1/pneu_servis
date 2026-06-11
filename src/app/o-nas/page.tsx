@@ -1,5 +1,8 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import type { Metadata } from 'next';
+import TechBackground from '@/components/TechBackground';
+import { CONTACT_INFO } from '@/constants/contact';
 
 export const metadata: Metadata = {
   title: 'O nás',
@@ -10,140 +13,74 @@ const stats = [
   { value: '15+', label: 'Let zkušeností' },
   { value: '10K+', label: 'Spokojených zákazníků' },
   { value: '25K+', label: 'Vyměněných pneumatik' },
-  { value: '4.9', label: 'Hodnocení' },
-];
-
-const reasons = [
-  {
-    icon: '⭐',
-    title: '15+ let zkušeností',
-    description: 'Lorem ipsum dolor sit amet consectetur adipiscing elit',
-  },
-  {
-    icon: '⚡',
-    title: 'Rychlá obsluha',
-    description: 'Lorem ipsum dolor sit amet consectetur adipiscing elit',
-  },
-  {
-    icon: '💰',
-    title: 'Férové ceny',
-    description: 'Lorem ipsum dolor sit amet consectetur adipiscing elit',
-  },
-  {
-    icon: '✓',
-    title: 'Záruka kvality',
-    description: 'Lorem ipsum dolor sit amet consectetur adipiscing elit',
-  },
+  { value: '4.9★', label: 'Hodnocení' },
 ];
 
 const values = [
   {
     icon: '🎯',
     title: 'Kvalita',
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+    description: 'Každé kolo bereme vážně. Používáme kalibrované stroje, originální závaží a ventily, a nikdy nespěcháme na úkor přesnosti.',
   },
   {
     icon: '🤝',
-    title: 'Důvěra',
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+    title: 'Poctivost',
+    description: 'Transparentní ceník, žádné skryté poplatky. Řekneme vám pravdu o stavu vašich pneumatik — i kdyby to pro nás znamenalo méně práce.',
   },
   {
-    icon: '💡',
-    title: 'Inovace',
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-  },
-];
-
-const team = [
-  {
-    icon: '👨‍🔧',
-    name: 'Jan Novák',
-    position: 'Majitel & Hlavní mechanik',
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor.',
-  },
-  {
-    icon: '👨‍🔧',
-    name: 'Petr Dvořák',
-    position: 'Mechanik',
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor.',
-  },
-  {
-    icon: '👩‍💼',
-    name: 'Marie Svobodová',
-    position: 'Recepční & Administrativa',
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor.',
+    icon: '⚡',
+    title: 'Rychlost',
+    description: 'Vaše auto potřebujete brzy zpátky. Snažíme se o maximální efektivitu bez ztráty kvality — přezutí 4 kol na počkání.',
   },
 ];
 
 export default function ONasPage() {
   return (
-    <div className="min-h-screen bg-[#0a0a0a] relative">
-      {/* Background blur effect - celá stránka */}
-      <div className="fixed inset-0 pointer-events-none z-0">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-20 left-20 w-72 h-72 bg-orange-500 rounded-full blur-3xl animate-bg-float"></div>
-          <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-orange-600 rounded-full blur-3xl animate-bg-float-delayed"></div>
-          <div className="absolute bottom-1/4 left-1/3 w-80 h-80 bg-yellow-500/60 rounded-full blur-3xl animate-bg-float"></div>
-          <div className="absolute bottom-20 right-20 w-96 h-96 bg-red-600/40 rounded-full blur-3xl animate-bg-float-delayed"></div>
+    <TechBackground>
+      {/* Hero */}
+      <section className="relative border-b border-theme py-20 lg:py-28 overflow-hidden">
+        <div className="absolute inset-0 opacity-15 pointer-events-none">
+          <Image src="/pictures_web/hero_tire.png" alt="" fill className="object-cover" sizes="100vw" priority />
+          <div className="absolute inset-0" style={{ background: 'var(--hero-overlay)' }} />
         </div>
-      </div>
-      {/* Hero Section */}
-      <section className="relative py-20 overflow-hidden bg-gradient-to-b from-[#1a1a1a] via-[#0f0f0f]/80 to-[#0f0f0f]/98">
-        {/* Obrázek s pneumatikou přes celou šířku - lze změnit v kódu */}
-        {/* ============================================ */}
-        {/* ZDE MŮŽETE ZMĚNIT OBRÁZEK: přepište '/pictures_web/upImg2.jpg' na váš obrázek */}
-        {/* ============================================ */}
-        <div className="absolute inset-0 w-full h-full opacity-20 md:opacity-30 pointer-events-none z-5">
-          <Image
-            src="/pictures_web/upImg2.jpg"
-            alt="Pneumatika"
-            fill
-            className="object-cover"
-            sizes="100vw"
-            priority
-          />
-        </div>
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-20 left-20 w-72 h-72 bg-orange-500 rounded-full blur-3xl animate-bg-float"></div>
-          <div className="absolute bottom-20 right-20 w-96 h-96 bg-red-600 rounded-full blur-3xl animate-bg-float-delayed"></div>
-        </div>
-
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-5xl md:text-6xl font-black mb-6 animate-fadeInUp">
-            <span className="gradient-text">O nás</span>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <p className="section-tag justify-center mb-4 animate-fadeInUp">O nás</p>
+          <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold text-theme mb-5 animate-fadeInUp stagger-1">
+            Váš pneuservis<br /><span className="gradient-tech">s tradicí</span>
           </h1>
-          <p className="text-xl text-gray-300 mb-8 max-w-3xl mx-auto animate-fadeInUp stagger-2">
-            Zjistěte více o našem příběhu a našich hodnotách.
+          <p className="text-theme-secondary text-lg max-w-2xl mx-auto animate-fadeInUp stagger-2">
+            Zjistěte více o našem příběhu, hodnotách a lidech za PneuservisVMK.
           </p>
         </div>
       </section>
 
-      {/* Story Section */}
-      <section className="section-padding bg-gradient-to-b from-[#0a0a0a]/98 via-[#1a1a1a] to-[#0f0f0f]/95">
-        <div className="max-w-7xl mx-auto">
+      {/* Story */}
+      <section className="py-16 lg:py-24">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="animate-fadeInUp">
-              <h2 className="text-4xl md:text-5xl font-bold mb-6">
-                <span className="gradient-text">Náš příběh</span>
+              <p className="section-tag">Náš příběh</p>
+              <h2 className="section-title text-3xl sm:text-4xl font-bold mb-6">
+                Přes 15 let<br /><span className="text-accent">na vašich kolech</span>
               </h2>
-              <div className="space-y-4 text-gray-300 text-lg leading-relaxed">
+              <div className="space-y-4 text-theme-secondary text-base leading-relaxed">
                 <p>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.
+                  PneuservisVMK vznikl z jednoduché myšlenky: dělat pneuservis poctivě, rychle a za férovou cenu. Od prvního dne nám záleží na každém zákazníkovi — ať přijede s osobákem nebo s SUV.
                 </p>
                 <p>
-                  Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                  Za roky praxe jsme se setkali s pneumatikami všeho druhu — run-flat, nízkoprofilové, terénní offroad i těžká nákladní kola. Každý případ nás naučil něco nového.
                 </p>
                 <p>
-                  Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis.
+                  Nová provozovna v Jaroměři je vybavena moderními stroji pro montáž, demontáž a vyvažování kol. Ale co nás táhne dopředu, jsou spokojení zákazníci — a to se za 15 let nezměnilo.
                 </p>
               </div>
             </div>
             <div className="animate-fadeInUp stagger-2">
-              <div className="card p-0 overflow-hidden hover-glow">
-                <img 
-                  src="/pictures_web/VMKLogo.png" 
-                  alt="PneuservisVMK" 
-                  className="w-full h-full object-cover"
+              <div className="hud-frame p-2 overflow-hidden">
+                <img
+                  src="/pictures_web/VMKLogo.png"
+                  alt="PneuservisVMK"
+                  className="w-full h-full object-cover rounded-sm"
                 />
               </div>
             </div>
@@ -151,139 +88,68 @@ export default function ONasPage() {
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="section-padding bg-gradient-to-b from-[#0a0a0a]/95 via-[#1a1a1a]/90 to-[#0a0a0a]/95">
-        <div className="max-w-7xl mx-auto">
-          <h2 className="text-4xl md:text-5xl font-bold text-center mb-16">
-            <span className="gradient-text">Naše úspěchy</span>
-          </h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {stats.map((stat, index) => (
-              <div key={index} className={`text-center hover-glow cursor-pointer animate-fadeInUp stagger-${index + 1}`}>
-                <div className="text-5xl md:text-6xl font-black gradient-text mb-2">
-                  {stat.value}
-                </div>
-                <div className="text-gray-400 font-medium hover:text-gray-300 transition-colors duration-300">{stat.label}</div>
+      {/* Stats */}
+      <section className="border-y border-theme bg-surface-alt py-16 lg:py-20 transition-colors duration-400">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <p className="section-tag justify-center mb-10">Naše čísla</p>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {stats.map((stat, i) => (
+              <div key={i} className={`stat-readout animate-fadeInUp stagger-${i + 1}`}>
+                <div className="value">{stat.value}</div>
+                <div className="label">{stat.label}</div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Why Choose Us Section */}
-      <section className="section-padding bg-gradient-to-b from-[#1a1a1a]/95 via-[#0f0f0f] to-[#0a0a0a]/90">
-        <div className="max-w-7xl mx-auto">
-          <h2 className="text-4xl md:text-5xl font-bold text-center mb-4">
-            <span className="gradient-text">Proč si vybrat nás?</span>
-          </h2>
-          <p className="text-gray-400 text-center mb-16 max-w-2xl mx-auto">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore.
+      {/* Values */}
+      <section className="py-16 lg:py-24">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="mb-12 max-w-2xl">
+            <p className="section-tag">Naše hodnoty</p>
+            <h2 className="section-title text-3xl sm:text-4xl font-bold">
+              Co nás žene<br /><span className="text-accent">každý den vpřed</span>
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            {values.map((v, i) => (
+              <div key={i} className={`tech-panel animate-fadeInUp stagger-${i + 1}`}>
+                <div className="text-4xl mb-4">{v.icon}</div>
+                <h3 className="font-display text-xl font-bold text-theme mb-2">{v.title}</h3>
+                <p className="text-theme-secondary text-sm leading-relaxed">{v.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="cta-band py-20 lg:py-28">
+        <div className="relative z-10 max-w-3xl mx-auto text-center px-4">
+          <p className="section-tag justify-center mb-4" style={{ color: 'rgba(255,255,255,0.6)' }}>
+            Přidejte se k nám
           </p>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {reasons.map((reason, index) => (
-              <div key={index} className={`text-center p-6 hover-glow cursor-pointer animate-fadeInUp stagger-${index + 1}`}>
-                <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl flex items-center justify-center text-4xl transition-all duration-300 shadow-lg hover:shadow-orange-500/50">
-                  {reason.icon}
-                </div>
-                <h3 className="text-xl font-bold mb-2 text-white hover:gradient-text transition-all duration-300">{reason.title}</h3>
-                <p className="text-gray-400 text-sm hover:text-gray-300 transition-colors duration-300">{reason.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Values Section */}
-      <section className="section-padding bg-gradient-to-b from-[#1a1a1a]/90 via-[#0f0f0f]/95 to-[#0f0f0f]">
-        <div className="max-w-7xl mx-auto">
-          <h2 className="text-4xl md:text-5xl font-bold text-center mb-16">
-            <span className="gradient-text">Naše hodnoty</span>
+          <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold mb-5">
+            Připojte se k tisícům spokojených zákazníků
           </h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {values.map((value, index) => (
-              <div
-                key={index}
-                className={`card group hover-glow cursor-pointer animate-fadeInUp stagger-${index + 1}`}
-              >
-                <div className="text-5xl mb-4 transition-all duration-300">
-                  {value.icon}
-                </div>
-                <h3 className="text-2xl font-bold mb-3 gradient-text group-hover:tracking-wide transition-all duration-300">
-                  {value.title}
-                </h3>
-                <p className="text-gray-400 group-hover:text-gray-300 transition-colors duration-300">
-                  {value.description}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Team Section */}
-      <section className="section-padding bg-gradient-to-b from-[#0a0a0a] to-[#0a0a0a]">
-        <div className="max-w-7xl mx-auto">
-          <h2 className="text-4xl md:text-5xl font-bold text-center mb-4">
-            <span className="gradient-text">Náš tým</span>
-          </h2>
-          <p className="text-gray-400 text-center mb-16 max-w-2xl mx-auto">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore.
+          <p className="text-lg mb-10 opacity-75">
+            Rezervujte termín online nebo nám zavolejte — rádi se postaráme o vaše kola.
           </p>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {team.map((member, index) => (
-              <div
-                key={index}
-                className={`card group hover-glow text-center cursor-pointer animate-fadeInUp stagger-${index + 1}`}
-              >
-                <div className="w-32 h-32 mx-auto mb-4 bg-gradient-to-br from-orange-500 to-red-600 rounded-full flex items-center justify-center text-6xl transition-all duration-300 shadow-lg group-hover:shadow-orange-500/50">
-                  {member.icon}
-                </div>
-                <h3 className="text-2xl font-bold mb-2 gradient-text group-hover:tracking-wide transition-all duration-300">
-                  {member.name}
-                </h3>
-                <p className="text-orange-500 font-semibold mb-3">{member.position}</p>
-                <p className="text-gray-400 group-hover:text-gray-300 transition-colors duration-300">
-                  {member.description}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="section-padding mb-16 bg-gradient-to-r from-orange-500 via-red-600 via-yellow-500 to-orange-600 relative overflow-hidden">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-0 left-0 w-96 h-96 bg-white rounded-full blur-3xl"></div>
-          <div className="absolute bottom-0 right-0 w-96 h-96 bg-white rounded-full blur-3xl"></div>
-        </div>
-        
-        <div className="relative z-10 max-w-4xl mx-auto text-center">
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-            Připojte se k našim spokojeným zákazníkům
-          </h2>
-          <p className="text-xl text-white/90 mb-8">
-            Rezervujte termín ještě dnes!
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a
-              href="/rezervace"
-              className="px-8 py-4 bg-white text-orange-600 rounded-lg font-bold text-lg hover:bg-gray-100 transition-all duration-300 shadow-xl"
-            >
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <Link href="/rezervace" className="btn-tech-primary">
               Rezervovat termín
-            </a>
+            </Link>
             <a
-              href="tel:+420602299090"
-              className="px-8 py-4 bg-[#0a0a0a] text-white rounded-lg font-bold text-lg hover:bg-[#1a1a1a] transition-all duration-300 shadow-xl border-2 border-white/30 hover:border-white/50"
+              href={`tel:${CONTACT_INFO.phone.raw}`}
+              className="btn-tech-secondary"
+              style={{ color: '#f0ede6', borderColor: 'rgba(255,255,255,0.3)' }}
             >
               Zavolat nyní
             </a>
           </div>
         </div>
       </section>
-    </div>
+    </TechBackground>
   );
 }

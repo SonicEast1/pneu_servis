@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
+import TechBackground from '@/components/TechBackground';
 
 interface Review {
   id: string;
@@ -19,362 +20,207 @@ export default function ReviewsPage() {
   const [selectedRating, setSelectedRating] = useState<number | null>(null);
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    rating: 5,
-    text: '',
-  });
+  const [formData, setFormData] = useState({ name: '', email: '', rating: 5, text: '' });
 
-  useEffect(() => {
-    loadReviews();
-  }, []);
+  useEffect(() => { loadReviews(); }, []);
 
   const loadReviews = async () => {
     try {
-      const response = await fetch('/api/recenze?approved=true');
-      const data = await response.json();
+      const r = await fetch('/api/recenze?approved=true');
+      const data = await r.json();
       setReviews(data.reviews || []);
-    } catch (error) {
-      console.error('Chyba při načítání recenzí:', error);
-    } finally {
-      setLoading(false);
-    }
+    } catch { /* ignore */ }
+    finally { setLoading(false); }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!formData.name || !formData.email || !formData.text) {
-      alert('Vyplňte prosím všechna pole');
-      return;
-    }
-
+    if (!formData.name || !formData.email || !formData.text) { alert('Vyplňte prosím všechna pole'); return; }
     setSubmitting(true);
-
     try {
-      const response = await fetch('/api/recenze', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        alert(`✅ Děkujeme za recenzi!\n\nVaše recenze byla odeslána a čeká na schválení správcem. Po schválení se zobrazí na webu.`);
-        setFormData({
-          name: '',
-          email: '',
-          rating: 5,
-          text: '',
-        });
+      const r = await fetch('/api/recenze', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(formData) });
+      const data = await r.json();
+      if (r.ok) {
+        alert('✅ Děkujeme za recenzi! Po schválení se zobrazí na webu.');
+        setFormData({ name: '', email: '', rating: 5, text: '' });
         setShowReviewForm(false);
-      } else {
-        alert(`❌ Chyba: ${data.error || 'Nepodařilo se odeslat recenzi'}`);
-      }
-    } catch (error) {
-      console.error('Chyba při odesílání recenze:', error);
-      alert('❌ Nastala chyba při odesílání recenze. Zkuste to prosím znovu.');
-    } finally {
-      setSubmitting(false);
-    }
+      } else { alert(`❌ Chyba: ${data.error || 'Nepodařilo se odeslat recenzi'}`); }
+    } catch { alert('❌ Nastala chyba. Zkuste to prosím znovu.'); }
+    finally { setSubmitting(false); }
   };
 
-  const filteredReviews = selectedRating
-    ? reviews.filter(r => r.rating === selectedRating)
-    : reviews;
-
-  const averageRating = reviews.length > 0 
-    ? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1)
-    : '0.0';
-
+  const filteredReviews = selectedRating ? reviews.filter(r => r.rating === selectedRating) : reviews;
+  const averageRating = reviews.length > 0 ? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1) : '0.0';
   const ratingDistribution = [5, 4, 3, 2, 1].map(rating => ({
     rating,
     count: reviews.filter(r => r.rating === rating).length,
-    percentage: reviews.length > 0 
-      ? (reviews.filter(r => r.rating === rating).length / reviews.length) * 100
-      : 0,
+    percentage: reviews.length > 0 ? (reviews.filter(r => r.rating === rating).length / reviews.length) * 100 : 0,
   }));
-
-  const getAvatar = (name: string) => {
-    const firstLetter = name.charAt(0).toUpperCase();
-    return firstLetter;
-  };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-orange-500 mx-auto mb-4"></div>
-          <p className="text-gray-300 text-lg">Načítám recenze...</p>
+      <TechBackground>
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-[var(--accent)] mx-auto mb-4" />
+            <p className="text-theme-secondary">Načítám recenze...</p>
+          </div>
         </div>
-      </div>
+      </TechBackground>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] relative">
-      {/* Background blur effect - celá stránka */}
-      <div className="fixed inset-0 pointer-events-none z-0">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-20 left-20 w-72 h-72 bg-orange-500 rounded-full blur-3xl animate-bg-float"></div>
-          <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-orange-600 rounded-full blur-3xl animate-bg-float-delayed"></div>
-          <div className="absolute bottom-1/4 left-1/3 w-80 h-80 bg-yellow-500/60 rounded-full blur-3xl animate-bg-float"></div>
-          <div className="absolute bottom-20 right-20 w-96 h-96 bg-red-600/40 rounded-full blur-3xl animate-bg-float-delayed"></div>
+    <TechBackground>
+      {/* Hero */}
+      <section className="relative border-b border-theme py-20 lg:py-28 overflow-hidden">
+        <div className="absolute inset-0 opacity-15 pointer-events-none">
+          <Image src="/pictures_web/hero_tire.png" alt="" fill className="object-cover" sizes="100vw" priority />
+          <div className="absolute inset-0" style={{ background: 'var(--hero-overlay)' }} />
         </div>
-      </div>
-      {/* Hero Section */}
-      <section className="section-padding bg-gradient-to-b from-[#1a1a1a] via-[#0f0f0f]/80 to-[#0f0f0f] relative overflow-hidden">
-        {/* Obrázek s pneumatikou přes celou šířku - lze změnit v kódu */}
-        {/* ============================================ */}
-        {/* ZDE MŮŽETE ZMĚNIT OBRÁZEK: přepište '/pictures_web/upImg2.jpg' na váš obrázek */}
-        {/* ============================================ */}
-        <div className="absolute inset-0 w-full h-full opacity-20 md:opacity-30 pointer-events-none z-5">
-          <Image
-            src="/pictures_web/upImg2.jpg"
-            alt="Pneumatika"
-            fill
-            className="object-cover"
-            sizes="100vw"
-            priority
-          />
-        </div>
-        <div className="relative z-10 max-w-7xl mx-auto text-center">
-          <h1 className="text-5xl md:text-6xl font-black mb-6">
-            <span className="gradient-text">Recenze zákazníků</span>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <p className="section-tag justify-center mb-4 animate-fadeInUp">Recenze</p>
+          <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold text-theme mb-5 animate-fadeInUp stagger-1">
+            Co říkají <span className="gradient-tech">zákazníci</span>
           </h1>
-          <p className="text-xl text-gray-300 max-w-2xl mx-auto">
+          <p className="text-theme-secondary text-lg max-w-2xl mx-auto animate-fadeInUp stagger-2">
             Přečtěte si, co o nás říkají naši spokojení zákazníci.
           </p>
         </div>
       </section>
 
-      <div className="w-full py-16 bg-gradient-to-b from-[#0a0a0a] via-[#1a1a1a] to-[#0f0f0f]/95">
+      <div className="py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-            {/* Stats Sidebar */}
+
+            {/* Sidebar */}
             <div className="lg:col-span-1">
-              <div className="card animate-fadeInLeft">
-              <h2 className="text-2xl font-bold mb-6 text-white">Celkové hodnocení</h2>
-              
-              <div className="text-center mb-8">
-                <div className="text-6xl font-black gradient-text mb-2">{averageRating}</div>
-                <div className="flex justify-center mb-2">
-                  {[...Array(5)].map((_, i) => (
-                    <span key={i} className="text-3xl text-orange-500">★</span>
+              <div className="tech-panel animate-fadeInUp">
+                <h2 className="font-display text-xl font-bold text-theme mb-6">Celkové hodnocení</h2>
+                <div className="text-center mb-8">
+                  <div className="font-display text-6xl font-black text-accent mb-2">{averageRating}</div>
+                  <div className="flex justify-center gap-0.5 mb-2">
+                    {[...Array(5)].map((_, i) => <span key={i} className="text-2xl text-accent">★</span>)}
+                  </div>
+                  <p className="text-theme-muted text-sm">Na základě {reviews.length} recenzí</p>
+                </div>
+
+                <div className="space-y-2 mb-8">
+                  {ratingDistribution.map(({ rating, count, percentage }) => (
+                    <div key={rating} className="flex items-center gap-2">
+                      <span className="text-sm text-theme-secondary w-6 font-semibold">{rating}★</span>
+                      <div className="flex-1 h-2 bg-[var(--bg-surface-alt)] rounded-full overflow-hidden">
+                        <div className="h-full bg-accent transition-all duration-500 rounded-full" style={{ width: `${percentage}%` }} />
+                      </div>
+                      <span className="text-sm text-theme-muted w-5 text-right">{count}</span>
+                    </div>
                   ))}
                 </div>
-                <p className="text-gray-400">Na základě {reviews.length} recenzí</p>
-              </div>
 
-              <div className="space-y-3 mb-8">
-                {ratingDistribution.map(({ rating, count, percentage }) => (
-                  <div key={rating} className="flex items-center gap-2">
-                    <span className="text-sm text-gray-300 w-8">{rating}★</span>
-                    <div className="flex-1 h-3 bg-[#1a1a1a] rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-gradient-to-r from-orange-500 to-red-600 transition-all duration-500"
-                        style={{ width: `${percentage}%` }}
-                      ></div>
-                    </div>
-                    <span className="text-sm text-gray-400 w-8">{count}</span>
-                  </div>
-                ))}
-              </div>
-
-              <h3 className="text-lg font-semibold mb-3 text-white">Filtrovat podle hodnocení</h3>
-              <div className="flex flex-wrap gap-2 mb-6">
-                <button
-                  onClick={() => setSelectedRating(null)}
-                  className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                    selectedRating === null
-                      ? 'bg-gradient-to-r from-orange-500 to-red-600 text-white border-2 border-orange-500'
-                      : 'bg-transparent text-orange-500 border-2 border-orange-500 hover:bg-gradient-to-r hover:from-orange-500 hover:to-red-600 hover:text-white'
-                  }`}
-                >
-                  Vše
-                </button>
-                {[5, 4, 3, 2, 1].map(rating => (
+                <h3 className="font-display font-semibold text-theme mb-3 text-sm">Filtrovat</h3>
+                <div className="flex flex-wrap gap-2 mb-6">
                   <button
-                    key={rating}
-                    onClick={() => setSelectedRating(rating)}
-                    className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                      selectedRating === rating
-                        ? 'bg-gradient-to-r from-orange-500 to-red-600 text-white border-2 border-orange-500'
-                        : 'bg-transparent text-orange-500 border-2 border-orange-500 hover:bg-gradient-to-r hover:from-orange-500 hover:to-red-600 hover:text-white'
-                    }`}
+                    onClick={() => setSelectedRating(null)}
+                    className={`px-3 py-1.5 text-sm font-display font-semibold border-2 rounded transition-all ${selectedRating === null ? 'bg-accent border-accent text-white' : 'border-[var(--border-strong)] text-theme hover:border-accent hover:text-accent'}`}
                   >
-                    {rating}★
+                    Vše
                   </button>
-                ))}
-              </div>
-
-              <button
-                onClick={() => setShowReviewForm(!showReviewForm)}
-                className="w-full btn-primary"
-              >
-                Napsat recenzi
-              </button>
-            </div>
-          </div>
-
-          {/* Reviews List */}
-          <div className="lg:col-span-2 space-y-6">
-            {showReviewForm && (
-              <div className="card animate-scaleIn">
-                <h3 className="text-2xl font-bold mb-6 gradient-text">Napište recenzi</h3>
-                <form className="space-y-4" onSubmit={handleSubmit}>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Jméno
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      className="w-full px-4 py-3 bg-[#1a1a1a] border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
-                      placeholder="Vaše jméno"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Email
-                    </label>
-                    <input
-                      type="email"
-                      value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      className="w-full px-4 py-3 bg-[#1a1a1a] border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
-                      placeholder="vas@email.cz"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Hodnocení
-                    </label>
-                    <div className="flex gap-2">
-                      {[1, 2, 3, 4, 5].map((rating) => (
-                        <button
-                          key={rating}
-                          type="button"
-                          onClick={() => setFormData({ ...formData, rating })}
-                          className={`text-4xl transition-all ${
-                            rating <= formData.rating ? 'text-orange-500' : 'text-gray-600'
-                          }`}
-                        >
-                          ★
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Vaše recenze
-                    </label>
-                    <textarea
-                      value={formData.text}
-                      onChange={(e) => setFormData({ ...formData, text: e.target.value })}
-                      rows={4}
-                      className="w-full px-4 py-3 bg-[#1a1a1a] border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
-                      placeholder="Napište svou recenzi..."
-                    />
-                  </div>
-
-                  <div className="flex gap-3">
-                    <button 
-                      type="submit" 
-                      disabled={submitting}
-                      className={`btn-primary flex-1 ${submitting ? 'opacity-50 cursor-not-allowed' : ''}`}
-                    >
-                      {submitting ? 'Odesílám...' : 'Odeslat recenzi'}
-                    </button>
+                  {[5, 4, 3, 2, 1].map(rating => (
                     <button
-                      type="button"
-                      onClick={() => setShowReviewForm(false)}
-                      className="px-6 py-3 bg-transparent text-orange-500 border-2 border-orange-500 rounded-lg hover:bg-gradient-to-r hover:from-orange-500 hover:to-red-600 hover:text-white transition-all duration-300"
+                      key={rating}
+                      onClick={() => setSelectedRating(rating)}
+                      className={`px-3 py-1.5 text-sm font-display font-semibold border-2 rounded transition-all ${selectedRating === rating ? 'bg-accent border-accent text-white' : 'border-[var(--border-strong)] text-theme hover:border-accent hover:text-accent'}`}
                     >
-                      Zrušit
+                      {rating}★
                     </button>
-                  </div>
-                </form>
-              </div>
-            )}
+                  ))}
+                </div>
 
-            {filteredReviews.length === 0 ? (
-              <div className="card text-center py-12">
-                <div className="text-6xl mb-4">⭐</div>
-                <h3 className="text-2xl font-bold text-white mb-2">
-                  {selectedRating ? 'Žádné recenze s tímto hodnocením' : 'Zatím žádné recenze'}
-                </h3>
-                <p className="text-gray-400 mb-6">
-                  {selectedRating 
-                    ? 'Zkuste zobrazit všechny recenze' 
-                    : 'Buďte první, kdo napíše recenzi!'}
-                </p>
-                <button
-                  onClick={() => {
-                    if (selectedRating) {
-                      setSelectedRating(null);
-                    } else {
-                      setShowReviewForm(true);
-                    }
-                  }}
-                  className="btn-primary"
-                >
-                  {selectedRating ? 'Zobrazit vše' : 'Napsat recenzi'}
+                <button onClick={() => setShowReviewForm(!showReviewForm)} className="btn-tech-primary w-full">
+                  Napsat recenzi
                 </button>
               </div>
-            ) : (
-              filteredReviews.map((review, index) => (
-                <div
-                  key={review.id}
-                  className={`card hover-glow animate-fadeInUp stagger-${(index % 6) + 1}`}
-                >
-                  <div className="flex items-start gap-4">
-                    <div className="w-14 h-14 bg-gradient-to-br from-orange-500 to-red-600 rounded-full flex items-center justify-center text-2xl font-bold text-white flex-shrink-0">
-                      {getAvatar(review.name)}
+            </div>
+
+            {/* Reviews */}
+            <div className="lg:col-span-2 space-y-5">
+              {showReviewForm && (
+                <div className="tech-panel animate-fadeInUp">
+                  <h3 className="font-display text-xl font-bold text-theme mb-5">Napište recenzi</h3>
+                  <form className="space-y-4" onSubmit={handleSubmit}>
+                    <div>
+                      <label className="form-label">Jméno</label>
+                      <input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="form-input" placeholder="Vaše jméno" />
                     </div>
-                    <div className="flex-1">
-                      <div className="flex items-start justify-between mb-2">
-                        <div>
-                          <h3 className="font-bold text-lg text-white">{review.name}</h3>
-                          <p className="text-sm text-gray-400">
-                            {new Date(review.createdAt).toLocaleDateString('cs-CZ')}
-                          </p>
-                        </div>
-                      <div className="flex">
-                        {[...Array(5)].map((_, i) => (
-                          <span
-                            key={i}
-                            className={`text-xl ${
-                              i < review.rating ? 'text-orange-500' : 'text-gray-600'
-                            }`}
-                          >
-                            ★
-                          </span>
+                    <div>
+                      <label className="form-label">E-mail</label>
+                      <input type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} className="form-input" placeholder="vas@email.cz" />
+                    </div>
+                    <div>
+                      <label className="form-label">Hodnocení</label>
+                      <div className="flex gap-1 mt-1">
+                        {[1, 2, 3, 4, 5].map((rating) => (
+                          <button key={rating} type="button" onClick={() => setFormData({ ...formData, rating })}
+                            className={`text-3xl transition-all ${rating <= formData.rating ? 'text-accent' : 'text-[var(--border-strong)]'}`}>★</button>
                         ))}
                       </div>
                     </div>
-                      <p className="text-gray-300 leading-relaxed">{review.text}</p>
+                    <div>
+                      <label className="form-label">Vaše recenze</label>
+                      <textarea value={formData.text} onChange={(e) => setFormData({ ...formData, text: e.target.value })} rows={4} className="form-input resize-none" placeholder="Napište svou recenzi..." />
+                    </div>
+                    <div className="flex gap-3">
+                      <button type="submit" disabled={submitting} className={`btn-tech-primary flex-1 ${submitting ? 'opacity-50 cursor-not-allowed' : ''}`}>
+                        {submitting ? 'Odesílám...' : 'Odeslat recenzi'}
+                      </button>
+                      <button type="button" onClick={() => setShowReviewForm(false)} className="btn-tech-secondary px-6">Zrušit</button>
+                    </div>
+                  </form>
+                </div>
+              )}
+
+              {filteredReviews.length === 0 ? (
+                <div className="tech-panel text-center py-12">
+                  <div className="text-5xl mb-4">⭐</div>
+                  <h3 className="font-display text-xl font-bold text-theme mb-2">
+                    {selectedRating ? 'Žádné recenze s tímto hodnocením' : 'Zatím žádné recenze'}
+                  </h3>
+                  <p className="text-theme-muted mb-6 text-sm">
+                    {selectedRating ? 'Zkuste zobrazit všechny recenze' : 'Buďte první, kdo napíše recenzi!'}
+                  </p>
+                  <button onClick={() => selectedRating ? setSelectedRating(null) : setShowReviewForm(true)} className="btn-tech-primary">
+                    {selectedRating ? 'Zobrazit vše' : 'Napsat recenzi'}
+                  </button>
+                </div>
+              ) : (
+                filteredReviews.map((review, index) => (
+                  <div key={review.id} className={`tech-panel animate-fadeInUp stagger-${(index % 4) + 1}`}>
+                    <div className="flex items-start gap-4">
+                      <div className="w-12 h-12 bg-accent flex items-center justify-center text-white font-display font-bold text-lg flex-shrink-0 rounded-sm">
+                        {review.name.charAt(0).toUpperCase()}
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-start justify-between mb-2 gap-2">
+                          <div>
+                            <h3 className="font-display font-bold text-theme">{review.name}</h3>
+                            <p className="text-xs text-theme-muted">{new Date(review.createdAt).toLocaleDateString('cs-CZ')}</p>
+                          </div>
+                          <div className="flex flex-shrink-0">
+                            {[...Array(5)].map((_, i) => (
+                              <span key={i} className={`text-lg ${i < review.rating ? 'text-accent' : 'text-[var(--border-strong)]'}`}>★</span>
+                            ))}
+                          </div>
+                        </div>
+                        <p className="text-theme-secondary text-sm leading-relaxed">{review.text}</p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))
-            )}
-          </div>
+                ))
+              )}
+            </div>
           </div>
         </div>
       </div>
-      
-      {/* Spacer pro odsazení od footeru */}
-      <div className="mb-16"></div>
-    </div>
+    </TechBackground>
   );
 }
-

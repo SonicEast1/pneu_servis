@@ -2,16 +2,11 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { CONTACT_INFO } from '@/constants/contact';
 
 interface Service {
   id: string;
   nazev: string;
-  popis: string;
-  ikona: string;
-  cenaOsobni: string;
-  cenaSUV: string;
-  features: string;
-  kategorie?: string;
   aktivni: boolean;
   poradi?: number;
 }
@@ -20,125 +15,121 @@ export default function Footer() {
   const [services, setServices] = useState<Service[]>([]);
 
   useEffect(() => {
-    loadServices();
+    fetch('/api/sluzby')
+      .then((r) => r.json())
+      .then((data) => {
+        const active = (data.services || [])
+          .filter((s: Service) => s.aktivni)
+          .sort((a: Service, b: Service) => (a.poradi || 0) - (b.poradi || 0))
+          .slice(0, 6);
+        setServices(active);
+      })
+      .catch(() => {});
   }, []);
 
-  const loadServices = async () => {
-    try {
-      const response = await fetch('/api/sluzby');
-      const data = await response.json();
-      // Zobrazit pouze prvních 6 aktivních služeb
-      const activeServices = (data.services || [])
-        .filter((s: Service) => s.aktivni)
-        .sort((a: Service, b: Service) => (a.poradi || 0) - (b.poradi || 0))
-        .slice(0, 6);
-      setServices(activeServices);
-    } catch (error) {
-      console.error('Chyba při načítání služeb:', error);
-    }
-  };
-
   return (
-    <footer className="relative z-10 bg-[#0a0a0a] border-t border-orange-500/30 animate-fadeInUp">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {/* Company Info */}
-          <div className="space-y-4">
-            <div className="flex items-center space-x-2">
-              <div className="w-10 h-10">
-                <img 
-                  src="/logoWeb.png" 
-                  alt="PneuservisVMK Logo" 
-                  className="w-full h-full object-contain"
-                />
+    <footer className="relative z-10 bg-surface border-t border-theme transition-colors duration-400">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
+          <div className="space-y-5">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 border border-theme p-1">
+                <img src="/logoWeb.png" alt="Logo" className="w-full h-full object-contain" />
               </div>
-              <span className="text-xl font-bold text-white">
-                PneuservisVMK
-              </span>
+              <div>
+                <span className="font-display font-bold text-theme text-lg tracking-tight">
+                  PNEUSERVIS<span className="text-accent">VMK</span>
+                </span>
+                <p className="font-display text-[0.65rem] font-semibold text-theme-muted tracking-wide">Jaroměř · od 2009</p>
+              </div>
             </div>
-            <p className="text-gray-400 text-sm">
-              Vždy nám na každém kole záleží. Profesionální péče o vaše pneumatiky s dlouholetou tradicí.
+            <p className="text-theme-secondary text-sm leading-relaxed">
+              Profesionální pneuservis s důrazem na preciznost, bezpečnost a férové jednání. Vždy nám na každém kole záleží.
             </p>
+            <div className="flex gap-2">
+              {[
+                { href: CONTACT_INFO.socials.facebook, label: 'Facebook', icon: 'f' },
+                { href: CONTACT_INFO.socials.instagram, label: 'Instagram', icon: '◎' },
+                { href: CONTACT_INFO.socials.tiktok, label: 'TikTok', icon: '♪' },
+              ].map((s) => (
+                <a
+                  key={s.label}
+                  href={s.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title={s.label}
+                  className="w-9 h-9 border border-theme flex items-center justify-center font-mono-tech text-xs text-theme-muted hover:text-accent hover:border-[var(--accent)] transition-all duration-300"
+                >
+                  {s.icon}
+                </a>
+              ))}
+            </div>
           </div>
 
-          {/* Quick Links */}
           <div>
-            <h3 className="text-white font-semibold mb-4">Rychlé odkazy</h3>
-            <ul className="space-y-2">
-              <li>
-                <Link href="/" className="text-gray-400 hover:text-orange-500 transition-all duration-300 hover:translate-x-1 inline-block">
-                  Domů
-                </Link>
-              </li>
-              <li>
-                <Link href="/recenze" className="text-gray-400 hover:text-orange-500 transition-all duration-300 hover:translate-x-1 inline-block">
-                  Recenze
-                </Link>
-              </li>
-              <li>
-                <Link href="/rezervace" className="text-gray-400 hover:text-orange-500 transition-all duration-300 hover:translate-x-1 inline-block">
-                  Rezervace
-                </Link>
-              </li>
-              <li>
-                <Link href="/galerie" className="text-gray-400 hover:text-orange-500 transition-all duration-300 hover:translate-x-1 inline-block">
-                  Galerie
-                </Link>
-              </li>
+            <h3 className="section-tag">Navigace</h3>
+            <ul className="space-y-2.5">
+              {[
+                { href: '/', label: 'Domů' },
+                { href: '/recenze', label: 'Recenze' },
+                { href: '/rezervace', label: 'Rezervace' },
+                { href: '/galerie', label: 'Galerie' },
+              ].map((link) => (
+                <li key={link.href}>
+                  <Link href={link.href} className="text-theme-secondary hover:text-accent transition-colors font-display font-semibold text-sm">
+                    → {link.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
-          {/* Services */}
           <div>
-            <h3 className="text-white font-semibold mb-4">Naše služby</h3>
+            <h3 className="section-tag">Služby</h3>
             {services.length > 0 ? (
-              <ul className="space-y-2 text-gray-400 text-sm">
-                {services.map((service) => (
-                  <li key={service.id}>{service.nazev}</li>
+              <ul className="space-y-2.5">
+                {services.map((s) => (
+                  <li key={s.id} className="text-theme-secondary text-sm">
+                    ▸ {s.nazev}
+                  </li>
                 ))}
               </ul>
             ) : (
-              <ul className="space-y-2 text-gray-400 text-sm">
-                <li>Načítání služeb...</li>
-              </ul>
+              <p className="text-theme-muted text-xs">načítání...</p>
             )}
           </div>
 
-          {/* Contact */}
           <div>
-            <h3 className="text-white font-semibold mb-4">Kontakt</h3>
-            <ul className="space-y-2 text-gray-400 text-sm">
-              <li className="flex items-start space-x-2">
-                <span>📍</span>
-                <span>Osady Ležáků 835<br />538 51 Chrast</span>
+            <h3 className="section-tag">Kontakt</h3>
+            <ul className="space-y-3 text-sm">
+              <li className="text-theme-secondary">
+                <span className="font-display text-[0.65rem] font-bold tracking-widest uppercase text-theme-muted block mb-0.5">Adresa</span>
+                {CONTACT_INFO.address.street}<br />
+                {CONTACT_INFO.address.zip} {CONTACT_INFO.address.city}
               </li>
-              <li className="flex items-center space-x-2">
-                <span>📞</span>
-                <a href="tel:+420602299090" className="hover:text-orange-500 transition-colors">
-                  +420 602 299 090
+              <li>
+                <span className="font-display text-[0.65rem] font-bold tracking-widest uppercase text-theme-muted block mb-0.5">Telefon</span>
+                <a href={`tel:${CONTACT_INFO.phone.raw}`} className="text-theme font-semibold hover:text-accent transition-colors">
+                  {CONTACT_INFO.phone.display}
                 </a>
               </li>
-              <li className="flex items-center space-x-2">
-                <span>✉️</span>
-                <a href="mailto:info@pneuservisvmk.cz" className="hover:text-orange-500 transition-colors">
-                  info@pneuservisvmk.cz
+              <li>
+                <span className="font-display text-[0.65rem] font-bold tracking-widest uppercase text-theme-muted block mb-0.5">E-mail</span>
+                <a href={`mailto:${CONTACT_INFO.email.raw}`} className="text-theme-secondary hover:text-accent transition-colors break-all text-xs">
+                  {CONTACT_INFO.email.display}
                 </a>
               </li>
             </ul>
           </div>
         </div>
 
-        <div className="mt-8 pt-8 border-t border-orange-500/20 flex flex-col md:flex-row justify-between items-center">
-          <p className="text-gray-400 text-sm">
-            © {new Date().getFullYear()} PneuservisVMK. Všechna práva vyhrazena.
+        <div className="mt-10 pt-6 border-t border-theme flex flex-col md:flex-row justify-between items-center gap-3">
+          <p className="font-display text-[0.7rem] font-semibold text-theme-muted tracking-wide">
+            © {new Date().getFullYear()} PneuservisVMK · Všechna práva vyhrazena
           </p>
-          <div className="flex space-x-6 mt-4 md:mt-0">
-            <Link href="#" className="text-gray-400 hover:text-orange-500 transition-colors">
-              Ochrana údajů
-            </Link>
-            <Link href="#" className="text-gray-400 hover:text-orange-500 transition-colors">
-              Podmínky
-            </Link>
+          <div className="flex gap-5 font-display text-[0.7rem] font-semibold text-theme-muted">
+            <Link href="#" className="hover:text-accent transition-colors">GDPR</Link>
+            <Link href="#" className="hover:text-accent transition-colors">PODMÍNKY</Link>
           </div>
         </div>
       </div>

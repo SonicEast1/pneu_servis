@@ -1,4 +1,5 @@
 import { SITE_CONFIG } from '@/constants/metadata';
+import { CONTACT_INFO } from '@/constants/contact';
 
 export default function StructuredData() {
   const structuredData = {
@@ -7,19 +8,19 @@ export default function StructuredData() {
     name: SITE_CONFIG.name,
     description: SITE_CONFIG.description,
     url: SITE_CONFIG.url,
-    telephone: '+420602299090',
-    email: 'info@pneuservisvmk.cz',
+    telephone: CONTACT_INFO.phone.raw,
+    email: CONTACT_INFO.email.raw,
     address: {
       '@type': 'PostalAddress',
-      streetAddress: 'Lorem Ipsum 123',
-      addressLocality: 'Praha',
-      postalCode: '123 45',
+      streetAddress: CONTACT_INFO.address.street,
+      addressLocality: CONTACT_INFO.address.city,
+      postalCode: CONTACT_INFO.address.zip,
       addressCountry: 'CZ',
     },
     geo: {
       '@type': 'GeoCoordinates',
-      latitude: 50.0755,
-      longitude: 14.4378,
+      latitude: 50.3609056,
+      longitude: 15.9306848,
     },
     openingHoursSpecification: [
       {
@@ -42,8 +43,9 @@ export default function StructuredData() {
       reviewCount: '150',
     },
     sameAs: [
-      'https://www.facebook.com/pneuservis',
-      'https://www.instagram.com/pneuservis',
+      CONTACT_INFO.socials.facebook,
+      CONTACT_INFO.socials.instagram,
+      CONTACT_INFO.socials.tiktok,
     ],
   };
 
@@ -54,4 +56,3 @@ export default function StructuredData() {
     />
   );
 }
-

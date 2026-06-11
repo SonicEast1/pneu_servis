@@ -1,4 +1,5 @@
 # .github/workflows/rosti_deploy.yml
+# Nasazení aplikace na Roští.cz při každém push do větve main
 
 name: Deploy into Roští.cz
 
@@ -74,13 +75,20 @@ jobs:
               location /static/ {
                       alias /srv/app/public/;
               }
-          }        
+          }
           EOF
           scp -o UserKnownHostsFile=./known_hosts -P $PORT rosti.nginx.conf $USER@$HOST:/srv/conf/nginx.d/app.conf
           rm rosti.nginx.conf
       - name: Copy code
         run: |
-          rsync -ae "ssh -o UserKnownHostsFile=./known_hosts -p $PORT" --delete-after --exclude=.git ./ $USER@$HOST:/srv/app/
+          rsync -ae "ssh -o UserKnownHostsFile=./known_hosts -p $PORT" \
+            --delete-after \
+            --exclude=.git \
+            --exclude=data/*.json \
+            --exclude=data/*.xlsx \
+            --exclude=data/*.xls \
+            --exclude='public/uploads/*' \
+            ./ $USER@$HOST:/srv/app/
       - name: Apply changes
         run: |
           ssh -o UserKnownHostsFile=./known_hosts -p $PORT $USER@$HOST supervisorctl reread

@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
+import { CONTACT_INFO } from '@/constants/contact';
+import TechBackground from '@/components/TechBackground';
 
 interface OpeningHour {
   id: string;
@@ -16,271 +18,205 @@ export default function KontaktyPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadOpeningHours();
+    fetch('/api/oteviraci-doba')
+      .then((r) => r.json())
+      .then((data) => setOpeningHours(data.hours || []))
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, []);
 
-  const loadOpeningHours = async () => {
-    try {
-      const response = await fetch('/api/oteviraci-doba');
-      const data = await response.json();
-      setOpeningHours(data.hours || []);
-    } catch (error) {
-      console.error('Chyba při načítání otevírací doby:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
   return (
-    <div className="min-h-screen bg-[#0a0a0a] relative">
-      {/* Background blur effect - celá stránka */}
-      <div className="fixed inset-0 pointer-events-none z-0">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-20 left-20 w-72 h-72 bg-orange-500 rounded-full blur-3xl animate-bg-float"></div>
-          <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-orange-600 rounded-full blur-3xl animate-bg-float-delayed"></div>
-          <div className="absolute bottom-1/4 left-1/3 w-80 h-80 bg-yellow-500/60 rounded-full blur-3xl animate-bg-float"></div>
-          <div className="absolute bottom-20 right-20 w-96 h-96 bg-red-600/40 rounded-full blur-3xl animate-bg-float-delayed"></div>
+    <TechBackground>
+      {/* Hero */}
+      <section className="relative border-b border-theme py-20 lg:py-28">
+        <div className="absolute inset-0 opacity-15 pointer-events-none">
+          <Image src="/pictures_web/hero_tire.png" alt="" fill className="object-cover" sizes="100vw" priority />
+          <div className="absolute inset-0" style={{ background: 'var(--hero-overlay)' }} />
         </div>
-      </div>
-      {/* Hero Section */}
-      <section className="relative py-20 overflow-hidden">
-        {/* Obrázek s pneumatikou přes celou šířku - lze změnit v kódu */}
-        {/* ============================================ */}
-        {/* ZDE MŮŽETE ZMĚNIT OBRÁZEK: přepište '/pictures_web/upImg2.jpg' na váš obrázek */}
-        {/* ============================================ */}
-        <div className="absolute inset-0 w-full h-full opacity-20 md:opacity-30 pointer-events-none z-5">
-          <Image
-            src="/pictures_web/upImg2.jpg"
-            alt="Pneumatika"
-            fill
-            className="object-cover"
-            sizes="100vw"
-            priority
-          />
-        </div>
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-20 left-20 w-72 h-72 bg-orange-500 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-20 right-20 w-96 h-96 bg-orange-600 rounded-full blur-3xl"></div>
-        </div>
-
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-5xl md:text-6xl font-black mb-6 animate-fadeInUp">
-            <span className="gradient-text">Kontaktujte nás</span>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <p className="section-tag justify-center mb-4 animate-fadeInUp">Kontakt</p>
+          <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold text-theme mb-5 animate-fadeInUp stagger-1">
+            Jsme tu <span className="gradient-tech">pro vás</span>
           </h1>
-          <p className="text-xl text-gray-300 mb-8 max-w-3xl mx-auto animate-fadeInUp stagger-2">
-            Jsme tu pro vás! Kontaktujte nás telefonicky, emailem nebo nás navštivte na našich pobočkách.
+          <p className="text-theme-secondary text-lg max-w-2xl mx-auto animate-fadeInUp stagger-2">
+            Kontaktujte nás telefonicky, e-mailem nebo navštivte provozovnu v Jaroměři.
           </p>
         </div>
       </section>
 
-      {/* Contact Info Section */}
-      <section className="section-padding bg-gradient-to-b from-[#0a0a0a] via-[#1a1a1a] to-[#0f0f0f]">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
-            {/* Phone Card */}
-            <div className="card hover-glow group animate-fadeInUp stagger-1 p-4">
-              <div className="flex items-center space-x-3">
-                <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center text-2xl transition-all duration-300 shadow-lg group-hover:shadow-orange-500/50 flex-shrink-0">
-                  📞
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-lg font-bold mb-1 gradient-text">Telefon</h3>
-                  <a 
-                    href="tel:+420602299090" 
-                    className="text-gray-300 text-base hover:text-orange-500 transition-colors duration-300 hover:underline"
-                  >
-                    +420 602 299 090
-                  </a>
-                  <p className="text-gray-400 text-xs mt-1">
-                    Volejte v pracovní dny 8:00 - 18:00
-                  </p>
-                </div>
-              </div>
+      <section className="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Quick contact */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
+          <a href={`tel:${CONTACT_INFO.phone.raw}`} className="tech-panel flex items-center gap-5 group animate-fadeInUp stagger-1 no-underline">
+            <div className="w-14 h-14 border border-theme rounded-sm flex items-center justify-center text-2xl text-accent group-hover:border-[var(--accent)] transition-colors flex-shrink-0">
+              📞
             </div>
+            <div>
+              <span className="font-display text-xs font-bold tracking-widest uppercase text-theme-muted block mb-0.5">Telefon</span>
+              <span className="font-display text-xl font-bold text-theme group-hover:text-accent transition-colors">
+                {CONTACT_INFO.phone.display}
+              </span>
+              <p className="text-theme-muted text-sm mt-0.5">{CONTACT_INFO.phone.hours}</p>
+            </div>
+          </a>
 
-            {/* Email Card */}
-            <div className="card hover-glow group animate-fadeInUp stagger-2 p-4">
-              <div className="flex items-center space-x-3">
-                <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center text-2xl transition-all duration-300 shadow-lg group-hover:shadow-orange-500/50 flex-shrink-0">
-                  ✉️
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-lg font-bold mb-1 gradient-text">Email</h3>
-                  <a 
-                    href="mailto:info@pneuservisvmk.cz" 
-                    className="text-gray-300 text-base hover:text-orange-500 transition-colors duration-300 hover:underline break-all"
-                  >
-                    info@pneuservisvmk.cz
-                  </a>
-                  <p className="text-gray-400 text-xs mt-1">
-                    Odpovíme do 24 hodin
-                  </p>
-                </div>
-              </div>
+          <a href={`mailto:${CONTACT_INFO.email.raw}`} className="tech-panel flex items-center gap-5 group animate-fadeInUp stagger-2 no-underline">
+            <div className="w-14 h-14 border border-theme rounded-sm flex items-center justify-center text-2xl text-accent group-hover:border-[var(--accent)] transition-colors flex-shrink-0">
+              ✉
+            </div>
+            <div>
+              <span className="font-display text-xs font-bold tracking-widest uppercase text-theme-muted block mb-0.5">E-mail</span>
+              <span className="font-display text-xl font-bold text-theme group-hover:text-accent transition-colors break-all">
+                {CONTACT_INFO.email.display}
+              </span>
+              <p className="text-theme-muted text-sm mt-0.5">Odpovíme co nejdříve</p>
+            </div>
+          </a>
+        </div>
+
+        {/* Provozovna */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-12">
+          <div className="tech-panel animate-fadeInUp">
+            <div className="tech-badge tech-badge-live mb-5 w-fit">Hlavní provozovna</div>
+            <h2 className="font-display text-2xl font-bold text-theme mb-4">Pneuservis VMK</h2>
+            <p className="text-theme-secondary text-lg leading-relaxed mb-4">
+              {CONTACT_INFO.address.street}<br />
+              {CONTACT_INFO.address.zip} {CONTACT_INFO.address.city}<br />
+              <span className="text-theme-muted text-sm">({CONTACT_INFO.address.part})</span>
+            </p>
+            <p className="text-theme-muted text-sm leading-relaxed border-t border-theme pt-4 mb-6">
+              Veškeré pneuservisní služby — přezouvání, vyvažování, opravy defektů, výdej a uskladnění pneumatik.
+            </p>
+            <a
+              href="https://www.google.com/maps/search/?api=1&query=Nachodska+118+Jaromer"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-tech-secondary text-xs"
+            >
+              Otevřít v Mapách →
+            </a>
+          </div>
+
+          <div className="hud-frame overflow-hidden min-h-[350px] animate-fadeInUp stagger-1">
+            <iframe
+              src={CONTACT_INFO.maps.provozovna}
+              width="100%"
+              height="100%"
+              style={{ border: 0, minHeight: '350px' }}
+              allowFullScreen
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              title="Mapa - Provozovna Jaroměř"
+              className="w-full h-full"
+            />
+          </div>
+        </div>
+
+        {/* Sídlo */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-12">
+          <div className="tech-panel animate-fadeInUp">
+            <p className="section-tag">Sídlo společnosti</p>
+            <h2 className="font-display text-2xl font-bold text-theme mb-4">{CONTACT_INFO.billing.company}</h2>
+            <p className="text-theme-secondary leading-relaxed mb-4">
+              {CONTACT_INFO.billing.street}<br />
+              {CONTACT_INFO.billing.zip} {CONTACT_INFO.billing.city}
+            </p>
+            <div className="border-t border-theme pt-4 text-sm">
+              <p className="text-theme-secondary">
+                <span className="font-display text-xs font-bold tracking-widest uppercase text-theme-muted">IČO: </span>
+                {CONTACT_INFO.billing.ico}
+              </p>
+              <p className="text-theme-muted text-xs mt-2 leading-relaxed">{CONTACT_INFO.billing.register}</p>
             </div>
           </div>
 
-          {/* Sídlo společnosti - Praha */}
-          <div className="mb-16">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {/* Text vlevo */}
-              <div className="card hover-glow animate-fadeInUp">
-                <h2 className="text-3xl font-bold mb-6 gradient-text">
-                  🏢 Sídlo společnosti
-                </h2>
-                <div className="space-y-4">
-                  <div>
-                    <h3 className="text-xl font-bold text-white mb-2">VMK Consulting Group s.r.o.</h3>
-                    <p className="text-gray-300 leading-relaxed">
-                      Dandova 2619/13
-                      <br />
-                      193 00 Praha 9
-                    </p>
-                  </div>
-                  <div className="pt-4 border-t border-gray-700">
-                    <p className="text-gray-400 text-sm mb-1">
-                      <span className="font-semibold text-gray-300">IČO:</span> 193 81 735
-                    </p>
-                    <p className="text-gray-400 text-sm">
-                      Zapsána v obchodním rejstříku vedeným Krajským soudem v Praze
-                      <br />
-                      oddíl C, vložka 385168
-                    </p>
-                  </div>
-                </div>
-              </div>
+          <div className="hud-frame overflow-hidden min-h-[300px] animate-fadeInUp stagger-1">
+            <iframe
+              src={CONTACT_INFO.maps.sidlo}
+              width="100%"
+              height="100%"
+              style={{ border: 0, minHeight: '300px' }}
+              allowFullScreen
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              title="Mapa - Sídlo společnosti Praha"
+              className="w-full h-full"
+            />
+          </div>
+        </div>
 
-              {/* Mapa vpravo */}
-              <div className="card h-full min-h-[500px] p-0 overflow-hidden hover-glow group">
-                <div className="relative w-full h-full">
-                  <iframe 
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2558.8210618104886!2d14.618882275891774!3d50.10835617152879!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x470bf2ea7d7dcfb1%3A0x7b14ff945d6f453!2sDandova%202619%2F13%2C%20193%2000%20Horn%C3%AD%20Po%C4%8Dernice!5e0!3m2!1scs!2scz!4v1762980448035!5m2!1scs!2scz" 
-                    width="100%" 
-                    height="100%" 
-                    style={{ border: 0, minHeight: '500px' }}
-                    allowFullScreen={true}
-                    loading="lazy"
-                    referrerPolicy="no-referrer-when-downgrade"
-                    title="Mapa - Sídlo společnosti Praha"
-                    className="w-full h-full"
-                  />
-                </div>
+        {/* Hours + Socials */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="tech-panel lg:col-span-2 animate-fadeInUp">
+            <p className="section-tag">Otevírací doba</p>
+            {loading ? (
+              <div className="py-8 text-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-[var(--accent)] mx-auto" />
               </div>
-            </div>
+            ) : (
+              <div>
+                {openingHours.map((day, i) => (
+                  <div
+                    key={day.id}
+                    className={`flex justify-between items-center py-3 px-2 ${i < openingHours.length - 1 ? 'border-b border-theme' : ''}`}
+                  >
+                    <span className="font-display font-semibold text-theme">{day.den}</span>
+                    <span className="font-display font-semibold text-theme-secondary">{day.hodiny}</span>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
-          {/* Provozovna - Chrast */}
-          <div className="mb-16">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {/* Text vlevo */}
-              <div className="card hover-glow animate-fadeInUp">
-                <h2 className="text-3xl font-bold mb-6 gradient-text">
-                  🔧 Provozovna / Výdejní místo
-                </h2>
-                <div className="space-y-4">
-                  <div>
-                    <h3 className="text-xl font-bold text-white mb-2">Pneuservis VMK</h3>
-                    <p className="text-gray-300 leading-relaxed">
-                      Osady Ležáků 835
-                      <br />
-                      538 51 Chrast
-                    </p>
-                  </div>
-                  <div className="pt-4 border-t border-gray-700">
-                    <p className="text-gray-400 text-sm">
-                      Zde najdete naši provozovnu, kde provádíme veškeré služby
-                      <br />
-                      související s pneumatikami a koly.
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Mapa vpravo */}
-              <div className="card h-full min-h-[500px] p-0 overflow-hidden hover-glow group">
-                <div className="relative w-full h-full">
-                  <iframe 
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2569.990958198211!2d15.92763977587662!3d49.89897307149216!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x470db86d15207add%3A0xe0f6ed5abccb02fa!2zT3NhZHkgTGXFvsOha8WvIDgzNSwgNTM4IDUxIENocmFzdCB1IENocnVkaW3Emw!5e0!3m2!1scs!2scz!4v1762978379120!5m2!1scs!2scz" 
-                    width="100%" 
-                    height="100%" 
-                    style={{ border: 0, minHeight: '500px' }}
-                    allowFullScreen={true}
-                    loading="lazy"
-                    referrerPolicy="no-referrer-when-downgrade"
-                    title="Mapa - Provozovna Chrast"
-                    className="w-full h-full"
-                  />
-                </div>
-              </div>
+          <div className="tech-panel animate-fadeInUp stagger-1">
+            <p className="section-tag">Sociální sítě</p>
+            <p className="text-theme-muted text-sm mb-5 leading-relaxed">
+              Sledujte naše práce, tipy na péči o pneumatiky a novinky.
+            </p>
+            <div className="space-y-2">
+              {[
+                { href: CONTACT_INFO.socials.facebook, label: 'Facebook' },
+                { href: CONTACT_INFO.socials.instagram, label: 'Instagram' },
+                { href: CONTACT_INFO.socials.tiktok, label: 'TikTok' },
+              ].map((s) => (
+                <a
+                  key={s.label}
+                  href={s.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 p-3 border border-theme rounded text-theme-secondary hover:text-accent hover:border-[var(--accent)] transition-all font-display font-semibold text-sm"
+                >
+                  → {s.label}
+                </a>
+              ))}
             </div>
           </div>
         </div>
       </section>
 
-      {/* Opening Hours Section */}
-      <section className="py-12 pb-16 bg-gradient-to-b from-[#0a0a0a] to-[#1a1a1a]/50">
-        <div className="max-w-4xl mx-auto">
-          <div className="card hover-glow animate-fadeInUp">
-            <div className="flex items-start space-x-4">
-              <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl flex items-center justify-center text-3xl shadow-lg flex-shrink-0">
-                🕐
-              </div>
-              <div className="flex-1">
-                <h3 className="text-3xl font-bold mb-6 gradient-text">Otevírací doba</h3>
-                {loading ? (
-                  <div className="text-center py-8">
-                    <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-orange-500 mx-auto"></div>
-                  </div>
-                ) : (
-                  <div className="space-y-1">
-                    {openingHours.map((day, index) => (
-                      <div 
-                        key={day.id} 
-                        className={`flex justify-between items-center py-4 px-3 rounded-lg transition-colors hover:bg-white/5 ${
-                          index < openingHours.length - 1 ? 'border-b border-gray-800' : ''
-                        }`}
-                      >
-                        <span className="font-semibold text-white">{day.den}</span>
-                        <span className="text-gray-400">{day.hodiny}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="section-padding mb-16 bg-gradient-to-r from-orange-500 via-red-600 via-yellow-500 to-orange-600 relative overflow-hidden">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-0 left-0 w-96 h-96 bg-white rounded-full blur-3xl"></div>
-          <div className="absolute bottom-0 right-0 w-96 h-96 bg-white rounded-full blur-3xl"></div>
-        </div>
-        
-        <div className="relative z-10 max-w-4xl mx-auto text-center">
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-            Máte dotaz nebo zájem o službu?
+      {/* CTA */}
+      <section className="cta-band py-20">
+        <div className="relative z-10 max-w-3xl mx-auto text-center px-4">
+          <h2 className="font-display text-3xl sm:text-4xl font-bold mb-5">
+            Máte dotaz nebo zájem o přezutí?
           </h2>
-          <p className="text-xl text-white/90 mb-8">
-            Neváhejte nás kontaktovat telefonicky nebo emailem. Rádi vám odpovíme na všechny vaše dotazy!
+          <p className="text-lg mb-8 opacity-75">
+            Neváhejte nás kontaktovat — rádi zodpovíme dotazy nebo naplánujeme termín.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a
-              href="tel:+420602299090"
-              className="px-8 py-4 bg-white text-orange-600 rounded-lg font-bold text-lg hover:bg-gray-100 transition-all duration-300 shadow-xl"
-            >
-              📞 Zavolat nyní
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <a href={`tel:${CONTACT_INFO.phone.raw}`} className="btn-tech-primary">
+              Zavolat nyní
             </a>
             <a
-              href="mailto:info@pneuservisvmk.cz"
-              className="px-8 py-4 bg-[#0a0a0a] text-white rounded-lg font-bold text-lg hover:bg-[#1a1a1a] transition-all duration-300 shadow-xl border-2 border-white/30 hover:border-white/50"
+              href={`mailto:${CONTACT_INFO.email.raw}`}
+              className="btn-tech-secondary"
+              style={{ color: '#f0ede6', borderColor: 'rgba(255,255,255,0.3)' }}
             >
-              ✉️ Napsat email
+              Poslat e-mail
             </a>
           </div>
         </div>
       </section>
-    </div>
+    </TechBackground>
   );
 }

@@ -3,6 +3,8 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
+import TechBackground from '@/components/TechBackground';
+import { CONTACT_INFO } from '@/constants/contact';
 
 interface Service {
   id: string;
@@ -17,23 +19,11 @@ interface Service {
   poradi?: number;
 }
 
-const process = [
-  {
-    title: 'Rezervace',
-    description: 'Lorem ipsum dolor sit amet consectetur adipiscing elit',
-  },
-  {
-    title: 'Příjezd',
-    description: 'Lorem ipsum dolor sit amet consectetur adipiscing elit',
-  },
-  {
-    title: 'Servis',
-    description: 'Lorem ipsum dolor sit amet consectetur adipiscing elit',
-  },
-  {
-    title: 'Platba',
-    description: 'Lorem ipsum dolor sit amet consectetur adipiscing elit',
-  },
+const processSteps = [
+  { title: 'Rezervace', description: 'Zarezervujte si termín online nebo zavolejte — rychle a bez čekání.' },
+  { title: 'Příjezd', description: 'Přijeďte v domluvený čas. Přijmeme váš vůz a domluvíme podrobnosti.' },
+  { title: 'Servis', description: 'Profesionální přezutí nebo vyvážení na kalibrovaných strojích.' },
+  { title: 'Platba', description: 'Transparentní cena dle ceníku, platba v hotovosti nebo kartou.' },
 ];
 
 export default function SluzbyPage() {
@@ -41,692 +31,303 @@ export default function SluzbyPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadServices();
+    fetch('/api/sluzby')
+      .then((r) => r.json())
+      .then((data) => setServices(data.services || []))
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, []);
-
-  const loadServices = async () => {
-    try {
-      const response = await fetch('/api/sluzby');
-      const data = await response.json();
-      setServices(data.services || []);
-    } catch (error) {
-      console.error('Chyba při načítání služeb:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-orange-500 mx-auto mb-4"></div>
-          <p className="text-gray-300 text-lg">Načítám služby...</p>
+      <TechBackground>
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-[var(--accent)] mx-auto mb-4" />
+            <p className="text-theme-secondary">Načítám služby...</p>
+          </div>
         </div>
-      </div>
+      </TechBackground>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] relative">
-      {/* Background blur effect - celá stránka */}
-      <div className="fixed inset-0 pointer-events-none z-0">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-20 left-20 w-72 h-72 bg-orange-500 rounded-full blur-3xl animate-bg-float"></div>
-          <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-orange-600 rounded-full blur-3xl animate-bg-float-delayed"></div>
-          <div className="absolute bottom-1/4 left-1/3 w-80 h-80 bg-yellow-500/60 rounded-full blur-3xl animate-bg-float"></div>
-          <div className="absolute bottom-20 right-20 w-96 h-96 bg-red-600/40 rounded-full blur-3xl animate-bg-float-delayed"></div>
+    <TechBackground>
+      {/* Hero */}
+      <section className="relative border-b border-theme py-20 lg:py-28 overflow-hidden">
+        <div className="absolute inset-0 opacity-15 pointer-events-none">
+          <Image src="/pictures_web/hero_tire.png" alt="" fill className="object-cover" sizes="100vw" priority />
+          <div className="absolute inset-0" style={{ background: 'var(--hero-overlay)' }} />
         </div>
-      </div>
-      {/* Hero Section */}
-      <section className="relative py-20 overflow-hidden bg-gradient-to-b from-[#0a0a0a] via-[#1a1a1a] to-[#0f0f0f]">
-        {/* Obrázek s pneumatikou přes celou šířku - lze změnit v kódu */}
-        {/* ============================================ */}
-        {/* ZDE MŮŽETE ZMĚNIT OBRÁZEK: přepište '/pictures_web/upImg2.jpg' na váš obrázek */}
-        {/* ============================================ */}
-        <div className="absolute inset-0 w-full h-full opacity-20 md:opacity-30 pointer-events-none z-5">
-          <Image
-            src="/pictures_web/upImg2.jpg"
-            alt="Pneumatika"
-            fill
-            className="object-cover"
-            sizes="100vw"
-            priority
-          />
-        </div>
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-20 left-20 w-72 h-72 bg-orange-500 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-20 right-20 w-96 h-96 bg-orange-600 rounded-full blur-3xl"></div>
-        </div>
-
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-5xl md:text-6xl font-black mb-6 animate-fadeInUp">
-            <span className="gradient-text">Naše služby</span>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <p className="section-tag justify-center mb-4 animate-fadeInUp">Služby & Ceník</p>
+          <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold text-theme mb-5 animate-fadeInUp stagger-1">
+            Naše <span className="gradient-tech">služby</span>
           </h1>
-          <p className="text-xl text-gray-300 mb-8 max-w-3xl mx-auto animate-fadeInUp stagger-2">
-            Kompletní přehled našich služeb a cen. Profesionální péče o vaše pneumatiky a kola.
+          <p className="text-theme-secondary text-lg max-w-2xl mx-auto animate-fadeInUp stagger-2">
+            Kompletní přehled služeb a cen. Profesionální péče o vaše pneumatiky a kola.
           </p>
         </div>
       </section>
 
-      {/* Main Services Section */}
-      {services.length > 0 ? (
-        <section className="section-padding bg-gradient-to-b from-[#0a0a0a] via-[#1a1a1a] to-[#0f0f0f]">
-          <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {/* Service Cards */}
+      {services.length > 0 && (
+        <section className="py-16 lg:py-20">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="mb-10">
+              <p className="section-tag">Co nabízíme</p>
+              <h2 className="section-title text-3xl sm:text-4xl font-bold">Přehled služeb</h2>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
               {services.map((service, index) => (
-                <div
-                  key={service.id}
-                  className={`card group hover-glow cursor-pointer animate-fadeInUp stagger-${(index % 6) + 1}`}
-                >
-                  <div className="text-5xl mb-4 transition-all duration-300">
-                    {service.ikona}
-                  </div>
-                  <h3 className="text-2xl font-bold mb-3 gradient-text group-hover:tracking-wide transition-all duration-300">
-                    {service.nazev}
-                  </h3>
-                  <p className="text-gray-400 mb-4 group-hover:text-gray-300 transition-colors duration-300">
-                    {service.popis}
-                  </p>
+                <div key={service.id} className={`tech-panel animate-fadeInUp stagger-${(index % 4) + 1}`}>
+                  <div className="text-4xl mb-4">{service.ikona}</div>
+                  <h3 className="font-display text-xl font-bold text-theme mb-2">{service.nazev}</h3>
+                  <p className="text-theme-secondary text-sm mb-4">{service.popis}</p>
                   {service.features && (
-                    <ul className="space-y-2 mb-6">
-                      {service.features.split(';').map((feature, idx) => (
-                        <li
-                          key={idx}
-                          className="flex items-center text-gray-300 text-sm transform group-hover:translate-x-1 transition-transform duration-300"
-                          style={{ transitionDelay: `${idx * 50}ms` }}
-                        >
-                          <span className="text-orange-500 mr-2 transition-all duration-300">✓</span>
-                          {feature.trim()}
+                    <ul className="space-y-1.5 mb-5">
+                      {service.features.split(';').map((f, i) => (
+                        <li key={i} className="flex items-center gap-2 text-theme-secondary text-sm">
+                          <span className="text-accent font-bold">✓</span>
+                          {f.trim()}
                         </li>
                       ))}
                     </ul>
                   )}
-                  <div className="pt-4 border-t border-gray-700">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-400">Cena od</span>
-                      <span className="text-2xl font-bold gradient-text">{service.cenaOsobni}</span>
-                    </div>
+                  <div className="pt-4 border-t border-theme flex items-center justify-between">
+                    <span className="text-theme-muted text-xs font-semibold uppercase tracking-wide">Cena od</span>
+                    <span className="font-display text-xl font-bold text-accent">{service.cenaOsobni}</span>
                   </div>
                 </div>
               ))}
             </div>
           </div>
         </section>
-      ) : (
-        <section className="section-padding bg-gradient-to-b from-[#0a0a0a] via-[#1a1a1a] to-[#0f0f0f]">
-          <div className="max-w-7xl mx-auto text-center">
-            <div className="text-6xl mb-4">🔧</div>
-            <h2 className="text-2xl font-bold text-gray-300 mb-2">
-              Žádné služby k dispozici
-            </h2>
-            <p className="text-gray-400">
-              Služby budou brzy přidány.
-            </p>
-          </div>
-        </section>
       )}
 
-      {/* Process Section */}
-      <section className="section-padding bg-gradient-to-b from-[#0a0a0a] via-[#1a1a1a] to-[#0f0f0f]">
-        <div className="max-w-7xl mx-auto">
-          <h2 className="text-4xl md:text-5xl font-bold text-center mb-4">
-            <span className="gradient-text">Jak to funguje?</span>
-          </h2>
-          <p className="text-gray-400 text-center mb-16 max-w-2xl mx-auto">
-            Jednoduchý proces od rezervace po dokončení servisu
-          </p>
-
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            {process.map((step, index) => (
-              <div key={index} className={`text-center animate-fadeInUp stagger-${index + 1}`}>
-                <div className="relative mb-6">
-                  <div className="w-20 h-20 mx-auto bg-gradient-to-br from-orange-500 to-red-600 rounded-full flex items-center justify-center text-3xl font-bold text-white shadow-lg hover:shadow-orange-500/50 transition-all duration-300">
+      {/* Process */}
+      <section className="border-y border-theme bg-surface-alt py-16 lg:py-20 transition-colors duration-400">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <p className="section-tag justify-center">Jak to funguje</p>
+            <h2 className="section-title text-3xl sm:text-4xl font-bold">
+              Od rezervace po dokončení
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            {processSteps.map((step, index) => (
+              <div key={index} className={`animate-fadeInUp stagger-${index + 1}`}>
+                <div className="relative mb-4 flex items-center gap-3">
+                  <div className="w-12 h-12 bg-accent flex items-center justify-center text-white font-display font-bold text-xl rounded-sm flex-shrink-0">
                     {index + 1}
                   </div>
-                  {index < process.length - 1 && (
-                    <div className="hidden md:block absolute top-10 left-1/2 w-full h-0.5 bg-gradient-to-r from-orange-500 to-transparent"></div>
+                  {index < processSteps.length - 1 && (
+                    <div className="hidden md:block absolute left-12 top-6 w-full h-0.5 bg-[var(--border-strong)]" />
                   )}
                 </div>
-                <h3 className="text-xl font-bold mb-3 text-white hover:gradient-text transition-all duration-300">
-                  {step.title}
-                </h3>
-                <p className="text-gray-400 text-sm">
-                  {step.description}
-                </p>
+                <h3 className="font-display text-lg font-bold text-theme mb-2">{step.title}</h3>
+                <p className="text-theme-secondary text-sm leading-relaxed">{step.description}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Pricing Table Section - detailní ceník dle Excelu */}
-      <section className="section-padding bg-gradient-to-b from-[#1a1a1a] via-[#0f0f0f] to-[#0a0a0a]">
-        <div className="max-w-7xl mx-auto">
-          <h2 className="text-4xl md:text-5xl font-bold text-center mb-4">
-            <span className="gradient-text">Ceník služeb</span>
-          </h2>
-          <p className="text-gray-400 text-center mb-4 max-w-2xl mx-auto">
-            Ceník pneuservisu &ndash; ceny za 1 ks, v Kč vč. DPH.
-          </p>
-          <p className="text-gray-500 text-xs md:text-sm text-center mb-12">
-            Platnost od 1.10.2025 &middot; Ceny jsou uvedeny včetně DPH 21%.
-          </p>
+      {/* Pricing Tables */}
+      <section className="py-16 lg:py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="mb-10">
+            <p className="section-tag">Ceník</p>
+            <h2 className="section-title text-3xl sm:text-4xl font-bold mb-2">Ceník služeb</h2>
+            <p className="text-theme-secondary text-sm">
+              Ceny za 1 ks, v Kč vč. DPH · Platnost od 1. 10. 2025
+            </p>
+          </div>
 
           {/* SERVISNÍ PAKETY */}
-          <section className="mb-12">
-            <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-2 mb-3">
+          <div className="mb-10">
+            <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-1 mb-3">
               <div>
-                <h3 className="text-lg font-semibold tracking-[0.18em] uppercase text-gray-200">
-                  Servisní pakety
-                </h3>
-                <p className="text-xs text-gray-400 uppercase tracking-[0.18em]">
-                  Cena za 1 ks (Kč vč. DPH)
-                </p>
+                <h3 className="font-display text-lg font-bold text-theme">Servisní pakety</h3>
+                <p className="text-theme-muted text-xs">Cena za 1 ks (Kč vč. DPH)</p>
               </div>
-              <p className="text-xs text-gray-500">
-                Velikosti pneu: R12 &ndash; R24, VAN/SUV 15&quot;-17&quot;, SUV/Offroad 18&quot;+
-              </p>
+              <p className="text-theme-muted text-xs">Velikosti: R12–R24, VAN/SUV 15&quot;–17&quot;, SUV/Offroad 18&quot;+</p>
             </div>
-
-            <div className="card overflow-hidden">
-              <div className="overflow-x-auto">
-                <table className="w-full text-[11px] sm:text-xs md:text-sm leading-relaxed">
-                  <thead>
-                    <tr className="bg-gradient-to-r from-orange-500 to-red-600 text-white">
-                      <th className="px-3 py-2 text-left font-semibold w-[18%] min-w-[150px]">
-                        Služba
-                      </th>
-                      <th className="px-3 py-2 text-left font-semibold w-[26%] min-w-[190px]">
-                        Popis
-                      </th>
-                      <th className="px-2 py-2 text-right font-semibold whitespace-nowrap">R12</th>
-                      <th className="px-2 py-2 text-right font-semibold whitespace-nowrap">R13</th>
-                      <th className="px-2 py-2 text-right font-semibold whitespace-nowrap">R14</th>
-                      <th className="px-2 py-2 text-right font-semibold whitespace-nowrap">R15</th>
-                      <th className="px-2 py-2 text-right font-semibold whitespace-nowrap">R16</th>
-                      <th className="px-2 py-2 text-right font-semibold whitespace-nowrap">R17</th>
-                      <th className="px-2 py-2 text-right font-semibold whitespace-nowrap">R18</th>
-                      <th className="px-2 py-2 text-right font-semibold whitespace-nowrap">R19</th>
-                      <th className="px-2 py-2 text-right font-semibold whitespace-nowrap">R20</th>
-                      <th className="px-2 py-2 text-right font-semibold whitespace-nowrap">R21</th>
-                      <th className="px-2 py-2 text-right font-semibold whitespace-nowrap">R22</th>
-                      <th className="px-2 py-2 text-right font-semibold whitespace-nowrap">R23</th>
-                      <th className="px-2 py-2 text-right font-semibold whitespace-nowrap">R24</th>
-                      <th className="px-2 py-2 text-right font-semibold whitespace-nowrap">
-                        VAN/SUV 15&quot;-17&quot;
-                      </th>
-                      <th className="px-2 py-2 text-right font-semibold whitespace-nowrap">
-                        SUV/Offroad 18&quot;+
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {/* Set 1 - KOMPLETNÍ PŘEZUTÍ */}
-                    <tr className="border-b border-gray-700/80 hover:bg-white/5 transition-colors">
-                      <td className="px-3 py-2 text-gray-200 font-semibold">
-                        Set 1 - KOMPLETNÍ PŘEZUTÍ
-                      </td>
-                      <td className="px-3 py-2 text-gray-400">
-                        výměna kola z osy na osu, výměna pneu, vyvážení, závaží, ventil
-                      </td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">170,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">185,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">200,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">225,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">250,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">300,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">325,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">350,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">375,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">400,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">425,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">450,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">500,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">375,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-400 font-semibold">425,00 Kč</td>
-                    </tr>
-
-                    {/* Set 2 - VÝMĚNA KOLA + VYVÁŽENÍ */}
-                    <tr className="border-b border-gray-700/80 hover:bg-white/5 transition-colors">
-                      <td className="px-3 py-2 text-gray-200 font-semibold">
-                        Set 2 - VÝMĚNA KOLA + VYVÁŽENÍ
-                      </td>
-                      <td className="px-3 py-2 text-gray-400">
-                        výměna kola z osy na osu, vyvážení, závaží
-                      </td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">115,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">125,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">125,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">150,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">165,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">205,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">220,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">235,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">250,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">265,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">280,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">295,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">335,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">225,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-400 font-semibold">255,00 Kč</td>
-                    </tr>
-
-                    {/* Set 3 - VÝMĚNA KOLA */}
-                    <tr className="border-b border-gray-700/80 hover:bg-white/5 transition-colors">
-                      <td className="px-3 py-2 text-gray-200 font-semibold">
-                        Set 3 - VÝMĚNA KOLA
-                      </td>
-                      <td className="px-3 py-2 text-gray-400">
-                        výměna kola z osy na osu, bez vyvážení
-                      </td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">50,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">65,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">75,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">75,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">85,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">95,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">105,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">110,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">115,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">120,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">130,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">130,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">130,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">115,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-400 font-semibold">125,00 Kč</td>
-                    </tr>
-
-                    {/* Set 4 - VÝMĚNA PNEU + VYVÁŽENÍ */}
-                    <tr className="border-b border-gray-700/80 hover:bg-white/5 transition-colors">
-                      <td className="px-3 py-2 text-gray-200 font-semibold">
-                        Set 4 - VÝMĚNA PNEU + VYVÁŽENÍ
-                      </td>
-                      <td className="px-3 py-2 text-gray-400">
-                        výměna pneu, vyvážení, závaží, ventil
-                      </td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">120,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">140,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">150,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">175,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">190,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">205,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">220,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">240,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">260,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">270,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">280,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">290,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">300,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">260,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-400 font-semibold">300,00 Kč</td>
-                    </tr>
-
-                    {/* Set 5 - MONTÁŽ PNEU + VYVÁŽENÍ */}
-                    <tr className="hover:bg-white/5 transition-colors">
-                      <td className="px-3 py-2 text-gray-200 font-semibold">
-                        Set 5 - MONTÁŽ PNEU + VYVÁŽENÍ
-                      </td>
-                      <td className="px-3 py-2 text-gray-400">
-                        montáž pneu na disk, vyvážení, ventil, závaží
-                      </td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">95,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">100,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">110,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">125,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">135,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">145,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">155,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">165,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">175,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">185,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">195,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">205,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">215,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">180,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-400 font-semibold">205,00 Kč</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
+            <div className="price-table-wrap overflow-x-auto">
+              <table>
+                <thead>
+                  <tr>
+                    <th className="min-w-[160px]">Služba</th>
+                    <th className="min-w-[200px]">Popis</th>
+                    <th>R12</th><th>R13</th><th>R14</th><th>R15</th><th>R16</th><th>R17</th>
+                    <th>R18</th><th>R19</th><th>R20</th><th>R21</th><th>R22</th><th>R23</th><th>R24</th>
+                    <th className="min-w-[100px]">VAN/SUV 15&quot;–17&quot;</th>
+                    <th className="min-w-[100px]">SUV/Offroad 18&quot;+</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Set 1 – KOMPLETNÍ PŘEZUTÍ</td>
+                    <td className="text-theme-secondary">výměna kola z osy na osu, výměna pneu, vyvážení, závaží, ventil</td>
+                    <td>170 Kč</td><td>185 Kč</td><td>200 Kč</td><td>225 Kč</td><td>250 Kč</td><td>300 Kč</td>
+                    <td>325 Kč</td><td>350 Kč</td><td>375 Kč</td><td>400 Kč</td><td>425 Kč</td><td>450 Kč</td><td>500 Kč</td>
+                    <td>375 Kč</td><td>425 Kč</td>
+                  </tr>
+                  <tr>
+                    <td>Set 2 – VÝMĚNA KOLA + VYVÁŽENÍ</td>
+                    <td className="text-theme-secondary">výměna kola z osy na osu, vyvážení, závaží</td>
+                    <td>115 Kč</td><td>125 Kč</td><td>125 Kč</td><td>150 Kč</td><td>165 Kč</td><td>205 Kč</td>
+                    <td>220 Kč</td><td>235 Kč</td><td>250 Kč</td><td>265 Kč</td><td>280 Kč</td><td>295 Kč</td><td>335 Kč</td>
+                    <td>225 Kč</td><td>255 Kč</td>
+                  </tr>
+                  <tr>
+                    <td>Set 3 – VÝMĚNA KOLA</td>
+                    <td className="text-theme-secondary">výměna kola z osy na osu, bez vyvážení</td>
+                    <td>50 Kč</td><td>65 Kč</td><td>75 Kč</td><td>75 Kč</td><td>85 Kč</td><td>95 Kč</td>
+                    <td>105 Kč</td><td>110 Kč</td><td>115 Kč</td><td>120 Kč</td><td>130 Kč</td><td>130 Kč</td><td>130 Kč</td>
+                    <td>115 Kč</td><td>125 Kč</td>
+                  </tr>
+                  <tr>
+                    <td>Set 4 – VÝMĚNA PNEU + VYVÁŽENÍ</td>
+                    <td className="text-theme-secondary">výměna pneu, vyvážení, závaží, ventil</td>
+                    <td>120 Kč</td><td>140 Kč</td><td>150 Kč</td><td>175 Kč</td><td>190 Kč</td><td>205 Kč</td>
+                    <td>220 Kč</td><td>240 Kč</td><td>260 Kč</td><td>270 Kč</td><td>280 Kč</td><td>290 Kč</td><td>300 Kč</td>
+                    <td>260 Kč</td><td>300 Kč</td>
+                  </tr>
+                  <tr>
+                    <td>Set 5 – MONTÁŽ PNEU + VYVÁŽENÍ</td>
+                    <td className="text-theme-secondary">montáž pneu na disk, vyvážení, ventil, závaží</td>
+                    <td>95 Kč</td><td>100 Kč</td><td>110 Kč</td><td>125 Kč</td><td>135 Kč</td><td>145 Kč</td>
+                    <td>155 Kč</td><td>165 Kč</td><td>175 Kč</td><td>185 Kč</td><td>195 Kč</td><td>205 Kč</td><td>215 Kč</td>
+                    <td>180 Kč</td><td>205 Kč</td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
-          </section>
+          </div>
 
           {/* DALŠÍ SLUŽBY */}
-          <section className="mb-12">
-            <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-2 mb-3">
-              <div>
-                <h3 className="text-lg font-semibold tracking-[0.18em] uppercase text-gray-200">
-                  Další služby
-                </h3>
-                <p className="text-xs text-gray-400 uppercase tracking-[0.18em]">
-                  Cena za 1 ks (Kč vč. DPH)
-                </p>
-              </div>
+          <div className="mb-10">
+            <div className="mb-3">
+              <h3 className="font-display text-lg font-bold text-theme">Další služby</h3>
+              <p className="text-theme-muted text-xs">Cena za 1 ks (Kč vč. DPH)</p>
             </div>
-
-            <div className="card overflow-hidden">
-              <div className="overflow-x-auto">
-                <table className="w-full text-[11px] sm:text-xs md:text-sm leading-relaxed">
-                  <thead>
-                    <tr className="bg-gradient-to-r from-orange-500 to-red-600 text-white">
-                      <th className="px-3 py-2 text-left font-semibold w-[18%] min-w-[150px]">
-                        Služba
-                      </th>
-                      <th className="px-3 py-2 text-left font-semibold w-[26%] min-w-[190px]">
-                        Popis
-                      </th>
-                      <th className="px-2 py-2 text-right font-semibold whitespace-nowrap">R12</th>
-                      <th className="px-2 py-2 text-right font-semibold whitespace-nowrap">R13</th>
-                      <th className="px-2 py-2 text-right font-semibold whitespace-nowrap">R14</th>
-                      <th className="px-2 py-2 text-right font-semibold whitespace-nowrap">R15</th>
-                      <th className="px-2 py-2 text-right font-semibold whitespace-nowrap">R16</th>
-                      <th className="px-2 py-2 text-right font-semibold whitespace-nowrap">R17</th>
-                      <th className="px-2 py-2 text-right font-semibold whitespace-nowrap">R18</th>
-                      <th className="px-2 py-2 text-right font-semibold whitespace-nowrap">R19</th>
-                      <th className="px-2 py-2 text-right font-semibold whitespace-nowrap">R20</th>
-                      <th className="px-2 py-2 text-right font-semibold whitespace-nowrap">R21</th>
-                      <th className="px-2 py-2 text-right font-semibold whitespace-nowrap">R22</th>
-                      <th className="px-2 py-2 text-right font-semibold whitespace-nowrap">R23</th>
-                      <th className="px-2 py-2 text-right font-semibold whitespace-nowrap">R24</th>
-                      <th className="px-2 py-2 text-right font-semibold whitespace-nowrap">
-                        VAN/SUV 15&quot;-17&quot;
-                      </th>
-                      <th className="px-2 py-2 text-right font-semibold whitespace-nowrap">
-                        SUV/Offroad 18&quot;+
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {/* Set 3 - VÝMĚNA KOLA */}
-                    <tr className="border-b border-gray-700/80 hover:bg-white/5 transition-colors">
-                      <td className="px-3 py-2 text-gray-200 font-semibold">
-                        Set 3 - VÝMĚNA KOLA
-                      </td>
-                      <td className="px-3 py-2 text-gray-400">
-                        výměna kola z osy na osu, bez vyvážení
-                      </td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">50,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">55,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">60,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">65,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">75,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">90,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">95,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">100,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">105,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">110,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">115,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">120,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">125,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">105,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-400 font-semibold">115,00 Kč</td>
-                    </tr>
-
-                    {/* VÝMĚNA PNEU */}
-                    <tr className="border-b border-gray-700/80 hover:bg-white/5 transition-colors">
-                      <td className="px-3 py-2 text-gray-200 font-semibold">
-                        VÝMĚNA PNEU
-                      </td>
-                      <td className="px-3 py-2 text-gray-400">
-                        výměna pneu na disku, ventil, bez vyvážení
-                      </td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">55,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">60,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">65,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">75,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">80,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">100,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">110,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">120,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">130,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">140,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">150,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">160,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">190,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">130,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-400 font-semibold">150,00 Kč</td>
-                    </tr>
-
-                    {/* VYVÁŽENÍ KOLA */}
-                    <tr className="border-b border-gray-700/80 hover:bg-white/5 transition-colors">
-                      <td className="px-3 py-2 text-gray-200 font-semibold">
-                        VYVÁŽENÍ KOLA
-                      </td>
-                      <td className="px-3 py-2 text-gray-400">
-                        vč. závaží
-                      </td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">65,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">70,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">75,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">85,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">95,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">110,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">120,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">130,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">140,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">150,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">160,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">170,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">185,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">140,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-400 font-semibold">160,00 Kč</td>
-                    </tr>
-
-                    {/* MONTÁŽ PNEU */}
-                    <tr className="border-b border-gray-700/80 hover:bg-white/5 transition-colors">
-                      <td className="px-3 py-2 text-gray-200 font-semibold">
-                        MONTÁŽ PNEU
-                      </td>
-                      <td className="px-3 py-2 text-gray-400">
-                        vč. ventilku, bez vyvážení
-                      </td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">30,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">35,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">35,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">40,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">45,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">55,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">60,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">65,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">70,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">75,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">80,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">85,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">100,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">70,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-400 font-semibold">80,00 Kč</td>
-                    </tr>
-
-                    {/* DEMONTÁŽ PNEU */}
-                    <tr className="border-b border-gray-700/80 hover:bg-white/5 transition-colors">
-                      <td className="px-3 py-2 text-gray-200 font-semibold">
-                        DEMONTÁŽ PNEU
-                      </td>
-                      <td className="px-3 py-2 text-gray-400">
-                        demontáž pneu z disku
-                      </td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">25,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">25,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">30,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">35,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">35,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">45,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">50,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">55,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">60,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">65,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">70,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">75,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">90,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-300">60,00 Kč</td>
-                      <td className="px-2 py-2 text-right whitespace-nowrap text-orange-400 font-semibold">70,00 Kč</td>
-                    </tr>
-
-                    {/* MYTÍ KOLA */}
-                    <tr className="hover:bg-white/5 transition-colors">
-                      <td className="px-3 py-2 text-gray-200 font-semibold">
-                        MYTÍ KOLA
-                      </td>
-                      <td className="px-3 py-2 text-gray-400">
-                        R12&ndash;SUV/Offroad
-                      </td>
-                      {/* Pro R12&ndash;R24 a VAN/SUV ponecháno prázdné, cena platí obecně */}
-                      <td className="px-2 py-3 text-right text-orange-300">25,00 Kč</td>
-                      <td className="px-2 py-3 text-right text-orange-300">25,00 Kč</td>
-                      <td className="px-2 py-3 text-right text-orange-300">25,00 Kč</td>
-                      <td className="px-2 py-3 text-right text-orange-300">25,00 Kč</td>
-                      <td className="px-2 py-3 text-right text-orange-300">25,00 Kč</td>
-                      <td className="px-2 py-3 text-right text-orange-300">25,00 Kč</td>
-                      <td className="px-2 py-3 text-right text-orange-300">25,00 Kč</td>
-                      <td className="px-2 py-3 text-right text-orange-300">25,00 Kč</td>
-                      <td className="px-2 py-3 text-right text-orange-300">25,00 Kč</td>
-                      <td className="px-2 py-3 text-right text-orange-300">25,00 Kč</td>
-                      <td className="px-2 py-3 text-right text-orange-300">25,00 Kč</td>
-                      <td className="px-2 py-3 text-right text-orange-300">25,00 Kč</td>
-                      <td className="px-2 py-3 text-right text-orange-300">25,00 Kč</td>
-                      <td className="px-2 py-3 text-right text-orange-300">25,00 Kč</td>
-                      <td className="px-2 py-3 text-right text-orange-400 font-semibold">25,00 Kč</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
+            <div className="price-table-wrap overflow-x-auto">
+              <table>
+                <thead>
+                  <tr>
+                    <th className="min-w-[160px]">Služba</th>
+                    <th className="min-w-[200px]">Popis</th>
+                    <th>R12</th><th>R13</th><th>R14</th><th>R15</th><th>R16</th><th>R17</th>
+                    <th>R18</th><th>R19</th><th>R20</th><th>R21</th><th>R22</th><th>R23</th><th>R24</th>
+                    <th className="min-w-[100px]">VAN/SUV 15&quot;–17&quot;</th>
+                    <th className="min-w-[100px]">SUV/Offroad 18&quot;+</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Set 3 – VÝMĚNA KOLA</td>
+                    <td className="text-theme-secondary">výměna kola z osy na osu, bez vyvážení</td>
+                    <td>50 Kč</td><td>55 Kč</td><td>60 Kč</td><td>65 Kč</td><td>75 Kč</td><td>90 Kč</td>
+                    <td>95 Kč</td><td>100 Kč</td><td>105 Kč</td><td>110 Kč</td><td>115 Kč</td><td>120 Kč</td><td>125 Kč</td>
+                    <td>105 Kč</td><td>115 Kč</td>
+                  </tr>
+                  <tr>
+                    <td>VÝMĚNA PNEU</td>
+                    <td className="text-theme-secondary">výměna pneu na disku, ventil, bez vyvážení</td>
+                    <td>55 Kč</td><td>60 Kč</td><td>65 Kč</td><td>75 Kč</td><td>80 Kč</td><td>100 Kč</td>
+                    <td>110 Kč</td><td>120 Kč</td><td>130 Kč</td><td>140 Kč</td><td>150 Kč</td><td>160 Kč</td><td>190 Kč</td>
+                    <td>130 Kč</td><td>150 Kč</td>
+                  </tr>
+                  <tr>
+                    <td>VYVÁŽENÍ KOLA</td>
+                    <td className="text-theme-secondary">vč. závaží</td>
+                    <td>65 Kč</td><td>70 Kč</td><td>75 Kč</td><td>85 Kč</td><td>95 Kč</td><td>110 Kč</td>
+                    <td>120 Kč</td><td>130 Kč</td><td>140 Kč</td><td>150 Kč</td><td>160 Kč</td><td>170 Kč</td><td>185 Kč</td>
+                    <td>140 Kč</td><td>160 Kč</td>
+                  </tr>
+                  <tr>
+                    <td>MONTÁŽ PNEU</td>
+                    <td className="text-theme-secondary">vč. ventilku, bez vyvážení</td>
+                    <td>30 Kč</td><td>35 Kč</td><td>35 Kč</td><td>40 Kč</td><td>45 Kč</td><td>55 Kč</td>
+                    <td>60 Kč</td><td>65 Kč</td><td>70 Kč</td><td>75 Kč</td><td>80 Kč</td><td>85 Kč</td><td>100 Kč</td>
+                    <td>70 Kč</td><td>80 Kč</td>
+                  </tr>
+                  <tr>
+                    <td>DEMONTÁŽ PNEU</td>
+                    <td className="text-theme-secondary">demontáž pneu z disku</td>
+                    <td>25 Kč</td><td>25 Kč</td><td>30 Kč</td><td>35 Kč</td><td>35 Kč</td><td>45 Kč</td>
+                    <td>50 Kč</td><td>55 Kč</td><td>60 Kč</td><td>65 Kč</td><td>70 Kč</td><td>75 Kč</td><td>90 Kč</td>
+                    <td>60 Kč</td><td>70 Kč</td>
+                  </tr>
+                  <tr>
+                    <td>MYTÍ KOLA</td>
+                    <td className="text-theme-secondary">R12–SUV/Offroad</td>
+                    <td>25 Kč</td><td>25 Kč</td><td>25 Kč</td><td>25 Kč</td><td>25 Kč</td><td>25 Kč</td>
+                    <td>25 Kč</td><td>25 Kč</td><td>25 Kč</td><td>25 Kč</td><td>25 Kč</td><td>25 Kč</td><td>25 Kč</td>
+                    <td>25 Kč</td><td>25 Kč</td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
-          </section>
+          </div>
 
-          {/* OSTATNÍ DOPLŇKOVÉ SLUŽBY */}
-          <section>
-            <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-2 mb-3">
-              <div>
-                <h3 className="text-lg font-semibold tracking-[0.18em] uppercase text-gray-200">
-                  Ostatní doplňkové služby
-                </h3>
-              </div>
+          {/* DOPLŇKOVÉ SLUŽBY */}
+          <div>
+            <div className="mb-3">
+              <h3 className="font-display text-lg font-bold text-theme">Ostatní doplňkové služby</h3>
             </div>
-
-            <div className="card overflow-hidden">
-              <div className="overflow-x-auto">
-                <table className="w-full table-fixed text-sm leading-snug">
-                  <thead>
-                    <tr className="bg-gradient-to-r from-orange-500 to-red-600 text-white">
-                      <th className="px-3 py-2 text-left font-semibold">Služba</th>
-                      <th className="px-3 py-2 text-left font-semibold">Popis</th>
-                      <th className="px-3 py-2 text-right font-semibold whitespace-nowrap">Cena</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr className="border-b border-gray-700/80 hover:bg-white/5 transition-colors">
-                      <td className="px-3 py-2 text-gray-200 font-semibold">OPRAVA PNEU</td>
-                      <td className="px-3 py-2 text-gray-400">
-                        vč. materiálu i práce s pneu
-                      </td>
-                      <td className="px-3 py-2 text-right text-orange-400 font-semibold whitespace-nowrap">
-                        300,00 Kč
-                      </td>
-                    </tr>
-                    <tr className="border-b border-gray-700/80 hover:bg-white/5 transition-colors">
-                      <td className="px-3 py-2 text-gray-200 font-semibold">
-                        PŘÍPLATEK ZA SERVIS RUNFLAT PNEU
-                      </td>
-                      <td className="px-3 py-2 text-gray-400"></td>
-                      <td className="px-3 py-2 text-right text-orange-400 font-semibold whitespace-nowrap">
-                        75,00 Kč
-                      </td>
-                    </tr>
-                    <tr className="border-b border-gray-700/80 hover:bg-white/5 transition-colors">
-                      <td className="px-3 py-2 text-gray-200 font-semibold">
-                        TPMS - montáž/demontáž senzoru
-                      </td>
-                      <td className="px-3 py-2 text-gray-400">/ ks</td>
-                      <td className="px-3 py-2 text-right text-orange-400 font-semibold whitespace-nowrap">
-                        25,00 Kč
-                      </td>
-                    </tr>
-                    <tr className="border-b border-gray-700/80 hover:bg-white/5 transition-colors">
-                      <td className="px-3 py-2 text-gray-200 font-semibold">
-                        TPMS - programování/spárování senzoru
-                      </td>
-                      <td className="px-3 py-2 text-gray-400">/ vozidlo</td>
-                      <td className="px-3 py-2 text-right text-orange-400 font-semibold whitespace-nowrap">
-                        250,00 Kč
-                      </td>
-                    </tr>
-                    <tr className="border-b border-gray-700/80 hover:bg-white/5 transition-colors">
-                      <td className="px-3 py-2 text-gray-200 font-semibold">
-                        TPMS - kontrola senzorů
-                      </td>
-                      <td className="px-3 py-2 text-gray-400">/ vozidlo</td>
-                      <td className="px-3 py-2 text-right text-orange-400 font-semibold whitespace-nowrap">
-                        80,00 Kč
-                      </td>
-                    </tr>
-                    <tr className="border-b border-gray-700/80 hover:bg-white/5 transition-colors">
-                      <td className="px-3 py-2 text-gray-200 font-semibold">
-                        TPMS - aktivace přímého systému měření
-                      </td>
-                      <td className="px-3 py-2 text-gray-400">/ vozidlo</td>
-                      <td className="px-3 py-2 text-right text-orange-400 font-semibold whitespace-nowrap">
-                        80,00 Kč
-                      </td>
-                    </tr>
-                    <tr className="border-b border-gray-700/80 hover:bg-white/5 transition-colors">
-                      <td className="px-3 py-2 text-gray-200 font-semibold">
-                        Odvoz pneumatiky k likvidaci
-                      </td>
-                      <td className="px-3 py-2 text-gray-400">/ ks</td>
-                      <td className="px-3 py-2 text-right text-orange-400 font-semibold whitespace-nowrap">
-                        50,00 Kč
-                      </td>
-                    </tr>
-                    <tr className="hover:bg-white/5 transition-colors">
-                      <td className="px-3 py-2 text-gray-200 font-semibold">
-                        Ostatní mechanické práce
-                      </td>
-                      <td className="px-3 py-2 text-gray-400">
-                        500,00 Kč / hod &ndash; účtováno po 1/2 hodiny dle skutečného času
-                      </td>
-                      <td className="px-3 py-2 text-right text-orange-400 font-semibold whitespace-nowrap">
-                        500,00 Kč / hod
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
+            <div className="price-table-wrap overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr>
+                    <th>Služba</th>
+                    <th>Popis</th>
+                    <th>Cena</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>OPRAVA PNEU</td><td className="text-theme-secondary">vč. materiálu i práce s pneu</td><td>300 Kč</td></tr>
+                  <tr><td>PŘÍPLATEK ZA RUNFLAT PNEU</td><td className="text-theme-secondary"></td><td>75 Kč</td></tr>
+                  <tr><td>TPMS – montáž/demontáž senzoru</td><td className="text-theme-secondary">/ ks</td><td>25 Kč</td></tr>
+                  <tr><td>TPMS – programování/spárování senzoru</td><td className="text-theme-secondary">/ vozidlo</td><td>250 Kč</td></tr>
+                  <tr><td>TPMS – kontrola senzorů</td><td className="text-theme-secondary">/ vozidlo</td><td>80 Kč</td></tr>
+                  <tr><td>TPMS – aktivace přímého systému měření</td><td className="text-theme-secondary">/ vozidlo</td><td>80 Kč</td></tr>
+                  <tr><td>Odvoz pneumatiky k likvidaci</td><td className="text-theme-secondary">/ ks</td><td>50 Kč</td></tr>
+                  <tr><td>Ostatní mechanické práce</td><td className="text-theme-secondary">účtováno po ½ hodiny</td><td>500 Kč/hod</td></tr>
+                </tbody>
+              </table>
             </div>
-          </section>
+          </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="section-padding mb-16 bg-gradient-to-r from-orange-500 via-red-600 via-yellow-500 to-orange-600 relative overflow-hidden">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-0 left-0 w-96 h-96 bg-white rounded-full blur-3xl"></div>
-          <div className="absolute bottom-0 right-0 w-96 h-96 bg-white rounded-full blur-3xl"></div>
-        </div>
-        
-        <div className="relative z-10 max-w-4xl mx-auto text-center">
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+      {/* CTA */}
+      <section className="cta-band py-20 lg:py-28">
+        <div className="relative z-10 max-w-3xl mx-auto text-center px-4">
+          <p className="section-tag justify-center mb-4" style={{ color: 'rgba(255,255,255,0.6)' }}>
             Zaujala vás některá služba?
-          </h2>
-          <p className="text-xl text-white/90 mb-8">
-            Rezervujte si termín ještě dnes a získejte profesionální servis!
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              href="/rezervace"
-              className="px-8 py-4 bg-white text-orange-600 rounded-lg font-bold text-lg hover:bg-gray-100 transition-all duration-300 shadow-xl"
-            >
+          <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold mb-5">
+            Rezervujte si termín ještě dnes
+          </h2>
+          <p className="text-lg mb-10 opacity-75">
+            Profesionální servis na počkání. Online rezervace do 2 minut.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <Link href="/rezervace" className="btn-tech-primary">
               Rezervovat termín
             </Link>
             <a
-              href="tel:+420602299090"
-              className="px-8 py-4 bg-[#0a0a0a] text-white rounded-lg font-bold text-lg hover:bg-[#1a1a1a] transition-all duration-300 shadow-xl border-2 border-white/30 hover:border-white/50"
+              href={`tel:${CONTACT_INFO.phone.raw}`}
+              className="btn-tech-secondary"
+              style={{ color: '#f0ede6', borderColor: 'rgba(255,255,255,0.3)' }}
             >
               Zavolat nyní
             </a>
           </div>
         </div>
       </section>
-    </div>
+    </TechBackground>
   );
 }
