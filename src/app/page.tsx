@@ -3,6 +3,7 @@ import Image from 'next/image';
 import type { Metadata } from 'next';
 import { CONTACT_INFO } from '@/constants/contact';
 import TechBackground from '@/components/TechBackground';
+import MascotCTA from '@/components/MascotCTA';
 
 export const metadata: Metadata = {
   title: 'Domů | PneuservisVMK Jaroměř',
@@ -82,24 +83,20 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Right — hero image */}
-            <div className="relative animate-fadeInUp stagger-2">
-              <div className="hud-frame p-1 aspect-square max-w-md mx-auto lg:max-w-none">
-                <div className="relative w-full h-full overflow-hidden rounded-sm" style={{ minHeight: '320px' }}>
-                  <Image
-                    src="/pictures_web/hero_tire.png"
-                    alt="Profesionální pneuservis VMK"
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 768px) 100vw, 50vw"
-                    priority
-                  />
-                  <div
-                    className="absolute inset-0"
-                    style={{ background: 'var(--hero-overlay)' }}
-                  />
-                </div>
-              </div>
+            {/* Right — mascot */}
+            <div className="relative flex items-center justify-center animate-fadeInUp stagger-2">
+              <Image
+                src="/pictures_web/mascot_thumbsup.png"
+                alt="Maskot VMK Pneuservis"
+                width={580}
+                height={620}
+                style={{
+                  mixBlendMode: 'multiply',
+                  maxHeight: '540px',
+                  width: 'auto',
+                }}
+                priority
+              />
             </div>
           </div>
         </div>
@@ -163,27 +160,15 @@ export default function HomePage() {
       </section>
 
       {/* ── CTA ── */}
-      <section className="cta-band py-20 lg:py-28">
-        <div className="relative z-10 max-w-3xl mx-auto text-center px-4">
-          <p className="section-tag justify-center mb-4" style={{ color: 'rgba(255,255,255,0.6)' }}>
-            Rezervace online
-          </p>
-          <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold mb-5">
-            Potřebujete přezout nebo vyvážit kola?
-          </h2>
-          <p className="text-lg mb-10 opacity-75">
-            Rezervujte si termín online během 2 minut, nebo nám rovnou zavolejte.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Link href="/rezervace" className="btn-tech-primary">
-              Rezervovat online
-            </Link>
-            <a href={`tel:${CONTACT_INFO.phone.raw}`} className="btn-tech-secondary" style={{ color: '#f0ede6', borderColor: 'rgba(255,255,255,0.3)' }}>
-              Zavolat nyní
-            </a>
-          </div>
-        </div>
-      </section>
+      <MascotCTA
+        tag="Rezervace online"
+        title="Potřebujete přezout nebo vyvážit kola?"
+        subtitle="Rezervujte si termín online během 2 minut, nebo nám rovnou zavolejte."
+        actions={[
+          { label: 'Rezervovat online', href: '/rezervace', variant: 'primary' },
+          { label: 'Zavolat nyní', href: '', isPhone: true, variant: 'secondary' },
+        ]}
+      />
     </TechBackground>
   );
 }

@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import TechBackground from '@/components/TechBackground';
 import { CONTACT_INFO } from '@/constants/contact';
+import MascotCTA from '@/components/MascotCTA';
 
 const imageMetadata: Record<string, { title?: string; description?: string; category?: string; imageUrl?: string }> = {
   'foto1.jpg': { title: 'Profesionální výměna', description: 'Naše profesionální výměna pneumatik s moderním vybavením', category: 'Výměna pneumatik', imageUrl: '/gallery/sonic.jpg' },
@@ -205,22 +206,14 @@ export default function GalleryPage() {
       )}
 
       {/* CTA */}
-      <section className="cta-band py-20">
-        <div className="relative z-10 max-w-3xl mx-auto text-center px-4">
-          <h2 className="font-display text-3xl sm:text-4xl font-bold mb-5">
-            Přesvědčili jsme vás?
-          </h2>
-          <p className="text-lg mb-8 opacity-75">
-            Navštivte nás nebo si rezervujte termín online!
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Link href="/rezervace" className="btn-tech-primary">Rezervovat termín</Link>
-            <a href={`tel:${CONTACT_INFO.phone.raw}`} className="btn-tech-secondary" style={{ color: '#f0ede6', borderColor: 'rgba(255,255,255,0.3)' }}>
-              {CONTACT_INFO.phone.display}
-            </a>
-          </div>
-        </div>
-      </section>
+      <MascotCTA
+        title="Přesvědčili jsme vás?"
+        subtitle="Navštivte nás nebo si rezervujte termín online!"
+        actions={[
+          { label: 'Rezervovat termín', href: '/rezervace', variant: 'primary' },
+          { label: CONTACT_INFO.phone.display, href: '', isPhone: true, variant: 'secondary' },
+        ]}
+      />
     </TechBackground>
   );
 }

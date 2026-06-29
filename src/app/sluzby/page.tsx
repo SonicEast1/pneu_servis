@@ -3,8 +3,9 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
-import TechBackground from '@/components/TechBackground';
 import { CONTACT_INFO } from '@/constants/contact';
+import TechBackground from '@/components/TechBackground';
+import MascotCTA from '@/components/MascotCTA';
 
 interface Service {
   id: string;
@@ -303,31 +304,15 @@ export default function SluzbyPage() {
       </section>
 
       {/* CTA */}
-      <section className="cta-band py-20 lg:py-28">
-        <div className="relative z-10 max-w-3xl mx-auto text-center px-4">
-          <p className="section-tag justify-center mb-4" style={{ color: 'rgba(255,255,255,0.6)' }}>
-            Zaujala vás některá služba?
-          </p>
-          <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold mb-5">
-            Rezervujte si termín ještě dnes
-          </h2>
-          <p className="text-lg mb-10 opacity-75">
-            Profesionální servis na počkání. Online rezervace do 2 minut.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Link href="/rezervace" className="btn-tech-primary">
-              Rezervovat termín
-            </Link>
-            <a
-              href={`tel:${CONTACT_INFO.phone.raw}`}
-              className="btn-tech-secondary"
-              style={{ color: '#f0ede6', borderColor: 'rgba(255,255,255,0.3)' }}
-            >
-              Zavolat nyní
-            </a>
-          </div>
-        </div>
-      </section>
+      <MascotCTA
+        tag="Zaujala vás některá služba?"
+        title="Rezervujte si termín ještě dnes"
+        subtitle="Profesionální servis na počkání. Online rezervace do 2 minut."
+        actions={[
+          { label: 'Rezervovat termín', href: '/rezervace', variant: 'primary' },
+          { label: 'Zavolat nyní', href: '', isPhone: true, variant: 'secondary' },
+        ]}
+      />
     </TechBackground>
   );
 }

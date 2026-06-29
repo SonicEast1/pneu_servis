@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import TechBackground from '@/components/TechBackground';
 import { CONTACT_INFO } from '@/constants/contact';
+import MascotCTA from '@/components/MascotCTA';
 
 interface Service {
   id: string;
@@ -84,7 +85,8 @@ export default function BookingPage() {
   };
 
   return (
-    <TechBackground>
+    <>
+      <TechBackground>
       {/* Hero */}
       <section className="relative border-b border-theme py-16 lg:py-24 overflow-hidden">
         <div className="absolute inset-0 opacity-15 pointer-events-none">
@@ -317,5 +319,15 @@ export default function BookingPage() {
         </div>
       </div>
     </TechBackground>
+    <MascotCTA
+      tag="Potřebujete poradit?"
+      title="Máte otázku? Zavolejte nám"
+      subtitle="Rádi vám poradíme s výběrem termínu nebo odpovíme na jakýkoli dotaz."
+      actions={[
+        { label: 'Zavolat nyní', href: '', isPhone: true, variant: 'primary' },
+        { label: 'Naše služby', href: '/sluzby', variant: 'secondary' },
+      ]}
+    />
+    </>
   );
 }

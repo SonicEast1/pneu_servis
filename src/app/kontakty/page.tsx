@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { CONTACT_INFO } from '@/constants/contact';
 import TechBackground from '@/components/TechBackground';
+import MascotCTA from '@/components/MascotCTA';
 
 interface OpeningHour {
   id: string;
@@ -195,28 +196,14 @@ export default function KontaktyPage() {
       </section>
 
       {/* CTA */}
-      <section className="cta-band py-20">
-        <div className="relative z-10 max-w-3xl mx-auto text-center px-4">
-          <h2 className="font-display text-3xl sm:text-4xl font-bold mb-5">
-            Máte dotaz nebo zájem o přezutí?
-          </h2>
-          <p className="text-lg mb-8 opacity-75">
-            Neváhejte nás kontaktovat — rádi zodpovíme dotazy nebo naplánujeme termín.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <a href={`tel:${CONTACT_INFO.phone.raw}`} className="btn-tech-primary">
-              Zavolat nyní
-            </a>
-            <a
-              href={`mailto:${CONTACT_INFO.email.raw}`}
-              className="btn-tech-secondary"
-              style={{ color: '#f0ede6', borderColor: 'rgba(255,255,255,0.3)' }}
-            >
-              Poslat e-mail
-            </a>
-          </div>
-        </div>
-      </section>
+      <MascotCTA
+        title="Máte dotaz nebo zájem o přezutí?"
+        subtitle="Neváhejte nás kontaktovat — rádi zodpovíme dotazy nebo naplánujeme termín."
+        actions={[
+          { label: 'Zavolat nyní', href: '', isPhone: true, variant: 'primary' },
+          { label: 'Poslat e-mail', href: '', isEmail: true, variant: 'secondary' },
+        ]}
+      />
     </TechBackground>
   );
 }

@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import TechBackground from '@/components/TechBackground';
+import { CONTACT_INFO } from '@/constants/contact';
+import MascotCTA from '@/components/MascotCTA';
 
 interface Review {
   id: string;
@@ -71,7 +73,8 @@ export default function ReviewsPage() {
   }
 
   return (
-    <TechBackground>
+    <>
+      <TechBackground>
       {/* Hero */}
       <section className="relative border-b border-theme py-20 lg:py-28 overflow-hidden">
         <div className="absolute inset-0 opacity-15 pointer-events-none">
@@ -222,5 +225,16 @@ export default function ReviewsPage() {
         </div>
       </div>
     </TechBackground>
+
+      <MascotCTA
+        tag="Vaše zkušenost"
+        title="Byli jste u nás? Napište recenzi!"
+        subtitle="Vaše hodnocení nám pomáhá zlepšovat se a pomáhá dalším zákazníkům se rozhodnout."
+        actions={[
+          { label: 'Napsat recenzi', href: '/recenze', variant: 'primary' },
+          { label: 'Zavolat nyní', href: '', isPhone: true, variant: 'secondary' },
+        ]}
+      />
+    </>
   );
 }

@@ -3,6 +3,7 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 import TechBackground from '@/components/TechBackground';
 import { CONTACT_INFO } from '@/constants/contact';
+import MascotCTA from '@/components/MascotCTA';
 
 export const metadata: Metadata = {
   title: 'O nás',
@@ -125,31 +126,15 @@ export default function ONasPage() {
       </section>
 
       {/* CTA */}
-      <section className="cta-band py-20 lg:py-28">
-        <div className="relative z-10 max-w-3xl mx-auto text-center px-4">
-          <p className="section-tag justify-center mb-4" style={{ color: 'rgba(255,255,255,0.6)' }}>
-            Přidejte se k nám
-          </p>
-          <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold mb-5">
-            Připojte se k tisícům spokojených zákazníků
-          </h2>
-          <p className="text-lg mb-10 opacity-75">
-            Rezervujte termín online nebo nám zavolejte — rádi se postaráme o vaše kola.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Link href="/rezervace" className="btn-tech-primary">
-              Rezervovat termín
-            </Link>
-            <a
-              href={`tel:${CONTACT_INFO.phone.raw}`}
-              className="btn-tech-secondary"
-              style={{ color: '#f0ede6', borderColor: 'rgba(255,255,255,0.3)' }}
-            >
-              Zavolat nyní
-            </a>
-          </div>
-        </div>
-      </section>
+      <MascotCTA
+        tag="Přidejte se k nám"
+        title="Připojte se k tisícům spokojených zákazníků"
+        subtitle="Rezervujte termín online nebo nám zavolejte — rádi se postaráme o vaše kola."
+        actions={[
+          { label: 'Rezervovat termín', href: '/rezervace', variant: 'primary' },
+          { label: 'Zavolat nyní', href: '', isPhone: true, variant: 'secondary' },
+        ]}
+      />
     </TechBackground>
   );
 }
