@@ -10,19 +10,11 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-
   productionBrowserSourceMaps: false,
-
   experimental: {
     cpus: 1,
     workerThreads: false,
     memoryBasedWorkersCount: false,
-
-    webpackBuildWorker: false,
-    webpackMemoryOptimizations: true,
-    parallelServerCompiles: false,
-    parallelServerBuildTraces: false,
-
     staticGenerationRetryCount: 1,
     staticGenerationMaxConcurrency: 1,
     staticGenerationMinPagesPerWorker: 1000,

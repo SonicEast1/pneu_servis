@@ -3,10 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 8080",
-    "build": "next build --webpack",
-    "start": "next start -p 8080",
-    "lint": "eslint"
+  "dev": "next dev -p 8080",
+  "build": "next build --webpack",
+  "start": "next start -p 8080",
+  "lint": "eslint"
   },
   "dependencies": {
     "cross-env": "^10.1.0",
