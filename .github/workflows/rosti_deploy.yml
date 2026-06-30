@@ -2,7 +2,7 @@ name: Deploy into Roští.cz
 
 on:
   push:
-    branches: [main]
+    branches: [main, master]
 
 jobs:
   deploy:
