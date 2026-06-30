@@ -27,7 +27,8 @@ jobs:
 
       - name: Setup hostkey
         run: |
-          echo "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCBHz8JoEeMU/7volcrP8AYtKPjNpkQebeLSxzkMGjJMXvzKPnmE78agXqZN82KWzFXx/NQvkCDsVJ7twi5HdV+pEOzQ8dHCMAaS3opwFC/p3oTkgQTy/70wpjMqvrSqBiziVnRvT/+Gkxya4Mb1anbNZWjzTNnJag/8kI11n1kaplrrMIppCsYYbdrqvnn0uSsPen0NpPMbOaUDEjjleFsq2Nz4g1fRSwdo3el4wfeI9AvFA16bnEQZ5a6dBHVpbZtAnCcL/zCOqiyc4lkPR1gYEWHNAKrtihMnMovijCTBLlNj3lk9/ydsaxQkbvutlLJgqNmE7bqS4dCqONpBWyf" > ./known_hosts
+          mkdir -p ~/.ssh
+          ssh-keyscan -p $PORT $HOST >> ~/.ssh/known_hosts
 
       - name: Create env file
         run: |
@@ -43,7 +44,7 @@ jobs:
 
       - name: Setup Node.js on Roští
         run: |
-          ssh -o UserKnownHostsFile=./known_hosts -p $PORT $USER@$HOST /usr/local/bin/rosti node $NODE_VERSION
+          ssh -p $PORT $USER@$HOST /usr/local/bin/rosti node $NODE_VERSION
 
       - name: Setup Supervisord
         run: |
@@ -63,7 +64,7 @@ jobs:
           stdout_events_enabled=false
           redirect_stderr=true
           EOF
-          scp -o UserKnownHostsFile=./known_hosts -P $PORT rosti.app.conf $USER@$HOST:/srv/conf/supervisor.d/app.conf
+          scp -P $PORT rosti.app.conf $USER@$HOST:/srv/conf/supervisor.d/app.conf
 
       - name: Setup Nginx
         run: |
@@ -86,11 +87,11 @@ jobs:
               }
           }
           EOF
-          scp -o UserKnownHostsFile=./known_hosts -P $PORT rosti.nginx.conf $USER@$HOST:/srv/conf/nginx.d/app.conf
+          scp -P $PORT rosti.nginx.conf $USER@$HOST:/srv/conf/nginx.d/app.conf
 
       - name: Copy built app to Roští
         run: |
-          rsync -az -e "ssh -o UserKnownHostsFile=./known_hosts -p $PORT" \
+          rsync -az -e "ssh -p $PORT" \
             --delete-after \
             --exclude=.git \
             --exclude=node_modules \
@@ -102,8 +103,8 @@ jobs:
 
       - name: Install production deps on Roští and restart
         run: |
-          ssh -o UserKnownHostsFile=./known_hosts -p $PORT $USER@$HOST "cd /srv/app && npm ci --omit=dev"
-          ssh -o UserKnownHostsFile=./known_hosts -p $PORT $USER@$HOST supervisorctl reread
-          ssh -o UserKnownHostsFile=./known_hosts -p $PORT $USER@$HOST supervisorctl update
-          ssh -o UserKnownHostsFile=./known_hosts -p $PORT $USER@$HOST supervisorctl restart nginx
-          ssh -o UserKnownHostsFile=./known_hosts -p $PORT $USER@$HOST supervisorctl restart app
+          ssh -p $PORT $USER@$HOST "cd /srv/app && npm ci --omit=dev"
+          ssh -p $PORT $USER@$HOST supervisorctl reread
+          ssh -p $PORT $USER@$HOST supervisorctl update
+          ssh -p $PORT $USER@$HOST supervisorctl restart nginx
+          ssh -p $PORT $USER@$HOST supervisorctl restart app
