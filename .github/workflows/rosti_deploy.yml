@@ -1,45 +1,50 @@
-# .github/workflows/rosti_deploy.yml
-# Nasazení aplikace na Roští.cz při každém push do větve main
-
 name: Deploy into Roští.cz
 
 on:
-    push:
-      branches: [main]
+  push:
+    branches: [main]
 
 jobs:
-    deploy:
-      runs-on: ubuntu-latest
-      env:
-        HOST: ssh.rosti.cz
-        USER: app
-        PORT: 12110
-        NODE_VERSION: 24.7.0
-      steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      HOST: ssh.rosti.cz
+      USER: app
+      PORT: 12110
+      NODE_VERSION: 22.22.2
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
         with:
-          node-version: "v24.7.0"
-      - uses: webfactory/ssh-agent@v0.8.0
+          node-version: "22"
+          cache: "npm"
+
+      - uses: webfactory/ssh-agent@v0.9.0
         with:
           ssh-private-key: ${{ secrets.ROSTI_DEPLOY_SSH_KEY }}
+
       - name: Setup hostkey
         run: |
           echo "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCBHz8JoEeMU/7volcrP8AYtKPjNpkQebeLSxzkMGjJMXvzKPnmE78agXqZN82KWzFXx/NQvkCDsVJ7twi5HdV+pEOzQ8dHCMAaS3opwFC/p3oTkgQTy/70wpjMqvrSqBiziVnRvT/+Gkxya4Mb1anbNZWjzTNnJag/8kI11n1kaplrrMIppCsYYbdrqvnn0uSsPen0NpPMbOaUDEjjleFsq2Nz4g1fRSwdo3el4wfeI9AvFA16bnEQZ5a6dBHVpbZtAnCcL/zCOqiyc4lkPR1gYEWHNAKrtihMnMovijCTBLlNj3lk9/ydsaxQkbvutlLJgqNmE7bqS4dCqONpBWyf" > ./known_hosts
-      - name: env
+
+      - name: Create env file
         run: |
           cat << EOF > .env
           ${{ secrets.ENV }}
           EOF
-      - name: Dependencies
-        run: |
-          npm install
-      - name: Build
-        run: |
-          npm run build
-      - name: Setup Node.js
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build on GitHub
+        run: NEXT_TELEMETRY_DISABLED=1 npm run build
+
+      - name: Setup Node.js on Roští
         run: |
           ssh -o UserKnownHostsFile=./known_hosts -p $PORT $USER@$HOST /usr/local/bin/rosti node $NODE_VERSION
+
       - name: Setup Supervisord
         run: |
           cat << EOF > rosti.app.conf
@@ -59,38 +64,46 @@ jobs:
           redirect_stderr=true
           EOF
           scp -o UserKnownHostsFile=./known_hosts -P $PORT rosti.app.conf $USER@$HOST:/srv/conf/supervisor.d/app.conf
-          rm rosti.app.conf
+
       - name: Setup Nginx
         run: |
           cat << EOF > rosti.nginx.conf
           server {
-              listen       0.0.0.0:8000;
-              listen       [::]:8000;
+              listen 0.0.0.0:8000;
+              listen [::]:8000;
+
               location / {
-                      proxy_pass         http://127.0.0.1:8080/;
-                      proxy_redirect     default;
-                      proxy_set_header   X-Real-IP  \$remote_addr;
-                      proxy_set_header   Host       \$host;
+                  proxy_pass http://127.0.0.1:8080/;
+                  proxy_redirect default;
+                  proxy_set_header X-Real-IP \$remote_addr;
+                  proxy_set_header Host \$host;
+                  proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+                  proxy_set_header X-Forwarded-Proto \$scheme;
               }
+
               location /static/ {
-                      alias /srv/app/public/;
+                  alias /srv/app/public/;
               }
           }
           EOF
           scp -o UserKnownHostsFile=./known_hosts -P $PORT rosti.nginx.conf $USER@$HOST:/srv/conf/nginx.d/app.conf
-          rm rosti.nginx.conf
-      - name: Copy code
+
+      - name: Copy built app to Roští
         run: |
-          rsync -ae "ssh -o UserKnownHostsFile=./known_hosts -p $PORT" \
+          rsync -az -e "ssh -o UserKnownHostsFile=./known_hosts -p $PORT" \
             --delete-after \
             --exclude=.git \
+            --exclude=node_modules \
             --exclude=data/*.json \
             --exclude=data/*.xlsx \
             --exclude=data/*.xls \
             --exclude='public/uploads/*' \
             ./ $USER@$HOST:/srv/app/
-      - name: Apply changes
+
+      - name: Install production deps on Roští and restart
         run: |
+          ssh -o UserKnownHostsFile=./known_hosts -p $PORT $USER@$HOST "cd /srv/app && npm ci --omit=dev"
           ssh -o UserKnownHostsFile=./known_hosts -p $PORT $USER@$HOST supervisorctl reread
-          ssh -o UserKnownHostsFile=./known_hosts -p $PORT $USER@$HOST supervisorctl restart app
+          ssh -o UserKnownHostsFile=./known_hosts -p $PORT $USER@$HOST supervisorctl update
           ssh -o UserKnownHostsFile=./known_hosts -p $PORT $USER@$HOST supervisorctl restart nginx
+          ssh -o UserKnownHostsFile=./known_hosts -p $PORT $USER@$HOST supervisorctl restart app

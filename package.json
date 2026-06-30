@@ -2,12 +2,12 @@
   "name": "pneu_servis",
   "version": "0.1.0",
   "private": true,
-  "scripts": {
+ "scripts": {
   "dev": "next dev -p 8080",
   "build": "next build --webpack",
   "start": "next start -p 8080",
   "lint": "eslint"
-  },
+},
   "dependencies": {
     "cross-env": "^10.1.0",
     "next": "^16.2.9",
