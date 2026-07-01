@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { CONTACT_INFO } from '@/constants/contact';
+import { RESERVATIONS_ENABLED } from '@/constants/reservation';
 
 interface Service {
   id: string;
@@ -71,8 +72,10 @@ export default function Footer() {
             <ul className="space-y-2.5">
               {[
                 { href: '/', label: 'Domů' },
+                { href: '/sluzby', label: 'Služby' },
+                { href: '/cenik', label: 'Ceník' },
                 { href: '/recenze', label: 'Recenze' },
-                { href: '/rezervace', label: 'Rezervace' },
+                ...(RESERVATIONS_ENABLED ? [{ href: '/rezervace', label: 'Rezervace' }] : []),
                 { href: '/galerie', label: 'Galerie' },
               ].map((link) => (
                 <li key={link.href}>

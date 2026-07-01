@@ -5,16 +5,18 @@ import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { CONTACT_INFO } from '@/constants/contact';
 import ThemeToggle from '@/components/ThemeToggle';
+import { RESERVATIONS_ENABLED } from '@/constants/reservation';
 
 const navItems = [
   { href: '/', label: 'Domů' },
   { href: '/o-nas', label: 'O nás' },
   { href: '/sluzby', label: 'Služby' },
+  { href: '/cenik', label: 'Ceník' },
   { href: '/recenze', label: 'Recenze' },
   { href: '/rezervace', label: 'Rezervace' },
   { href: '/galerie', label: 'Galerie' },
   { href: '/kontakty', label: 'Kontakty' },
-];
+].filter((item) => RESERVATIONS_ENABLED || item.href !== '/rezervace');
 
 export default function Navigation() {
   const pathname = usePathname();

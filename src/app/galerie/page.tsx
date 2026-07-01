@@ -6,6 +6,7 @@ import Link from 'next/link';
 import TechBackground from '@/components/TechBackground';
 import { CONTACT_INFO } from '@/constants/contact';
 import MascotCTA from '@/components/MascotCTA';
+import { bookingHref, BOOKING_CTA_LABEL, RESERVATIONS_ENABLED } from '@/constants/reservation';
 
 const imageMetadata: Record<string, { title?: string; description?: string; category?: string; imageUrl?: string }> = {
   'foto1.jpg': { title: 'Profesionální výměna', description: 'Naše profesionální výměna pneumatik s moderním vybavením', category: 'Výměna pneumatik', imageUrl: '/gallery/sonic.jpg' },
@@ -208,9 +209,9 @@ export default function GalleryPage() {
       {/* CTA */}
       <MascotCTA
         title="Přesvědčili jsme vás?"
-        subtitle="Navštivte nás nebo si rezervujte termín online!"
+        subtitle={RESERVATIONS_ENABLED ? 'Navštivte nás nebo si rezervujte termín online!' : 'Navštivte nás nebo nás kontaktujte pro domluvení termínu.'}
         actions={[
-          { label: 'Rezervovat termín', href: '/rezervace', variant: 'primary' },
+          { label: BOOKING_CTA_LABEL, href: bookingHref(), variant: 'primary' },
           { label: CONTACT_INFO.phone.display, href: '', isPhone: true, variant: 'secondary' },
         ]}
       />

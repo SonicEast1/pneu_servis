@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { mkdir, access, readFile, writeFile } from 'fs/promises';
 import path from 'path';
 import * as XLSX from 'xlsx';
+import { RESERVATIONS_ENABLED } from '@/constants/reservation';
 
 interface Reservation {
   id: string;
@@ -184,6 +185,13 @@ async function saveReservations(reservations: Reservation[]) {
 
 // POST - Vytvořit novou rezervaci
 export async function POST(request: NextRequest) {
+  if (!RESERVATIONS_ENABLED) {
+    return NextResponse.json(
+      { error: 'Online rezervace jsou dočasně nedostupné. Kontaktujte nás prosím telefonicky nebo e-mailem.' },
+      { status: 503 }
+    );
+  }
+
   try {
     const body = await request.json();
     

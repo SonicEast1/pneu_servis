@@ -57,7 +57,6 @@ export default function KontaktyPage() {
               <span className="font-display text-xl font-bold text-theme group-hover:text-accent transition-colors">
                 {CONTACT_INFO.phone.display}
               </span>
-              <p className="text-theme-muted text-sm mt-0.5">{CONTACT_INFO.phone.hours}</p>
             </div>
           </a>
 
@@ -114,8 +113,8 @@ export default function KontaktyPage() {
         </div>
 
         {/* Sídlo */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-12">
-          <div className="tech-panel animate-fadeInUp">
+        <div className="mb-12">
+          <div className="tech-panel animate-fadeInUp max-w-2xl">
             <p className="section-tag">Sídlo společnosti</p>
             <h2 className="font-display text-2xl font-bold text-theme mb-4">{CONTACT_INFO.billing.company}</h2>
             <p className="text-theme-secondary leading-relaxed mb-4">
@@ -129,20 +128,6 @@ export default function KontaktyPage() {
               </p>
               <p className="text-theme-muted text-xs mt-2 leading-relaxed">{CONTACT_INFO.billing.register}</p>
             </div>
-          </div>
-
-          <div className="hud-frame overflow-hidden min-h-[300px] animate-fadeInUp stagger-1">
-            <iframe
-              src={CONTACT_INFO.maps.sidlo}
-              width="100%"
-              height="100%"
-              style={{ border: 0, minHeight: '300px' }}
-              allowFullScreen
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              title="Mapa - Sídlo společnosti Praha"
-              className="w-full h-full"
-            />
           </div>
         </div>
 

@@ -2,7 +2,7 @@ export const CONTACT_INFO = {
   phone: {
     display: '+420 604 355 902',
     raw: '+420604355902',
-    hours: 'Po – Pá: 8:00 – 18:00, So: 9:00 – 14:00',
+    hours: 'Po – Pá: 8:00 – 16:00, So: 9:00 – 14:00',
   },
   email: {
     display: 'infovmkcompany@gmail.com',

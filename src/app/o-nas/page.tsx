@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 import TechBackground from '@/components/TechBackground';
 import { CONTACT_INFO } from '@/constants/contact';
 import MascotCTA from '@/components/MascotCTA';
+import { bookingHref, BOOKING_CTA_LABEL, RESERVATIONS_ENABLED } from '@/constants/reservation';
 
 export const metadata: Metadata = {
   title: 'O nás',
@@ -129,9 +130,9 @@ export default function ONasPage() {
       <MascotCTA
         tag="Přidejte se k nám"
         title="Připojte se k tisícům spokojených zákazníků"
-        subtitle="Rezervujte termín online nebo nám zavolejte — rádi se postaráme o vaše kola."
+        subtitle={RESERVATIONS_ENABLED ? 'Rezervujte termín online nebo nám zavolejte — rádi se postaráme o vaše kola.' : 'Kontaktujte nás telefonicky nebo e-mailem — rádi se postaráme o vaše kola.'}
         actions={[
-          { label: 'Rezervovat termín', href: '/rezervace', variant: 'primary' },
+          { label: BOOKING_CTA_LABEL, href: bookingHref(), variant: 'primary' },
           { label: 'Zavolat nyní', href: '', isPhone: true, variant: 'secondary' },
         ]}
       />

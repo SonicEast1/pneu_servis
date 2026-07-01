@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 import { CONTACT_INFO } from '@/constants/contact';
 import TechBackground from '@/components/TechBackground';
 import MascotCTA from '@/components/MascotCTA';
+import { bookingHref, BOOKING_CTA_LABEL, BOOKING_CTA_LABEL_ONLINE, RESERVATIONS_ENABLED } from '@/constants/reservation';
 
 export const metadata: Metadata = {
   title: 'Domů | PneuservisVMK Jaroměř',
@@ -44,16 +45,16 @@ export default function HomePage() {
   return (
     <TechBackground>
       {/* ── HERO ── */}
-      <section className="relative border-b border-theme">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
+      <section className="relative border-b border-theme overflow-hidden">
+        <div className="absolute inset-0 opacity-15 pointer-events-none">
+          <Image src="/pictures_web/hero_tire.png" alt="" fill className="object-cover" sizes="100vw" priority />
+          <div className="absolute inset-0" style={{ background: 'var(--hero-overlay)' }} />
+        </div>
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
             {/* Left — copy */}
             <div>
-              <div className="tech-badge tech-badge-live mb-6 animate-fadeInUp">
-                Otevřeno · Jaroměř
-              </div>
-
-              <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold text-theme leading-[1.05] mb-6 animate-fadeInUp stagger-1">
+              <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold text-theme leading-[1.05] mb-6 animate-fadeInUp">
                 Pneuservis
                 <br />
                 <span className="gradient-tech">na maximum</span>
@@ -64,8 +65,8 @@ export default function HomePage() {
               </p>
 
               <div className="flex flex-col sm:flex-row gap-3 animate-fadeInUp stagger-3">
-                <Link href="/rezervace" className="btn-tech-primary">
-                  Rezervovat termín
+                <Link href={bookingHref()} className="btn-tech-primary">
+                  {BOOKING_CTA_LABEL}
                 </Link>
                 <a href={`tel:${CONTACT_INFO.phone.raw}`} className="btn-tech-secondary">
                   {CONTACT_INFO.phone.display}
@@ -161,11 +162,11 @@ export default function HomePage() {
 
       {/* ── CTA ── */}
       <MascotCTA
-        tag="Rezervace online"
+        tag={RESERVATIONS_ENABLED ? 'Rezervace online' : 'Kontakt'}
         title="Potřebujete přezout nebo vyvážit kola?"
-        subtitle="Rezervujte si termín online během 2 minut, nebo nám rovnou zavolejte."
+        subtitle={RESERVATIONS_ENABLED ? 'Rezervujte si termín online během 2 minut, nebo nám rovnou zavolejte.' : 'Kontaktujte nás telefonicky nebo e-mailem — rádi domluvíme termín.'}
         actions={[
-          { label: 'Rezervovat online', href: '/rezervace', variant: 'primary' },
+          { label: BOOKING_CTA_LABEL_ONLINE, href: bookingHref(), variant: 'primary' },
           { label: 'Zavolat nyní', href: '', isPhone: true, variant: 'secondary' },
         ]}
       />
