@@ -442,7 +442,7 @@ body {
   50% { opacity: 0.5; transform: scale(0.8); }
 }
 
-.animate-fadeInUp { animation: fadeInUp 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+.animate-fadeInUp { animation: fadeInUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
 .animate-fadeInDown { animation: fadeInDown 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 .animate-slideDown { animation: slideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 .animate-slideUp { animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
@@ -451,6 +451,48 @@ body {
 .stagger-2 { animation-delay: 0.12s; opacity: 0; }
 .stagger-3 { animation-delay: 0.2s; opacity: 0; }
 .stagger-4 { animation-delay: 0.28s; opacity: 0; }
+.stagger-5 { animation-delay: 0.36s; opacity: 0; }
+.stagger-6 { animation-delay: 0.44s; opacity: 0; }
+
+/* ─── Scroll reveal — prvky se decentně objeví až po doscrollování ───
+   Aktivní jen když JS přidá .reveal-ready na <html> (viz layout inline script).
+   Bez JS / při hydrataci prvky zůstávají viditelné = žádná ztráta obsahu. */
+.reveal-ready .animate-fadeInUp,
+.reveal-ready .animate-fadeInDown {
+  opacity: 0;
+  animation-play-state: paused;
+  will-change: transform, opacity;
+}
+
+.reveal-ready .animate-fadeInUp.in-view,
+.reveal-ready .animate-fadeInDown.in-view {
+  animation-play-state: running;
+}
+
+/* Jemné plynulé hover reakce napříč webem */
+a,
+button {
+  transition: color 0.25s ease, background-color 0.25s ease, border-color 0.25s ease, opacity 0.25s ease, transform 0.25s ease;
+}
+
+.tech-panel,
+.stat-readout,
+.hud-frame {
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s ease, border-color 0.35s ease;
+}
+
+/* Respektuj systémové nastavení — nulové animace pro citlivé uživatele */
+@media (prefers-reduced-motion: reduce) {
+  .animate-fadeInUp,
+  .animate-fadeInDown,
+  .animate-slideDown,
+  .animate-slideUp {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  html { scroll-behavior: auto; }
+}
 
 /* ─── Nedostupná služba ─── */
 .service-unavailable {

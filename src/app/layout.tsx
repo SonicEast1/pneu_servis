@@ -4,6 +4,7 @@ import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import CookieBanner from "@/components/CookieBanner";
 import StructuredData from "@/components/StructuredData";
+import ScrollReveal from "@/components/ScrollReveal";
 import { SITE_CONFIG } from "@/constants/metadata";
 
 export const metadata: Metadata = {
@@ -71,6 +72,10 @@ export default function RootLayout({
                     document.documentElement.classList.remove('dark');
                     document.documentElement.setAttribute('data-theme', 'light');
                   }
+                  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+                  if (!reduceMotion) {
+                    document.documentElement.classList.add('reveal-ready');
+                  }
                 } catch (e) {}
               })()
             `,
@@ -78,6 +83,7 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-screen flex flex-col bg-page text-theme transition-colors duration-400">
+        <ScrollReveal />
         <Navigation />
         <main className="flex-1 mt-[72px]">
           {children}

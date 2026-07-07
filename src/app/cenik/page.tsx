@@ -6,7 +6,6 @@ import MascotCTA from '@/components/MascotCTA';
 import {
   AdditionalServicesTable,
   ServicePackagesTable,
-  SizeCategoryChips,
   SupplementaryServicesTable,
 } from '@/components/PricingTables';
 import { PRICING_META } from '@/constants/pricing';
@@ -33,16 +32,8 @@ export default function CenikPage() {
             Ceník <span className="gradient-tech">pneuservisu</span>
           </h1>
           <p className="text-theme-secondary text-lg max-w-2xl mx-auto animate-fadeInUp stagger-2">
-            {PRICING_META.vatNote} Platnost od {PRICING_META.validFrom}.
+            Platnost od {PRICING_META.validFrom}.
           </p>
-        </div>
-      </section>
-
-      {/* Size categories — aligned with tables */}
-      <section className="border-b border-theme bg-surface-alt py-8 sm:py-10 transition-colors duration-400">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <p className="section-tag mb-4">Rozměrové kategorie</p>
-          <SizeCategoryChips />
         </div>
       </section>
 

@@ -49,9 +49,9 @@ export default function Footer() {
             </p>
             <div className="flex gap-2">
               {[
-                { href: CONTACT_INFO.socials.facebook, label: 'Facebook', icon: 'f' },
-                { href: CONTACT_INFO.socials.instagram, label: 'Instagram', icon: '◎' },
-                { href: CONTACT_INFO.socials.tiktok, label: 'TikTok', icon: '♪' },
+                { href: CONTACT_INFO.socials.facebook, label: 'Facebook', img: '/pictures_web/facebook (1).png' },
+                { href: CONTACT_INFO.socials.instagram, label: 'Instagram', img: '/pictures_web/instagram (1).png' },
+                { href: CONTACT_INFO.socials.tiktok, label: 'TikTok', img: '/pictures_web/tik-tok.png' },
               ].map((s) => (
                 <a
                   key={s.label}
@@ -59,9 +59,9 @@ export default function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   title={s.label}
-                  className="w-9 h-9 border border-theme flex items-center justify-center font-mono-tech text-xs text-theme-muted hover:text-accent hover:border-[var(--accent)] transition-all duration-300"
+                  className="w-9 h-9 flex items-center justify-center hover:opacity-80 transition-opacity duration-300"
                 >
-                  {s.icon}
+                  <img src={s.img} alt={s.label} className="w-7 h-7 object-contain" />
                 </a>
               ))}
             </div>
