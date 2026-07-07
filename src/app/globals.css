@@ -494,35 +494,33 @@ button {
   html { scroll-behavior: auto; }
 }
 
-/* ─── Nedostupná služba ─── */
-.service-unavailable {
-  opacity: 0.5;
-  filter: grayscale(0.6);
-  position: relative;
-}
-
-.service-unavailable::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: var(--bg-page);
-  opacity: 0.25;
-  pointer-events: none;
-  border-radius: inherit;
-}
-
-.service-unavailable-badge {
-  display: inline-block;
-  font-family: 'IBM Plex Mono', monospace;
+/* ─── Připravovaná služba (coming soon) ─── */
+.service-soon-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-shrink: 0;
+  font-family: 'Space Grotesk', sans-serif;
   font-size: 0.65rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
+  font-weight: 700;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--text-muted);
-  background: var(--bg-surface-alt);
-  border: 1px solid var(--border-strong);
-  padding: 0.25rem 0.6rem;
-  margin-bottom: 0.75rem;
+  color: var(--iron);
+  background: var(--iron-soft);
+  border: 1px solid var(--iron);
+  border-radius: 999px;
+  padding: 0.28rem 0.7rem;
+  white-space: nowrap;
+}
+
+.service-soon-badge::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--iron);
+  box-shadow: 0 0 8px var(--tech-glow);
+  animation: pulse-dot 2s ease-in-out infinite;
 }
 
 /* ─── Form inputs ─── */

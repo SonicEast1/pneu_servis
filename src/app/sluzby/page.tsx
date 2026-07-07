@@ -7,7 +7,7 @@ import { CONTACT_INFO } from '@/constants/contact';
 import TechBackground from '@/components/TechBackground';
 import MascotCTA from '@/components/MascotCTA';
 import { bookingHref, BOOKING_CTA_LABEL, RESERVATIONS_ENABLED } from '@/constants/reservation';
-import { isServiceTemporarilyUnavailable } from '@/constants/services';
+import { isServiceComingSoon } from '@/constants/services';
 
 interface Service {
   id: string;
@@ -83,23 +83,25 @@ export default function SluzbyPage() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
               {services.map((service, index) => {
-                const unavailable = isServiceTemporarilyUnavailable(service.nazev);
+                const comingSoon = isServiceComingSoon(service.nazev);
                 return (
                 <div
                   key={service.id}
-                  className={`tech-panel animate-fadeInUp stagger-${(index % 4) + 1} ${unavailable ? 'service-unavailable' : ''}`}
+                  className={`tech-panel animate-fadeInUp stagger-${(index % 4) + 1}`}
                 >
-                  {unavailable && (
-                    <span className="service-unavailable-badge relative z-10">Momentálně nedostupné</span>
-                  )}
-                  <div className={`text-4xl mb-4 ${unavailable ? 'relative z-10' : ''}`}>{service.ikona}</div>
-                  <h3 className={`font-display text-xl font-bold mb-2 ${unavailable ? 'text-theme-muted relative z-10' : 'text-theme'}`}>
+                  <div className="flex items-start justify-between gap-3 mb-4">
+                    <div className="text-4xl">{service.ikona}</div>
+                    {comingSoon && (
+                      <span className="service-soon-badge">Připravujeme</span>
+                    )}
+                  </div>
+                  <h3 className="font-display text-xl font-bold mb-2 text-theme">
                     {service.nazev}
                   </h3>
-                  <p className={`text-theme-secondary text-sm ${unavailable ? 'relative z-10' : ''} ${unavailable ? 'mb-0' : 'mb-4'}`}>
+                  <p className="text-theme-secondary text-sm mb-4">
                     {service.popis}
                   </p>
-                  {service.features && !unavailable && (
+                  {service.features && (
                     <ul className="space-y-1.5">
                       {service.features.split(';').map((f, i) => (
                         <li key={i} className="flex items-center gap-2 text-theme-secondary text-sm">
