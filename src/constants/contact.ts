@@ -28,6 +28,15 @@ export const CONTACT_INFO = {
     instagram: 'https://www.instagram.com/pneuservisvmk/',
     tiktok: 'https://www.tiktok.com/@pneuservisvmk',
   },
+  seznam: {
+    // ⚠️ Aktualizuj podle profilu na Firmy.cz (Seznam nemá veřejné API)
+    rating: 4.9,
+    reviewsCount: 87,
+    maxRating: 5,
+    profileUrl: 'https://www.firmy.cz/detail/13898911-pneuservis-vmk-jaromer.html',
+    addRatingUrl: 'https://www.firmy.cz/detail/13898911-pneuservis-vmk-jaromer.html#pridat-hodnoceni',
+    widgetUrl: 'https://www.firmy.cz/detail/13898911-pneuservis-vmk-jaromer.html?widget&limit=3',
+  },
   maps: {
     provozovna: 'https://maps.google.com/maps?q=N%C3%A1chodsk%C3%A1%20118,%20Jarom%C4%9B%C5%99&t=&z=15&ie=UTF8&iwloc=&output=embed',
     sidlo: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2558.8210618104886!2d14.618882275891774!3d50.10835617152879!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x470bf2ea7d7dcfb1%3A0x7b14ff945d6f453!2sDandova%202619%2F13%2C%20193%2000%20Horn%C3%AD%20Po%C4%8Dernice!5e0!3m2!1scs!2scz!4v1762980448035!5m2!1scs!2scz',

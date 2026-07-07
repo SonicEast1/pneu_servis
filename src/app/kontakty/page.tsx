@@ -99,13 +99,12 @@ export default function KontaktyPage() {
 
           <div className="hud-frame overflow-hidden min-h-[350px] animate-fadeInUp stagger-1">
             <iframe
-              src={CONTACT_INFO.maps.provozovna}
+              src="https://mapy.com/s/kedogodota"
               width="100%"
               height="100%"
-              style={{ border: 0, minHeight: '350px' }}
+              style={{ border: 'none', minHeight: '350px' }}
               allowFullScreen
               loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
               title="Mapa - Provozovna Jaroměř"
               className="w-full h-full"
             />
