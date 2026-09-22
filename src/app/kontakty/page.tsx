@@ -147,7 +147,7 @@ export default function KontaktyPage() {
 
         {/* Hours + Socials */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="tech-panel lg:col-span-2 animate-fadeInUp">
+          <div className="tech-panel lg:col-span-2 animate-fadeInUp" id="oteviraci-doba">
             <p className="section-tag">Otevírací doba</p>
             {loading ? (
               <div className="py-8 text-center">

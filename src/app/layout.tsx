@@ -80,7 +80,7 @@ export default function RootLayout({
       </head>
       <body className="min-h-screen flex flex-col bg-page text-theme transition-colors duration-400">
         <Navigation />
-        <main className="flex-1 mt-[72px]">
+        <main className="flex-1 mt-[var(--header-h)]">
           {children}
         </main>
         <Footer />

@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { CONTACT_INFO } from '@/constants/contact';
 import ThemeToggle from '@/components/ThemeToggle';
+import OpenStatusBar from '@/components/OpenStatusBar';
 import { RESERVATIONS_ENABLED } from '@/constants/reservation';
 
 const navItems = [
@@ -24,8 +25,10 @@ export default function Navigation() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
+    <header className="site-header">
+      <OpenStatusBar />
     <nav
-      className="fixed top-0 left-0 right-0 z-40 border-b border-theme animate-fadeInDown transition-colors duration-400"
+      className="border-b border-theme transition-colors duration-400"
       style={{ background: 'var(--nav-bg)', backdropFilter: 'blur(16px)' }}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -113,5 +116,6 @@ export default function Navigation() {
         </div>
       )}
     </nav>
+    </header>
   );
 }
