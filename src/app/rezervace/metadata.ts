@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Online rezervace',
-  description: 'Rezervujte si termín pro výměnu pneumatik online. Rychle, jednoduše a bez čekání.',
-  keywords: ['rezervace termínu', 'online objednávka', 'výměna pneumatik rezervace'],
+  title: 'Rezervace',
+  description: 'Objednejte přezutí a pneuservis v Jaroměři u PneuservisVMK. Telefon +420 604 355 902, Náchodská 118.',
+  keywords: ['rezervace pneuservis', 'přezutí jaroměř objednávka', 'pneuservisvmk'],
+  alternates: { canonical: '/rezervace' },
 };
-

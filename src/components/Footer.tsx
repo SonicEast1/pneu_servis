@@ -36,7 +36,7 @@ export default function Footer() {
           <div className="space-y-5">
             <div className="flex items-center gap-3">
               <div className="relative w-9 h-9 border border-theme p-1">
-                <Image src="/logoWeb.png" alt="Logo" fill className="object-contain" sizes="36px" />
+                <Image src="/logoWeb.png" alt="Logo PneuservisVMK" fill className="object-contain" sizes="36px" />
               </div>
               <div>
                 <span className="font-display font-bold text-theme text-lg tracking-tight">
@@ -107,18 +107,17 @@ export default function Footer() {
             <h3 className="section-tag">Kontakt</h3>
             <ul className="space-y-3 text-sm">
               <li className="text-theme-secondary">
-                <span className="font-display text-[0.65rem] font-bold tracking-widest uppercase text-theme-muted block mb-0.5">Adresa</span>
-                {CONTACT_INFO.address.street}<br />
-                {CONTACT_INFO.address.zip} {CONTACT_INFO.address.city}
+                <span className="font-display text-[0.65rem] font-bold tracking-widest uppercase text-theme-muted block mb-0.5">Adresa:</span>
+                {`${CONTACT_INFO.address.street}, ${CONTACT_INFO.address.zip} ${CONTACT_INFO.address.city}`}
               </li>
               <li>
-                <span className="font-display text-[0.65rem] font-bold tracking-widest uppercase text-theme-muted block mb-0.5">Telefon</span>
+                <span className="font-display text-[0.65rem] font-bold tracking-widest uppercase text-theme-muted block mb-0.5">Telefon:</span>
                 <a href={`tel:${CONTACT_INFO.phone.raw}`} className="text-theme font-semibold hover:text-accent transition-colors">
                   {CONTACT_INFO.phone.display}
                 </a>
               </li>
               <li>
-                <span className="font-display text-[0.65rem] font-bold tracking-widest uppercase text-theme-muted block mb-0.5">E-mail</span>
+                <span className="font-display text-[0.65rem] font-bold tracking-widest uppercase text-theme-muted block mb-0.5">E-mail:</span>
                 <a href={`mailto:${CONTACT_INFO.email.raw}`} className="text-theme-secondary hover:text-accent transition-colors break-all text-xs">
                   {CONTACT_INFO.email.display}
                 </a>

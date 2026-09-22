@@ -1,7 +1,11 @@
-# Allow all crawlers
+# Allow all crawlers, including image bot (favicon)
 User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /api
+
+User-agent: Googlebot-Image
 Allow: /
 
 # Sitemap location
 Sitemap: https://www.pneuservisvmk.cz/sitemap.xml
-

@@ -6,7 +6,9 @@ import MascotCTA from '@/components/MascotCTA';
 
 export const metadata: Metadata = {
   title: 'Recenze',
-  description: 'Hodnocení zákazníků pneuservisu VMK Jaroměř na Firmy.cz / Seznam.cz.',
+  description: 'Recenze a hodnocení zákazníků PneuservisVMK Jaroměř na Firmy.cz. Pneuservis, přezutí a vyvážení kol.',
+  keywords: ['recenze pneuservis', 'pneuservisvmk recenze', 'hodnocení pneuservis jaroměř'],
+  alternates: { canonical: '/recenze' },
 };
 
 export default function ReviewsPage() {

@@ -15,8 +15,9 @@ import { bookingHref, BOOKING_CTA_LABEL } from '@/constants/reservation';
 
 export const metadata: Metadata = {
   title: 'Ceník',
-  description: 'Aktuální ceník pneuservisu VMK Jaroměř. Servisní pakety, montáž, vyvážení a doplňkové služby. Ceny v Kč včetně DPH.',
-  keywords: ['ceník pneuservis', 'ceny přezutí', 'vyvážení kol cena', 'montáž pneu Jaroměř'],
+  description: 'Ceník PneuservisVMK Jaroměř. Přezutí, montáž, vyvážení kol a doplňkové služby. Ceny v Kč včetně DPH.',
+  keywords: ['ceník pneuservis', 'ceník pneuservis jaroměř', 'ceny přezutí', 'vyvážení kol cena', 'montáž pneu Jaroměř'],
+  alternates: { canonical: '/cenik' },
 };
 
 export default function CenikPage() {

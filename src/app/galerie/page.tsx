@@ -7,8 +7,9 @@ import { bookingHref, BOOKING_CTA_LABEL, RESERVATIONS_ENABLED } from '@/constant
 
 export const metadata: Metadata = {
   title: 'Fotogalerie',
-  description: 'Podívejte se na fotografie z naší provozovny, vybavení a práce našeho pneuservisu.',
-  keywords: ['fotogalerie pneuservis', 'provozovna', 'vybavení', 'fotky'],
+  description: 'Fotogalerie PneuservisVMK Jaroměř. Provozovna, vybavení a práce pneuservisu na Náchodské 118.',
+  keywords: ['fotogalerie pneuservis', 'pneuservis jaroměř', 'provozovna', 'vybavení'],
+  alternates: { canonical: '/galerie' },
 };
 
 export default function GalleryPage() {

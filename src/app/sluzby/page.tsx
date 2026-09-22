@@ -67,7 +67,7 @@ export default function SluzbyPage() {
             Naše <span className="gradient-tech">služby</span>
           </h1>
           <p className="text-theme-secondary text-lg max-w-2xl mx-auto animate-fadeInUp stagger-2">
-            Kompletní přehled služeb. Profesionální péče o vaše pneumatiky a kola.
+            PneuservisVMK v Jaroměři: přezutí, vyvážení kol, opravy defektů a uskladnění pneumatik.
           </p>
         </div>
       </section>

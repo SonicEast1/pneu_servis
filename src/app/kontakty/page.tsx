@@ -40,7 +40,7 @@ export default function KontaktyPage() {
             Jsme tu <span className="gradient-tech">pro vás</span>
           </h1>
           <p className="text-theme-secondary text-lg max-w-2xl mx-auto animate-fadeInUp stagger-2">
-            Kontaktujte nás telefonicky, e-mailem nebo navštivte provozovnu v Jaroměři.
+            PneuservisVMK, Náchodská 118, Jaroměř. Zavolejte, napište, nebo se zastavte v provozovně.
           </p>
         </div>
       </section>

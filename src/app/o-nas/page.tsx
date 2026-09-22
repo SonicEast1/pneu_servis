@@ -6,7 +6,8 @@ import { bookingHref, BOOKING_CTA_LABEL, RESERVATIONS_ENABLED } from '@/constant
 
 export const metadata: Metadata = {
   title: 'O nás',
-  description: 'Seznamte se s PneuservisVMK - náš příběh, zkušenosti a hodnoty, které nás vedou.',
+  description: 'PneuservisVMK Jaroměř: pneuservis s více než 15 lety praxe. Přezutí, vyvážení a péče o pneumatiky na Náchodské 118.',
+  alternates: { canonical: '/o-nas' },
 };
 
 const stats = [

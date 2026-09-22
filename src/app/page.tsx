@@ -7,8 +7,18 @@ import MascotCTA from '@/components/MascotCTA';
 import { bookingHref, BOOKING_CTA_LABEL, BOOKING_CTA_LABEL_ONLINE, RESERVATIONS_ENABLED } from '@/constants/reservation';
 
 export const metadata: Metadata = {
-  title: 'Domů | PneuservisVMK Jaroměř',
-  description: 'Profesionální pneuservis v Jaroměři s dlouholetou tradicí. Výměna pneumatik, vyvážení kol, uskladnění pneu a kompletní servis.',
+  title: {
+    absolute: 'PneuservisVMK Jaroměř | Přezutí, výměna a uskladnění pneumatik',
+  },
+  description:
+    'PneuservisVMK v Jaroměři: přezutí a výměna pneumatik, vyvážení kol, opravy defektů a uskladnění pneu. Náchodská 118, telefon +420 604 355 902.',
+  alternates: { canonical: '/' },
+  openGraph: {
+    title: 'PneuservisVMK Jaroměř | Přezutí, výměna a uskladnění pneumatik',
+    description:
+      'PneuservisVMK v Jaroměři: přezutí a výměna pneumatik, vyvážení kol, opravy defektů a uskladnění pneu. Náchodská 118, telefon +420 604 355 902.',
+    url: '/',
+  },
 };
 
 const stats = [
@@ -54,14 +64,15 @@ export default function HomePage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
             {/* Left — copy */}
             <div>
+              <p className="section-tag mb-4 animate-fadeInUp">Pneuservis na maximum</p>
               <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold text-theme leading-[1.05] mb-6 animate-fadeInUp">
-                Pneuservis
+                Pneuservis<span className="text-accent">VMK</span>
                 <br />
-                <span className="gradient-tech">na maximum</span>
+                <span className="gradient-tech">Jaroměř</span>
               </h1>
 
               <p className="text-theme-secondary text-lg leading-relaxed mb-8 max-w-lg animate-fadeInUp stagger-2">
-                Vždy nám na každém kole záleží. Profesionální péče o pneumatiky s nejmodernějším vybavením a individuálním přístupem ke každému vozu.
+                Pneuservis v Jaroměři na Náchodské 118. Přezutí a výměna pneumatik, vyvážení kol a uskladnění pneu. Vždy nám na každém kole záleží.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-3 animate-fadeInUp stagger-3">
@@ -141,11 +152,11 @@ export default function HomePage() {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div>
-                <span className="font-display text-xs font-bold tracking-widest uppercase text-theme-muted block mb-1">Adresa</span>
+                <span className="font-display text-xs font-bold tracking-widest uppercase text-theme-muted block mb-1">Adresa:</span>
                 <span className="text-theme font-semibold">{CONTACT_INFO.address.full}</span>
               </div>
               <div>
-                <span className="font-display text-xs font-bold tracking-widest uppercase text-theme-muted block mb-1">Telefon</span>
+                <span className="font-display text-xs font-bold tracking-widest uppercase text-theme-muted block mb-1">Telefon:</span>
                 <a href={`tel:${CONTACT_INFO.phone.raw}`} className="text-accent font-semibold hover:underline">
                   {CONTACT_INFO.phone.display}
                 </a>

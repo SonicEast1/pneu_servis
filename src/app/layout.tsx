@@ -8,26 +8,45 @@ import { SITE_CONFIG } from "@/constants/metadata";
 
 export const metadata: Metadata = {
   title: {
-    default: SITE_CONFIG.name,
-    template: `%s | ${SITE_CONFIG.name}`,
+    default: SITE_CONFIG.title,
+    template: `%s | PneuservisVMK Jaroměř`,
   },
   description: SITE_CONFIG.description,
   keywords: SITE_CONFIG.keywords,
   authors: [{ name: SITE_CONFIG.name }],
   creator: SITE_CONFIG.name,
   metadataBase: new URL(SITE_CONFIG.url),
+  applicationName: 'PneuservisVMK',
+  icons: {
+    icon: [
+      { url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/icon-512.png', sizes: '512x512', type: 'image/png' },
+      { url: '/favicon.ico', sizes: '48x48', type: 'image/x-icon' },
+    ],
+    apple: [{ url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }],
+  },
+  manifest: '/site.webmanifest',
   openGraph: {
     type: 'website',
     locale: SITE_CONFIG.locale,
     url: SITE_CONFIG.url,
-    title: SITE_CONFIG.name,
+    title: SITE_CONFIG.title,
     description: SITE_CONFIG.description,
-    siteName: SITE_CONFIG.name,
+    siteName: 'PneuservisVMK',
+    images: [
+      {
+        url: '/pictures_web/VMKLogo.png',
+        width: 2083,
+        height: 2083,
+        alt: 'Logo PneuservisVMK Jaroměř',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: SITE_CONFIG.name,
+    title: SITE_CONFIG.title,
     description: SITE_CONFIG.description,
+    images: ['/pictures_web/VMKLogo.png'],
   },
   robots: {
     index: true,
