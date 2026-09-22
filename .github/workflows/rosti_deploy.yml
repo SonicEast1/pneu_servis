@@ -104,6 +104,7 @@ jobs:
       - name: Install production deps on Roští and restart
         run: |
           ssh -p $PORT $USER@$HOST "cd /srv/app && npm ci --omit=dev"
+          ssh -p $PORT $USER@$HOST "cd /srv/app && node scripts/sync-opening-hours.mjs"
           ssh -p $PORT $USER@$HOST supervisorctl reread
           ssh -p $PORT $USER@$HOST supervisorctl update
           ssh -p $PORT $USER@$HOST supervisorctl restart nginx

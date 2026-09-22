@@ -2,14 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { mkdir, access, readFile, writeFile } from 'fs/promises';
 import path from 'path';
 import * as XLSX from 'xlsx';
-
-interface OpeningHour {
-  id: string;
-  den: string;
-  hodiny: string;
-  poradi: number;
-  aktivni: boolean;
-}
+import { DEFAULT_OPENING_HOURS, type OpeningHour } from '@/lib/openingHours';
 
 const EXCEL_FILE = path.join(process.cwd(), 'data', 'oteviraci_doby.xlsx');
 
@@ -33,59 +26,7 @@ async function fileExists(filePath: string): Promise<boolean> {
 async function initializeExcelFile() {
   await ensureDataDir();
 
-  const defaultHours: OpeningHour[] = [
-    {
-      id: 'OH-1',
-      den: 'Pondělí',
-      hodiny: '8:00 - 16:00',
-      poradi: 1,
-      aktivni: true,
-    },
-    {
-      id: 'OH-2',
-      den: 'Úterý',
-      hodiny: '8:00 - 16:00',
-      poradi: 2,
-      aktivni: true,
-    },
-    {
-      id: 'OH-3',
-      den: 'Středa',
-      hodiny: '8:00 - 16:00',
-      poradi: 3,
-      aktivni: true,
-    },
-    {
-      id: 'OH-4',
-      den: 'Čtvrtek',
-      hodiny: '8:00 - 16:00',
-      poradi: 4,
-      aktivni: true,
-    },
-    {
-      id: 'OH-5',
-      den: 'Pátek',
-      hodiny: '8:00 - 16:00',
-      poradi: 5,
-      aktivni: true,
-    },
-    {
-      id: 'OH-6',
-      den: 'Sobota',
-      hodiny: '9:00 - 14:00',
-      poradi: 6,
-      aktivni: true,
-    },
-    {
-      id: 'OH-7',
-      den: 'Neděle',
-      hodiny: 'Zavřeno',
-      poradi: 7,
-      aktivni: true,
-    },
-  ];
-
-  await saveOpeningHours(defaultHours);
+  await saveOpeningHours([...DEFAULT_OPENING_HOURS]);
 }
 
 // Načíst všechny otevírací doby z Excel souboru
