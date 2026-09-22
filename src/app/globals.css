@@ -43,6 +43,11 @@
   --tech-glow: rgba(90, 82, 72, 0.15);
   --ring-color: rgba(232, 77, 0, 0.25);
   --border-strong: rgba(30, 27, 20, 0.22);
+
+  /* Fonty — načteny přes <link> v layout.tsx (viz head), ne next/font */
+  --font-sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-display: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'IBM Plex Mono', 'Courier New', monospace;
 }
 
 .dark {
