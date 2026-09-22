@@ -6,6 +6,8 @@ import MascotCTA from '@/components/MascotCTA';
 import {
   AdditionalServicesTable,
   ServicePackagesTable,
+  SizeCategoryChips,
+  SizeFocusProvider,
   SupplementaryServicesTable,
 } from '@/components/PricingTables';
 import { PRICING_META } from '@/constants/pricing';
@@ -32,34 +34,49 @@ export default function CenikPage() {
             Ceník <span className="gradient-tech">pneuservisu</span>
           </h1>
           <p className="text-theme-secondary text-lg max-w-2xl mx-auto animate-fadeInUp stagger-2">
-            Platnost od {PRICING_META.validFrom}.
+            {PRICING_META.vatNote} Platnost od {PRICING_META.validFrom}.
           </p>
         </div>
       </section>
 
-      {/* Servisní pakety */}
-      <section className="py-16 lg:py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mb-8">
-            <p className="section-tag">Servisní pakety</p>
-            <h2 className="section-title text-3xl sm:text-4xl font-bold mb-2">Servisní pakety</h2>
-            <p className="text-theme-secondary text-sm">{PRICING_META.perUnitNote}</p>
+      <SizeFocusProvider>
+        {/* Size categories — aligned with tables */}
+        <section className="border-b border-theme bg-surface-alt py-8 sm:py-10 transition-colors duration-400">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-wrap items-baseline justify-between gap-2 mb-4">
+              <p className="section-tag">Rozměrové kategorie</p>
+              <p className="text-theme-secondary text-xs font-mono-tech uppercase tracking-widest">
+                Klikněte na rozměr — zvýrazní se ceny v tabulkách níže
+              </p>
+            </div>
+            <SizeCategoryChips />
           </div>
-          <ServicePackagesTable />
-        </div>
-      </section>
+        </section>
 
-      {/* Další služby */}
-      <section className="border-t border-theme bg-surface-alt py-16 lg:py-20 transition-colors duration-400">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mb-8">
-            <p className="section-tag">Další služby</p>
-            <h2 className="section-title text-3xl sm:text-4xl font-bold mb-2">Další služby</h2>
-            <p className="text-theme-secondary text-sm">{PRICING_META.perUnitNote}</p>
+        {/* Servisní pakety */}
+        <section className="py-16 lg:py-20">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="mb-8">
+              <p className="section-tag">Servisní pakety</p>
+              <h2 className="section-title text-3xl sm:text-4xl font-bold mb-2">Servisní pakety</h2>
+              <p className="text-theme-secondary text-sm">{PRICING_META.perUnitNote}</p>
+            </div>
+            <ServicePackagesTable />
           </div>
-          <AdditionalServicesTable />
-        </div>
-      </section>
+        </section>
+
+        {/* Další služby */}
+        <section className="border-t border-theme bg-surface-alt py-16 lg:py-20 transition-colors duration-400">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="mb-8">
+              <p className="section-tag">Další služby</p>
+              <h2 className="section-title text-3xl sm:text-4xl font-bold mb-2">Další služby</h2>
+              <p className="text-theme-secondary text-sm">{PRICING_META.perUnitNote}</p>
+            </div>
+            <AdditionalServicesTable />
+          </div>
+        </section>
+      </SizeFocusProvider>
 
       {/* Doplňkové služby */}
       <section className="py-16 lg:py-20">

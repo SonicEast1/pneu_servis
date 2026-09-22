@@ -5,21 +5,21 @@ export const PRICING_META = {
 } as const;
 
 export const SIZE_COLUMNS = [
-  { key: 'r12', label: 'R12' },
-  { key: 'r13', label: 'R13' },
-  { key: 'r14', label: 'R14' },
-  { key: 'r15', label: 'R15' },
-  { key: 'r16', label: 'R16' },
-  { key: 'r17', label: 'R17' },
-  { key: 'r18', label: 'R18' },
-  { key: 'r19', label: 'R19' },
-  { key: 'r20', label: 'R20' },
-  { key: 'r21', label: 'R21' },
-  { key: 'r22', label: 'R22' },
-  { key: 'r23', label: 'R23' },
-  { key: 'r24', label: 'R24' },
-  { key: 'van', label: 'VAN/SUV 15"–17"' },
-  { key: 'suv', label: 'SUV/Offroad 18" a více' },
+  { key: 'r12', label: 'R12', hint: 'Malé rezervní a dojezdové ráfky, přípojné vozíky.' },
+  { key: 'r13', label: 'R13', hint: 'Drobné městské vozy — např. Fabia I, Fiesta, Polo.' },
+  { key: 'r14', label: 'R14', hint: 'Kompaktní vozy a starší rodinné modely.' },
+  { key: 'r15', label: 'R15', hint: 'Střední třída — např. Octavia, Golf, Focus.' },
+  { key: 'r16', label: 'R16', hint: 'Rodinné vozy a kombi, nejoblíbenější rozměr.' },
+  { key: 'r17', label: 'R17', hint: 'Vyšší střední třída a menší crossovery.' },
+  { key: 'r18', label: 'R18', hint: 'SUV a prémiové sedany.' },
+  { key: 'r19', label: 'R19', hint: 'Sportovní verze a větší SUV.' },
+  { key: 'r20', label: 'R20', hint: 'Luxusní SUV a offroady.' },
+  { key: 'r21', label: 'R21', hint: 'Velká SUV a pick-upy.' },
+  { key: 'r22', label: 'R22', hint: 'Prémiové offroady a upravená vozidla.' },
+  { key: 'r23', label: 'R23', hint: 'Extra velké ráfky, individuální úpravy.' },
+  { key: 'r24', label: 'R24', hint: 'Největší ráfky — luxusní pick-upy a SUV.' },
+  { key: 'van', label: 'VAN/SUV 15"–17"', hint: 'Dodávky a menší SUV s ráfky 15"–17".' },
+  { key: 'suv', label: 'SUV/Offroad 18" a více', hint: 'Terénní vozidla a velká SUV s ráfky 18" a více.' },
 ] as const;
 
 export type SizeKey = (typeof SIZE_COLUMNS)[number]['key'];

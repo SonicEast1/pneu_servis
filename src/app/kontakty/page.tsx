@@ -99,12 +99,13 @@ export default function KontaktyPage() {
 
           <div className="hud-frame overflow-hidden min-h-[350px] animate-fadeInUp stagger-1">
             <iframe
-              src="https://mapy.com/s/kedogodota"
+              src={CONTACT_INFO.maps.provozovna}
               width="100%"
               height="100%"
-              style={{ border: 'none', minHeight: '350px' }}
+              style={{ border: 0, minHeight: '350px' }}
               allowFullScreen
               loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
               title="Mapa - Provozovna Jaroměř"
               className="w-full h-full"
             />
@@ -112,8 +113,8 @@ export default function KontaktyPage() {
         </div>
 
         {/* Sídlo */}
-        <div className="mb-12">
-          <div className="tech-panel animate-fadeInUp max-w-2xl">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-12">
+          <div className="tech-panel animate-fadeInUp">
             <p className="section-tag">Sídlo společnosti</p>
             <h2 className="font-display text-2xl font-bold text-theme mb-4">{CONTACT_INFO.billing.company}</h2>
             <p className="text-theme-secondary leading-relaxed mb-4">
@@ -127,6 +128,20 @@ export default function KontaktyPage() {
               </p>
               <p className="text-theme-muted text-xs mt-2 leading-relaxed">{CONTACT_INFO.billing.register}</p>
             </div>
+          </div>
+
+          <div className="hud-frame overflow-hidden min-h-[300px] animate-fadeInUp stagger-1">
+            <iframe
+              src={CONTACT_INFO.maps.sidlo}
+              width="100%"
+              height="100%"
+              style={{ border: 0, minHeight: '300px' }}
+              allowFullScreen
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              title="Mapa - Sídlo společnosti Praha"
+              className="w-full h-full"
+            />
           </div>
         </div>
 

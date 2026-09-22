@@ -44,29 +44,30 @@ export default function ReviewsPage() {
               </h2>
             </div>
 
-            {/* Widget s recenzemi */}
-            <div className="hud-frame overflow-hidden animate-fadeInUp">
-              <iframe
-                src={s.widgetUrl}
-                width="100%"
-                height="420"
-                style={{ border: 'none', minHeight: '420px' }}
-                loading="lazy"
-                title="Recenze ze Seznam.cz / Firmy.cz"
-                className="w-full"
-              />
-            </div>
-
-            {/* CTA – přidat hodnocení */}
-            <div className="text-center mt-6">
-              <a
-                href={s.addRatingUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-tech-secondary"
-              >
-                Přidat hodnocení na Seznam.cz →
-              </a>
+            <div className="tech-panel animate-fadeInUp text-center">
+              <p className="font-display text-5xl font-bold text-accent mb-2">5,0</p>
+              <p className="text-theme font-display font-semibold mb-1">Fantastické hodnocení na Firmy.cz</p>
+              <p className="text-theme-secondary text-sm mb-6">
+                Ověřené recenze zákazníků na Seznam.cz / Firmy.cz.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                <a
+                  href={s.pageUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-tech-primary"
+                >
+                  Zobrazit recenze na Firmy.cz →
+                </a>
+                <a
+                  href={s.addRatingUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-tech-secondary"
+                >
+                  Přidat hodnocení
+                </a>
+              </div>
             </div>
 
           </div>

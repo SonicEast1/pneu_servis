@@ -39,13 +39,14 @@ export default function StructuredData() {
     priceRange: '$$',
     aggregateRating: {
       '@type': 'AggregateRating',
-      ratingValue: '4.9',
+      ratingValue: '5.0',
       reviewCount: '150',
     },
     sameAs: [
       CONTACT_INFO.socials.facebook,
       CONTACT_INFO.socials.instagram,
       CONTACT_INFO.socials.tiktok,
+      CONTACT_INFO.seznam.pageUrl,
     ],
   };
 

@@ -1,19 +1,25 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useSyncExternalStore } from 'react';
+
+function subscribe(onStoreChange: () => void) {
+  const observer = new MutationObserver(onStoreChange);
+  observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+  window.addEventListener('storage', onStoreChange);
+  return () => {
+    observer.disconnect();
+    window.removeEventListener('storage', onStoreChange);
+  };
+}
+
+function getTheme(): 'light' | 'dark' {
+  return document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+}
 
 export default function ThemeToggle() {
-  const [mounted, setMounted] = useState(false);
-  const [theme, setTheme] = useState<'light' | 'dark'>('light');
-
-  useEffect(() => {
-    setMounted(true);
-    const isDark = document.documentElement.classList.contains('dark');
-    setTheme(isDark ? 'dark' : 'light');
-  }, []);
+  const theme = useSyncExternalStore(subscribe, getTheme, () => 'light' as const);
 
   const setThemeMode = (newTheme: 'light' | 'dark') => {
-    setTheme(newTheme);
     if (newTheme === 'dark') {
       document.documentElement.classList.add('dark');
       document.documentElement.setAttribute('data-theme', 'dark');
@@ -24,10 +30,6 @@ export default function ThemeToggle() {
       localStorage.setItem('theme', 'light');
     }
   };
-
-  if (!mounted) {
-    return <div className="theme-pill w-[108px] h-[34px]" />;
-  }
 
   return (
     <div className="theme-pill" role="group" aria-label="Přepnout vzhled">

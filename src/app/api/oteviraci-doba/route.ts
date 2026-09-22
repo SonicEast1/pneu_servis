@@ -16,11 +16,7 @@ const EXCEL_FILE = path.join(process.cwd(), 'data', 'oteviraci_doby.xlsx');
 // Zajistit, že složka data existuje
 async function ensureDataDir() {
   const dataDir = path.join(process.cwd(), 'data');
-  try {
-    await mkdir(dataDir, { recursive: true });
-  } catch (error) {
-    // Složka už existuje
-  }
+  await mkdir(dataDir, { recursive: true });
 }
 
 // Zkontrolovat, zda soubor existuje
@@ -105,14 +101,14 @@ async function getOpeningHours(): Promise<OpeningHour[]> {
     const workbook = XLSX.read(fileBuffer, { type: 'buffer' });
     const sheetName = workbook.SheetNames[0];
     const worksheet = workbook.Sheets[sheetName];
-    const data = XLSX.utils.sheet_to_json(worksheet);
+    const data = XLSX.utils.sheet_to_json<Record<string, unknown>>(worksheet);
 
     // Převést zpět na interní formát
-    return data.map((row: any) => ({
-      id: row['ID'] || '',
-      den: row['Den'] || '',
-      hodiny: row['Hodiny'] || '',
-      poradi: row['Pořadí'] || 0,
+    return data.map((row) => ({
+      id: String(row['ID'] ?? ''),
+      den: String(row['Den'] ?? ''),
+      hodiny: String(row['Hodiny'] ?? ''),
+      poradi: Number(row['Pořadí'] ?? 0),
       aktivni: row['Aktivní'] === 'Ano' || row['Aktivní'] === true,
     }));
   } catch (error) {

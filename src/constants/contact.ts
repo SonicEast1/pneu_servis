@@ -29,13 +29,9 @@ export const CONTACT_INFO = {
     tiktok: 'https://www.tiktok.com/@pneuservisvmk',
   },
   seznam: {
-    // ⚠️ Aktualizuj podle profilu na Firmy.cz (Seznam nemá veřejné API)
-    rating: 4.9,
-    reviewsCount: 87,
-    maxRating: 5,
-    profileUrl: 'https://www.firmy.cz/detail/13898911-pneuservis-vmk-jaromer.html',
-    addRatingUrl: 'https://www.firmy.cz/detail/13898911-pneuservis-vmk-jaromer.html#pridat-hodnoceni',
-    widgetUrl: 'https://www.firmy.cz/detail/13898911-pneuservis-vmk-jaromer.html?widget&limit=3',
+    pageUrl: 'https://www.firmy.cz/detail/13898911-pneuservis-vmk-jaromer-jakubske-predmesti.html',
+    widgetUrl: 'https://www.firmy.cz/detail/13898911-pneuservis-vmk-jaromer-jakubske-predmesti.html#hodnoceni',
+    addRatingUrl: 'https://www.firmy.cz/detail/13898911-pneuservis-vmk-jaromer-jakubske-predmesti.html#hodnoceni',
   },
   maps: {
     provozovna: 'https://maps.google.com/maps?q=N%C3%A1chodsk%C3%A1%20118,%20Jarom%C4%9B%C5%99&t=&z=15&ie=UTF8&iwloc=&output=embed',

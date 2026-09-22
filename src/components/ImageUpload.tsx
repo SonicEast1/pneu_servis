@@ -117,6 +117,7 @@ export default function ImageUpload() {
           {previewUrl && (
             <div className="mt-4">
               <h3 className="text-lg font-semibold mb-2">Náhled:</h3>
+              {/* eslint-disable-next-line @next/next/no-img-element -- blob náhled před nahráním */}
               <img
                 src={previewUrl}
                 alt="Náhled"
@@ -156,6 +157,7 @@ export default function ImageUpload() {
                   key={index}
                   className="border rounded-lg p-4 bg-gray-50 hover:shadow-md transition-shadow"
                 >
+                  {/* eslint-disable-next-line @next/next/no-img-element -- dynamické nahrané soubory */}
                   <img
                     src={image.url}
                     alt={image.fileName}

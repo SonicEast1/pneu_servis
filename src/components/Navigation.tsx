@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { CONTACT_INFO } from '@/constants/contact';
@@ -31,10 +32,13 @@ export default function Navigation() {
         <div className="flex items-center justify-between h-[72px]">
           <Link href="/" className="flex items-center gap-3 group">
             <div className="relative w-10 h-10 border border-theme p-1 transition-all duration-300 group-hover:border-[var(--accent)]">
-              <img
+              <Image
                 src="/pictures_web/VMKLogo_Icona.ico"
                 alt="PneuservisVMK Logo"
-                className="w-full h-full object-contain"
+                fill
+                className="object-contain"
+                sizes="40px"
+                unoptimized
               />
             </div>
             <div className="flex flex-col leading-none">

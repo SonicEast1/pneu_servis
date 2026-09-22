@@ -1,8 +1,6 @@
 import Image from 'next/image';
-import Link from 'next/link';
 import type { Metadata } from 'next';
 import TechBackground from '@/components/TechBackground';
-import { CONTACT_INFO } from '@/constants/contact';
 import MascotCTA from '@/components/MascotCTA';
 import { bookingHref, BOOKING_CTA_LABEL, RESERVATIONS_ENABLED } from '@/constants/reservation';
 
@@ -15,7 +13,7 @@ const stats = [
   { value: '15+', label: 'Let zkušeností' },
   { value: '10K+', label: 'Spokojených zákazníků' },
   { value: '25K+', label: 'Vyměněných pneumatik' },
-  { value: '4.9★', label: 'Hodnocení' },
+  { value: '5.0★', label: 'Hodnocení' },
 ];
 
 const values = [
@@ -78,11 +76,13 @@ export default function ONasPage() {
               </div>
             </div>
             <div className="animate-fadeInUp stagger-2">
-              <div className="hud-frame p-2 overflow-hidden">
-                <img
+              <div className="hud-frame p-2 overflow-hidden relative aspect-square">
+                <Image
                   src="/pictures_web/VMKLogo.png"
                   alt="PneuservisVMK"
-                  className="w-full h-full object-cover rounded-sm"
+                  fill
+                  className="object-cover rounded-sm"
+                  sizes="(max-width: 768px) 100vw, 50vw"
                 />
               </div>
             </div>

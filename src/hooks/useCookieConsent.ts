@@ -1,27 +1,38 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useCallback, useSyncExternalStore } from 'react';
+
+const listeners = new Set<() => void>();
+
+function emit() {
+  listeners.forEach((listener) => listener());
+}
+
+function subscribe(onStoreChange: () => void) {
+  listeners.add(onStoreChange);
+  window.addEventListener('storage', onStoreChange);
+  return () => {
+    listeners.delete(onStoreChange);
+    window.removeEventListener('storage', onStoreChange);
+  };
+}
+
+function getShowBanner() {
+  return !localStorage.getItem('cookieConsent');
+}
 
 export function useCookieConsent() {
-  const [showBanner, setShowBanner] = useState(false);
+  const showBanner = useSyncExternalStore(subscribe, getShowBanner, () => false);
 
-  useEffect(() => {
-    const consent = localStorage.getItem('cookieConsent');
-    if (!consent) {
-      setShowBanner(true);
-    }
+  const acceptCookies = useCallback(() => {
+    localStorage.setItem('cookieConsent', 'accepted');
+    emit();
   }, []);
 
-  const acceptCookies = () => {
-    localStorage.setItem('cookieConsent', 'accepted');
-    setShowBanner(false);
-  };
-
-  const declineCookies = () => {
+  const declineCookies = useCallback(() => {
     localStorage.setItem('cookieConsent', 'declined');
-    setShowBanner(false);
-  };
+    emit();
+  }, []);
 
   return { showBanner, acceptCookies, declineCookies };
 }
-

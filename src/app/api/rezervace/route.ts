@@ -38,13 +38,13 @@ async function getServiceNames(): Promise<Record<string, string>> {
     const workbook = XLSX.read(fileBuffer, { type: 'buffer' });
     const sheetName = workbook.SheetNames[0];
     const worksheet = workbook.Sheets[sheetName];
-    const data = XLSX.utils.sheet_to_json(worksheet);
+    const data = XLSX.utils.sheet_to_json<Record<string, unknown>>(worksheet);
 
     // Vytvořit mapování ID -> Název služby
     const serviceMap: Record<string, string> = {};
-    data.forEach((row: any) => {
-      const id = row['ID'] || '';
-      const nazev = row['Název služby'] || '';
+    data.forEach((row) => {
+      const id = String(row['ID'] ?? '');
+      const nazev = String(row['Název služby'] ?? '');
       if (id && nazev) {
         serviceMap[id] = nazev;
       }
@@ -75,11 +75,7 @@ const EXCEL_FILE = path.join(process.cwd(), 'data', 'rezervace_all.xlsx');
 // Zajistit, že složka data existuje
 async function ensureDataDir() {
   const dataDir = path.join(process.cwd(), 'data');
-  try {
-    await mkdir(dataDir, { recursive: true });
-  } catch (error) {
-    // Složka už existuje
-  }
+  await mkdir(dataDir, { recursive: true });
 }
 
 // Zkontrolovat, zda soubor existuje
@@ -104,7 +100,7 @@ async function getReservations(): Promise<Reservation[]> {
     const workbook = XLSX.read(fileBuffer, { type: 'buffer' });
     const sheetName = workbook.SheetNames[0];
     const worksheet = workbook.Sheets[sheetName];
-    const data = XLSX.utils.sheet_to_json(worksheet);
+    const data = XLSX.utils.sheet_to_json<Record<string, unknown>>(worksheet);
 
     // Načíst názvy služeb z Excelu
     const serviceNamesMap = await getServiceNames();
@@ -114,19 +110,19 @@ async function getReservations(): Promise<Reservation[]> {
     });
 
     // Převést zpět na interní formát
-    return data.map((row: any) => ({
-      id: row['ID'],
-      service: reverseServiceMap[row['Služba']] || row['Služba'] || '',
-      date: row['Datum'] ? new Date(row['Datum']).toISOString().split('T')[0] : '',
-      time: row['Čas'],
-      name: row['Jméno'],
-      email: row['Email'],
-      phone: row['Telefon'],
-      car: row['Vozidlo'] || '',
-      note: row['Poznámka'] || '',
-      createdAt: row['Vytvořeno'],
-      status: row['Status'] === 'Potvrzeno' ? 'confirmed' : 
-              row['Status'] === 'Zrušeno' ? 'cancelled' : 'pending'
+    return data.map((row) => ({
+      id: String(row['ID'] ?? ''),
+      service: reverseServiceMap[String(row['Služba'] ?? '')] || String(row['Služba'] ?? ''),
+      date: row['Datum'] ? new Date(String(row['Datum'])).toISOString().split('T')[0] : '',
+      time: String(row['Čas'] ?? ''),
+      name: String(row['Jméno'] ?? ''),
+      email: String(row['Email'] ?? ''),
+      phone: String(row['Telefon'] ?? ''),
+      car: String(row['Vozidlo'] ?? ''),
+      note: String(row['Poznámka'] ?? ''),
+      createdAt: String(row['Vytvořeno'] ?? ''),
+      status: row['Status'] === 'Potvrzeno' ? 'confirmed' as const :
+              row['Status'] === 'Zrušeno' ? 'cancelled' as const : 'pending' as const
     }));
   } catch (error) {
     console.error('Chyba při čtení Excel souboru:', error);
@@ -246,7 +242,7 @@ export async function POST(request: NextRequest) {
 }
 
 // GET - Získat všechny rezervace (pouze pro admina)
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const reservations = await getReservations();
     

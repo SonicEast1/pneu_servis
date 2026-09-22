@@ -44,11 +44,7 @@ export async function POST(request: NextRequest) {
     const filePath = path.join(uploadDir, fileName);
 
     // Ujistit se, že složka existuje
-    try {
-      await mkdir(uploadDir, { recursive: true });
-    } catch (error) {
-      // Složka už existuje
-    }
+    await mkdir(uploadDir, { recursive: true });
 
     // Uložení souboru
     await writeFile(filePath, buffer);
@@ -88,7 +84,7 @@ export async function GET() {
         }));
       
       return NextResponse.json({ files: imageFiles });
-    } catch (error) {
+    } catch {
       return NextResponse.json({ files: [] });
     }
   } catch (error) {

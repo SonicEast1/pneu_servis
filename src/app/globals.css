@@ -87,18 +87,18 @@ html {
 body {
   background-color: var(--bg-page);
   color: var(--text-primary);
-  font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, sans-serif;
   -webkit-font-smoothing: antialiased;
   transition: background-color 0.4s ease, color 0.4s ease;
 }
 
 .font-display {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--font-display), sans-serif;
 }
 
 /* Keep mono class name but style as regular for garage feel */
 .font-mono-tech {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--font-display), sans-serif;
   font-weight: 600;
 }
 
@@ -183,7 +183,7 @@ body {
   padding: 0.9rem 1.75rem;
   background: var(--accent);
   color: #fff;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--font-display), sans-serif;
   font-weight: 700;
   font-size: 0.875rem;
   letter-spacing: 0.04em;
@@ -208,7 +208,7 @@ body {
   padding: 0.9rem 1.75rem;
   background: transparent;
   color: var(--text-primary);
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--font-display), sans-serif;
   font-weight: 700;
   font-size: 0.875rem;
   letter-spacing: 0.04em;
@@ -230,7 +230,7 @@ body {
   align-items: center;
   gap: 0.5rem;
   padding: 0.4rem 0.9rem;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--font-display), sans-serif;
   font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -254,7 +254,7 @@ body {
 
 /* ─── Section headers ─── */
 .section-tag {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--font-display), sans-serif;
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.15em;
@@ -277,7 +277,7 @@ body {
 }
 
 .section-title {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--font-display), sans-serif;
   font-weight: 700;
   color: var(--text-primary);
   letter-spacing: -0.02em;
@@ -335,7 +335,7 @@ body {
 }
 
 .stat-readout .value {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--font-display), sans-serif;
   font-size: 2rem;
   font-weight: 700;
   color: var(--accent);
@@ -343,7 +343,7 @@ body {
 }
 
 .stat-readout .label {
-  font-family: 'IBM Plex Sans', sans-serif;
+  font-family: var(--font-sans), sans-serif;
   font-size: 0.72rem;
   font-weight: 600;
   letter-spacing: 0.08em;
@@ -354,7 +354,7 @@ body {
 
 /* ─── Nav link ─── */
 .nav-link-tech {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--font-display), sans-serif;
   font-size: 0.85rem;
   font-weight: 600;
   letter-spacing: 0.02em;
@@ -392,7 +392,7 @@ body {
 
 .theme-pill-btn {
   padding: 0.4rem 0.65rem;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--font-display), sans-serif;
   font-size: 0.65rem;
   font-weight: 700;
   letter-spacing: 0.06em;
@@ -442,7 +442,7 @@ body {
   50% { opacity: 0.5; transform: scale(0.8); }
 }
 
-.animate-fadeInUp { animation: fadeInUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+.animate-fadeInUp { animation: fadeInUp 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 .animate-fadeInDown { animation: fadeInDown 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 .animate-slideDown { animation: slideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 .animate-slideUp { animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
@@ -451,82 +451,87 @@ body {
 .stagger-2 { animation-delay: 0.12s; opacity: 0; }
 .stagger-3 { animation-delay: 0.2s; opacity: 0; }
 .stagger-4 { animation-delay: 0.28s; opacity: 0; }
-.stagger-5 { animation-delay: 0.36s; opacity: 0; }
-.stagger-6 { animation-delay: 0.44s; opacity: 0; }
 
-/* ─── Scroll reveal — prvky se decentně objeví až po doscrollování ───
-   Aktivní jen když JS přidá .reveal-ready na <html> (viz layout inline script).
-   Bez JS / při hydrataci prvky zůstávají viditelné = žádná ztráta obsahu. */
-.reveal-ready .animate-fadeInUp,
-.reveal-ready .animate-fadeInDown {
-  opacity: 0;
-  animation-play-state: paused;
-  will-change: transform, opacity;
+/* ─── Nedostupná služba ─── */
+.service-unavailable {
+  opacity: 0.5;
+  filter: grayscale(0.6);
+  position: relative;
 }
 
-.reveal-ready .animate-fadeInUp.in-view,
-.reveal-ready .animate-fadeInDown.in-view {
-  animation-play-state: running;
-}
-
-/* Jemné plynulé hover reakce napříč webem */
-a,
-button {
-  transition: color 0.25s ease, background-color 0.25s ease, border-color 0.25s ease, opacity 0.25s ease, transform 0.25s ease;
-}
-
-.tech-panel,
-.stat-readout,
-.hud-frame {
-  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s ease, border-color 0.35s ease;
-}
-
-/* Respektuj systémové nastavení — nulové animace pro citlivé uživatele */
-@media (prefers-reduced-motion: reduce) {
-  .animate-fadeInUp,
-  .animate-fadeInDown,
-  .animate-slideDown,
-  .animate-slideUp {
-    animation: none !important;
-    opacity: 1 !important;
-    transform: none !important;
-  }
-  html { scroll-behavior: auto; }
-}
-
-/* ─── Připravovaná služba (coming soon) ─── */
-.service-soon-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  flex-shrink: 0;
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 0.65rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--iron);
-  background: var(--iron-soft);
-  border: 1px solid var(--iron);
-  border-radius: 999px;
-  padding: 0.28rem 0.7rem;
-  white-space: nowrap;
-}
-
-.service-soon-badge::before {
+.service-unavailable::after {
   content: '';
-  width: 6px;
-  height: 6px;
+  position: absolute;
+  inset: 0;
+  background: var(--bg-page);
+  opacity: 0.25;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+.service-unavailable-badge {
+  display: inline-block;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  background: var(--bg-surface-alt);
+  border: 1px solid var(--border-strong);
+  padding: 0.25rem 0.6rem;
+  margin-bottom: 0.75rem;
+}
+
+/* ─── Under construction panel ─── */
+.construction-panel {
+  position: relative;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 3rem 2rem;
+  text-align: center;
+  background: var(--bg-surface);
+  border: 2px dashed var(--border-strong);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.construction-panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 22px,
+    var(--accent-soft) 22px,
+    var(--accent-soft) 44px
+  );
+  pointer-events: none;
+}
+
+.construction-panel > * {
+  position: relative;
+  z-index: 1;
+}
+
+.construction-icon {
+  width: 84px;
+  height: 84px;
+  margin: 0 auto 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  background: var(--accent-soft);
+  border: 2px solid var(--accent);
   border-radius: 50%;
-  background: var(--iron);
-  box-shadow: 0 0 8px var(--tech-glow);
-  animation: pulse-dot 2s ease-in-out infinite;
 }
 
 /* ─── Form inputs ─── */
 .form-label {
   display: block;
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--font-display), sans-serif;
   font-size: 0.82rem;
   font-weight: 600;
   color: var(--text-secondary);
@@ -540,7 +545,7 @@ button {
   border: 1.5px solid var(--border-strong);
   border-radius: 4px;
   color: var(--text-primary);
-  font-family: 'IBM Plex Sans', sans-serif;
+  font-family: var(--font-sans), sans-serif;
   font-size: 0.9rem;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
@@ -555,202 +560,170 @@ button {
   background: var(--bg-elevated);
 }
 
-/* ─── Price table ─── */
-.price-table-wrap {
-  background: var(--bg-surface);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  overflow-x: auto;
-  box-shadow: var(--shadow);
+/* ─── Price cards (bez posuvníku — celé vždy viditelné) ─── */
+.price-card-grid {
+  display: grid;
+  gap: 1.25rem;
 }
 
-.price-table-scroll {
-  background: var(--bg-surface);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  box-shadow: var(--shadow);
+.price-card {
+  padding: 1.5rem;
+  overflow: visible;
 }
 
-.price-table-scroll .price-table-sized {
+.price-card-simple-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.price-card-desc-inline {
+  margin-bottom: 0;
+}
+
+.price-card-simple-price {
+  flex-shrink: 0;
+  font-family: var(--font-display), sans-serif;
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+.price-card-name {
+  font-family: var(--font-display), sans-serif;
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--text-primary);
+  margin-bottom: 0.35rem;
+}
+
+.price-card-desc {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 1.1rem;
+  line-height: 1.4;
+}
+
+.price-chip-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+  gap: 0.5rem;
+}
+
+.price-chip {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
   width: 100%;
-  min-width: 1280px;
-  border-collapse: collapse;
-}
-
-.price-table-wrap thead tr,
-.price-table-scroll .price-table-sized thead tr {
-  background: var(--accent);
-  color: #fff;
-}
-
-.price-table-wrap thead th,
-.price-table-scroll .price-table-sized thead th {
-  padding: 0.6rem 0.75rem;
-  text-align: left;
-  font-family: 'Space Grotesk', sans-serif;
-  font-weight: 700;
-  font-size: 0.78rem;
-  white-space: nowrap;
-}
-
-.price-table-scroll .price-table-sized thead th.price-col-size,
-.price-table-scroll .price-table-sized tbody td.price-col-size {
-  min-width: 3.75rem;
-  width: 3.75rem;
-  text-align: right;
-}
-
-.price-table-scroll .price-table-sized thead th.price-col-wide,
-.price-table-scroll .price-table-sized tbody td.price-col-wide {
-  min-width: 5.5rem;
-  width: 5.5rem;
-  text-align: right;
-}
-
-.price-table-scroll .price-table-sized thead th.price-col-wide {
-  white-space: normal;
-  line-height: 1.25;
-  vertical-align: bottom;
-  font-size: 0.72rem;
-  padding-top: 0.75rem;
-  padding-bottom: 0.75rem;
-}
-
-.price-table-scroll .price-table-sized thead th.price-col-name {
-  min-width: 11rem;
-}
-
-.price-table-scroll .price-table-sized thead th.price-col-desc {
-  min-width: 12rem;
-  max-width: 14rem;
-  white-space: normal;
-  line-height: 1.3;
-}
-
-.price-table-wrap thead th:not(:first-child):not(:nth-child(2)),
-.price-table-scroll .price-table-sized thead th:not(.price-col-name):not(.price-col-desc) {
-  text-align: right;
-}
-
-.price-table-wrap tbody tr,
-.price-table-scroll .price-table-sized tbody tr {
-  border-bottom: 1px solid var(--border);
-  transition: background 0.15s ease;
-}
-
-.price-table-wrap tbody tr:last-child,
-.price-table-scroll .price-table-sized tbody tr:last-child {
-  border-bottom: none;
-}
-
-.price-table-wrap tbody tr:hover,
-.price-table-scroll .price-table-sized tbody tr:hover {
+  min-height: 3.75rem;
+  padding: 0.5rem 0.35rem;
+  text-align: center;
   background: var(--bg-elevated);
-}
-
-.price-table-wrap tbody td,
-.price-table-scroll .price-table-sized tbody td {
-  padding: 0.6rem 0.75rem;
-  font-size: 0.82rem;
-  color: var(--text-secondary);
-}
-
-.price-table-scroll .price-table-sized tbody td.price-col-name {
-  min-width: 11rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  font-family: 'Space Grotesk', sans-serif;
-}
-
-.price-table-scroll .price-table-sized tbody td.price-col-desc {
-  min-width: 12rem;
-  max-width: 14rem;
-}
-
-.price-table-wrap tbody td:first-child {
-  font-weight: 600;
-  color: var(--text-primary);
-  font-family: 'Space Grotesk', sans-serif;
-}
-
-.price-table-wrap tbody td:not(:first-child):not(:nth-child(2)),
-.price-table-scroll .price-table-sized tbody td.price-col-size,
-.price-table-scroll .price-table-sized tbody td.price-col-wide {
-  text-align: right;
-  color: var(--accent);
-  white-space: nowrap;
-}
-
-/* ─── Simple price table (doplňkové služby) ─── */
-.price-table-simple-wrap {
-  width: fit-content;
-  max-width: 100%;
-  margin-right: auto;
-  background: var(--bg-surface);
   border: 1px solid var(--border);
   border-radius: 4px;
-  overflow-x: auto;
-  box-shadow: var(--shadow);
+  font-family: inherit;
+  cursor: pointer;
+  transition: background-color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, opacity 0.25s ease, transform 0.2s ease;
 }
 
-.price-table-simple {
-  width: auto;
-  min-width: 0;
-  border-collapse: collapse;
+.price-chip:hover,
+.price-chip:focus-visible {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  outline: none;
 }
 
-.price-table-simple thead tr {
-  background: var(--accent);
-  color: #fff;
+/* ─── Zvýraznění po kliknutí na rozměr v legendě ─── */
+.price-chip-active {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent);
+  transform: translateY(-2px);
 }
 
-.price-table-simple thead th {
-  padding: 0.6rem 0.75rem;
-  text-align: left;
-  font-family: 'Space Grotesk', sans-serif;
-  font-weight: 700;
-  font-size: 0.78rem;
-  white-space: nowrap;
-}
-
-.price-table-simple tbody tr {
-  border-bottom: 1px solid var(--border);
-  transition: background 0.15s ease;
-}
-
-.price-table-simple tbody tr:last-child {
-  border-bottom: none;
-}
-
-.price-table-simple tbody tr:hover {
-  background: var(--bg-elevated);
-}
-
-.price-table-simple tbody td {
-  padding: 0.6rem 0.75rem;
-  font-size: 0.82rem;
-  text-align: left;
-  color: var(--text-secondary);
-}
-
-.price-table-simple tbody td:first-child {
-  font-weight: 600;
-  color: var(--text-primary);
-  font-family: 'Space Grotesk', sans-serif;
-  min-width: 14rem;
-}
-
-.price-table-simple th:nth-child(3),
-.price-table-simple td:nth-child(3) {
-  min-width: 12rem;
-}
-
-.price-table-simple td.price-table-simple-price {
-  text-align: left;
+.price-chip-active .price-chip-label,
+.price-chip-active .price-chip-price {
   color: var(--accent);
+}
+
+.price-chip-dimmed {
+  opacity: 0.35;
+}
+
+/* ─── Size info tooltip (rozměr) ─── */
+.price-chip-tooltip {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  width: 190px;
+  transform: translateX(-50%) translateY(4px);
+  padding: 0.65rem 0.75rem;
+  background: var(--bg-invert);
+  color: var(--text-invert);
+  border-radius: 6px;
+  font-family: var(--font-sans), sans-serif;
+  font-size: 0.72rem;
+  font-weight: 500;
+  line-height: 1.45;
+  text-align: left;
+  text-transform: none;
+  letter-spacing: normal;
+  box-shadow: var(--shadow-lg);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+  z-index: 30;
+}
+
+.price-chip-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: var(--bg-invert);
+}
+
+.price-chip-tooltip-title {
+  display: block;
+  font-family: var(--font-display), sans-serif;
+  font-weight: 700;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--accent);
+  margin-bottom: 0.25rem;
+}
+
+.price-chip:hover .price-chip-tooltip,
+.price-chip:focus-visible .price-chip-tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+.price-chip-label {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.62rem;
   font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  line-height: 1.15;
+  color: var(--text-muted);
+}
+
+.price-chip-price {
+  font-family: var(--font-display), sans-serif;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--accent);
   white-space: nowrap;
 }
 
@@ -777,13 +750,14 @@ button {
 }
 
 .size-category-chip {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
   min-height: 2.75rem;
   padding: 0.5rem 0.35rem;
-  font-family: 'IBM Plex Mono', monospace;
+  font-family: var(--font-mono), monospace;
   font-size: clamp(0.6rem, 1.1vw, 0.78rem);
   font-weight: 600;
   letter-spacing: 0.04em;
@@ -792,7 +766,8 @@ button {
   color: var(--text-primary);
   background: var(--bg-surface);
   border: 1px solid var(--border-strong);
-  transition: background-color 0.3s ease, color 0.3s ease;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.25s ease, transform 0.2s ease;
 }
 
 @media (min-width: 640px) {
@@ -808,10 +783,20 @@ button {
   }
 }
 
-.size-category-chip:hover {
+.size-category-chip:hover,
+.size-category-chip:focus-visible {
   background: var(--accent-soft);
   border-color: var(--accent);
   color: var(--accent);
+  outline: none;
+}
+
+.size-category-chip-active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+  box-shadow: 0 0 0 3px var(--accent-soft);
+  transform: translateY(-2px);
 }
 
 /* ─── Scrollbar ─── */

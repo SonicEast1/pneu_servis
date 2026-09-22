@@ -21,11 +21,7 @@ const EXCEL_FILE = path.join(process.cwd(), 'data', 'cenik_sluzby.xlsx');
 // Zajistit, že složka data existuje
 async function ensureDataDir() {
   const dataDir = path.join(process.cwd(), 'data');
-  try {
-    await mkdir(dataDir, { recursive: true });
-  } catch (error) {
-    // Složka už existuje
-  }
+  await mkdir(dataDir, { recursive: true });
 }
 
 // Zkontrolovat, zda soubor existuje
@@ -133,20 +129,20 @@ async function getServices(): Promise<Service[]> {
     const workbook = XLSX.read(fileBuffer, { type: 'buffer' });
     const sheetName = workbook.SheetNames[0];
     const worksheet = workbook.Sheets[sheetName];
-    const data = XLSX.utils.sheet_to_json(worksheet);
+    const data = XLSX.utils.sheet_to_json<Record<string, unknown>>(worksheet);
 
     // Převést zpět na interní formát
-    return data.map((row: any) => ({
-      id: row['ID'] || '',
-      nazev: row['Název služby'] || '',
-      popis: row['Popis'] || '',
-      ikona: row['Ikona'] || '🔧',
-      cenaOsobni: row['Cena osobní auto'] || '',
-      cenaSUV: row['Cena SUV/Dodávka'] || '',
-      features: row['Funkce'] || '',
-      kategorie: row['Kategorie'] || '',
+    return data.map((row) => ({
+      id: String(row['ID'] ?? ''),
+      nazev: String(row['Název služby'] ?? ''),
+      popis: String(row['Popis'] ?? ''),
+      ikona: String(row['Ikona'] ?? '🔧'),
+      cenaOsobni: String(row['Cena osobní auto'] ?? ''),
+      cenaSUV: String(row['Cena SUV/Dodávka'] ?? ''),
+      features: String(row['Funkce'] ?? ''),
+      kategorie: String(row['Kategorie'] ?? ''),
       aktivni: row['Aktivní'] === 'Ano' || row['Aktivní'] === true,
-      poradi: row['Pořadí'] || 0,
+      poradi: Number(row['Pořadí'] ?? 0),
     }));
   } catch (error) {
     console.error('Chyba při čtení Excel souboru:', error);

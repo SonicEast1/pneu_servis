@@ -24,11 +24,7 @@ const EXCEL_FILE = path.join(process.cwd(), 'data', 'recenze_all.xlsx');
 // Zajistit, že složka data existuje
 async function ensureDataDir() {
   const dataDir = path.join(process.cwd(), 'data');
-  try {
-    await mkdir(dataDir, { recursive: true });
-  } catch (error) {
-    // Složka už existuje
-  }
+  await mkdir(dataDir, { recursive: true });
 }
 
 // Zkontrolovat, zda soubor existuje
@@ -53,18 +49,18 @@ async function getReviews(): Promise<Review[]> {
     const workbook = XLSX.read(fileBuffer, { type: 'buffer' });
     const sheetName = workbook.SheetNames[0];
     const worksheet = workbook.Sheets[sheetName];
-    const data = XLSX.utils.sheet_to_json(worksheet);
+    const data = XLSX.utils.sheet_to_json<Record<string, unknown>>(worksheet);
 
     // Převést zpět na interní formát
-    return data.map((row: any) => ({
-      id: row['ID'],
-      name: row['Jméno'],
-      email: row['Email'],
-      rating: row['Hodnocení'],
-      text: row['Recenze'],
-      createdAt: row['Vytvořeno'],
-      status: row['Status'] === 'Schváleno' ? 'approved' : 
-              row['Status'] === 'Zamítnuto' ? 'rejected' : 'pending'
+    return data.map((row) => ({
+      id: String(row['ID'] ?? ''),
+      name: String(row['Jméno'] ?? ''),
+      email: String(row['Email'] ?? ''),
+      rating: Number(row['Hodnocení'] ?? 0),
+      text: String(row['Recenze'] ?? ''),
+      createdAt: String(row['Vytvořeno'] ?? ''),
+      status: row['Status'] === 'Schváleno' ? 'approved' as const :
+              row['Status'] === 'Zamítnuto' ? 'rejected' as const : 'pending' as const
     }));
   } catch (error) {
     console.error('Chyba při čtení Excel souboru:', error);

@@ -1,11 +1,32 @@
 import type { Metadata } from "next";
+import { IBM_Plex_Mono, IBM_Plex_Sans, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import CookieBanner from "@/components/CookieBanner";
 import StructuredData from "@/components/StructuredData";
-import ScrollReveal from "@/components/ScrollReveal";
 import { SITE_CONFIG } from "@/constants/metadata";
+
+const ibmPlexSans = IBM_Plex_Sans({
+  subsets: ["latin", "latin-ext"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-sans",
+  display: "swap",
+});
+
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin", "latin-ext"],
+  weight: ["500", "600", "700"],
+  variable: "--font-display",
+  display: "swap",
+});
+
+const ibmPlexMono = IBM_Plex_Mono({
+  subsets: ["latin", "latin-ext"],
+  weight: ["400", "500", "600"],
+  variable: "--font-mono",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: {
@@ -49,14 +70,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="cs" className="transition-colors duration-400" suppressHydrationWarning>
+    <html lang="cs" className={`${ibmPlexSans.variable} ${spaceGrotesk.variable} ${ibmPlexMono.variable} transition-colors duration-400`} suppressHydrationWarning>
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap"
-          rel="stylesheet"
-        />
         <StructuredData />
         <script
           dangerouslySetInnerHTML={{
@@ -72,10 +87,6 @@ export default function RootLayout({
                     document.documentElement.classList.remove('dark');
                     document.documentElement.setAttribute('data-theme', 'light');
                   }
-                  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-                  if (!reduceMotion) {
-                    document.documentElement.classList.add('reveal-ready');
-                  }
                 } catch (e) {}
               })()
             `,
@@ -83,7 +94,6 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-screen flex flex-col bg-page text-theme transition-colors duration-400">
-        <ScrollReveal />
         <Navigation />
         <main className="flex-1 mt-[72px]">
           {children}

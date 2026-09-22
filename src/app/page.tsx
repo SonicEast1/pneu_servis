@@ -15,7 +15,7 @@ const stats = [
   { value: '15+', label: 'Let praxe' },
   { value: '10K+', label: 'Zákazníků' },
   { value: '25K+', label: 'Kol servisováno' },
-  { value: '4.9★', label: 'Hodnocení' },
+  { value: '5.0★', label: 'Hodnocení' },
 ];
 
 const reasons = [

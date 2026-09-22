@@ -20,20 +20,12 @@ const GALLERY_DIR = path.join(process.cwd(), 'public', 'gallery');
 // Zajistit, že složka data existuje
 async function ensureDataDir() {
   const dataDir = path.join(process.cwd(), 'data');
-  try {
-    await mkdir(dataDir, { recursive: true });
-  } catch (error) {
-    // Složka už existuje
-  }
+  await mkdir(dataDir, { recursive: true });
 }
 
 // Zajistit, že složka gallery existuje
 async function ensureGalleryDir() {
-  try {
-    await mkdir(GALLERY_DIR, { recursive: true });
-  } catch (error) {
-    // Složka už existuje
-  }
+  await mkdir(GALLERY_DIR, { recursive: true });
 }
 
 // Zkontrolovat, zda soubor existuje
@@ -67,9 +59,7 @@ async function initializeExcelFile() {
   const worksheet = XLSX.utils.json_to_sheet(excelData);
   
   // Zajistit, že všechny sloupce jsou přítomny v správném pořadí
-  const headers = ['ID', 'Název souboru', 'Kategorie', 'Zobrazovací název', 'Popis', 'Aktivní', 'Pořadí'];
-  const headerRow = XLSX.utils.encode_row(0);
-  
+  const headers = ['ID', 'Název souboru', 'Kategorie', 'Zobrazovací název', 'Popis', 'Aktivní', 'Pořadí']; 
   // Nastavit hlavičky sloupců
   headers.forEach((header, index) => {
     const cellAddress = XLSX.utils.encode_cell({ r: 0, c: index });
@@ -100,7 +90,7 @@ async function getImageFiles(): Promise<string[]> {
     await ensureGalleryDir();
     const files = await readdir(GALLERY_DIR);
     return files.filter(file => /\.(jpg|jpeg|png|gif|webp)$/i.test(file));
-  } catch (error) {
+  } catch {
     return [];
   }
 }
@@ -118,20 +108,20 @@ async function loadMetadata(): Promise<Record<string, Partial<GalleryImage>>> {
     const workbook = XLSX.read(fileBuffer, { type: 'buffer' });
     const sheetName = workbook.SheetNames[0];
     const worksheet = workbook.Sheets[sheetName];
-    const data = XLSX.utils.sheet_to_json(worksheet);
+    const data = XLSX.utils.sheet_to_json<Record<string, unknown>>(worksheet);
 
     const metadata: Record<string, Partial<GalleryImage>> = {};
-    data.forEach((row: any) => {
-      const fileName = row['Název souboru'] || row['fileName'] || '';
+    data.forEach((row) => {
+      const fileName = String(row['Název souboru'] ?? row['fileName'] ?? '');
       if (fileName) {
         metadata[fileName] = {
-          id: row['ID'] || row['id'] || '',
+          id: String(row['ID'] ?? row['id'] ?? ''),
           fileName: fileName,
-          category: row['Kategorie'] || row['category'] || 'Všechny',
-          title: row['Zobrazovací název'] || row['Název'] || row['title'] || row['Zobrazovaci nazev'] || '',
-          description: row['Popis'] || row['description'] || '',
-          aktivni: row['Aktivní'] !== undefined ? row['Aktivní'] : (row['aktivni'] !== undefined ? row['aktivni'] : true),
-          poradi: row['Pořadí'] || row['poradi'] || 0,
+          category: String(row['Kategorie'] ?? row['category'] ?? 'Všechny'),
+          title: String(row['Zobrazovací název'] ?? row['Název'] ?? row['title'] ?? row['Zobrazovaci nazev'] ?? ''),
+          description: String(row['Popis'] ?? row['description'] ?? ''),
+          aktivni: row['Aktivní'] !== undefined ? Boolean(row['Aktivní']) : (row['aktivni'] !== undefined ? Boolean(row['aktivni']) : true),
+          poradi: Number(row['Pořadí'] ?? row['poradi'] ?? 0),
         };
       }
     });
