@@ -5,8 +5,8 @@ export const CONTACT_INFO = {
     hours: 'Po – Pá: 8:00 – 16:00, So: 9:00 – 14:00',
   },
   email: {
-    display: 'infovmkcompany@gmail.com',
-    raw: 'infovmkcompany@gmail.com',
+    display: 'info@pneuservisvmk.cz',
+    raw: 'info@pneuservisvmk.cz',
   },
   address: {
     street: 'Náchodská 118',
