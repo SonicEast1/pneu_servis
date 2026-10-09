@@ -4,6 +4,7 @@ import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import CookieBanner from "@/components/CookieBanner";
 import StructuredData from "@/components/StructuredData";
+import AnalyticsTracker from "@/components/AnalyticsTracker";
 import { SITE_CONFIG } from "@/constants/metadata";
 
 export const metadata: Metadata = {
@@ -104,6 +105,7 @@ export default function RootLayout({
         </main>
         <Footer />
         <CookieBanner />
+        <AnalyticsTracker />
       </body>
     </html>
   );

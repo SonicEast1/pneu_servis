@@ -117,7 +117,12 @@ export default function ONasPage() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
             {values.map((v, i) => (
-              <div key={i} className={`tech-panel animate-fadeInUp stagger-${i + 1}`}>
+              <div
+                key={i}
+                className={`tech-panel animate-fadeInUp stagger-${i + 1}`}
+                data-track={`Karta: ${v.title}`}
+                data-track-cat="card"
+              >
                 <div className="text-4xl mb-4">{v.icon}</div>
                 <h3 className="font-display text-xl font-bold text-theme mb-2">{v.title}</h3>
                 <p className="text-theme-secondary text-sm leading-relaxed">{v.description}</p>

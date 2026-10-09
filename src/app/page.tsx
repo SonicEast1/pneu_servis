@@ -130,7 +130,12 @@ export default function HomePage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {reasons.map((r, i) => (
-              <div key={r.title} className={`tech-panel animate-fadeInUp stagger-${i + 1}`}>
+              <div
+                key={r.title}
+                className={`tech-panel animate-fadeInUp stagger-${i + 1}`}
+                data-track={`Karta: ${r.title}`}
+                data-track-cat="card"
+              >
                 <div className="mb-4">
                   <span className="text-3xl">{r.icon}</span>
                 </div>

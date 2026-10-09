@@ -166,7 +166,13 @@ export default function AdminReservationsPage() {
                 Přehled všech rezervací z webu
               </p>
             </div>
-            <div className="flex gap-3">
+            <div className="flex gap-3 flex-wrap">
+              <Link
+                href="/admin/statistiky"
+                className="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-medium transition-colors"
+              >
+                📊 Statistiky
+              </Link>
               <Link
                 href="/admin/upload"
                 className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-medium transition-colors"

@@ -86,7 +86,9 @@ export default function SluzbyPage() {
                 return (
                 <div
                   key={service.id}
-                  className={`tech-panel animate-fadeInUp stagger-${(index % 4) + 1} ${unavailable ? 'service-unavailable' : ''}`}
+                  data-track={`Karta: ${service.nazev}`}
+                  data-track-cat="card"
+                  className={`tech-panel animate-fadeInUp stagger-${(index % 4) + 1} ${unavailable ? 'service-unavailable' : ''} cursor-pointer`}
                 >
                   {unavailable && (
                     <span className="service-unavailable-badge relative z-10">Momentálně nedostupné</span>

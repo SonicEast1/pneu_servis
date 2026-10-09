@@ -48,7 +48,7 @@ function SizeInfoTooltip({ label, hint }: { label: string; hint: string }) {
   );
 }
 
-function SizePriceChip({ col, price }: { col: SizeColumn; price: number }) {
+function SizePriceChip({ col, price, rowName }: { col: SizeColumn; price: number; rowName: string }) {
   const { active, toggle } = useSizeFocus();
   const isActive = active === col.key;
   const isDimmed = active !== null && !isActive;
@@ -59,7 +59,14 @@ function SizePriceChip({ col, price }: { col: SizeColumn; price: number }) {
   ].filter(Boolean).join(' ');
 
   return (
-    <button type="button" className={className} onClick={() => toggle(col.key)} aria-pressed={isActive}>
+    <button
+      type="button"
+      className={className}
+      onClick={() => toggle(col.key)}
+      aria-pressed={isActive}
+      data-track={`Ceník: ${rowName} · ${col.label}`}
+      data-track-cat="card"
+    >
       <span className="price-chip-label">{sizeChipLabel(col.key, col.label)}</span>
       <span className="price-chip-price">{formatPrice(price)}</span>
       <SizeInfoTooltip label={col.label} hint={col.hint} />
@@ -71,12 +78,17 @@ function SizedPriceCards({ rows }: { rows: SizedPriceRow[] }) {
   return (
     <div className="price-card-grid">
       {rows.map((row) => (
-        <div key={row.name} className="tech-panel price-card">
+        <div
+          key={row.name}
+          className="tech-panel price-card"
+          data-track={`Karta: ${row.name}`}
+          data-track-cat="card"
+        >
           <h3 className="price-card-name">{row.name}</h3>
           {row.description && <p className="price-card-desc">{row.description}</p>}
           <div className="price-chip-grid">
             {SIZE_COLUMNS.map((col) => (
-              <SizePriceChip key={col.key} col={col} price={row.prices[col.key]} />
+              <SizePriceChip key={col.key} col={col} price={row.prices[col.key]} rowName={row.name} />
             ))}
           </div>
         </div>
@@ -97,7 +109,12 @@ export function SupplementaryServicesTable() {
   return (
     <div className="price-card-grid">
       {SUPPLEMENTARY_SERVICES.map((row) => (
-        <div key={row.name} className="tech-panel price-card price-card-simple">
+        <div
+          key={row.name}
+          className="tech-panel price-card price-card-simple"
+          data-track={`Karta: ${row.name}`}
+          data-track-cat="card"
+        >
           <div className="price-card-simple-row">
             <div>
               <h3 className="price-card-name">{row.name}</h3>
@@ -126,6 +143,8 @@ export function SizeCategoryChips() {
             className={`size-category-chip${isActive ? ' size-category-chip-active' : ''}`}
             onClick={() => toggle(col.key)}
             aria-pressed={isActive}
+            data-track={`Rozměr: ${col.label}`}
+            data-track-cat="card"
           >
             {col.label}
             <SizeInfoTooltip label={col.label} hint={col.hint} />

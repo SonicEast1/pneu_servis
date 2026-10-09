@@ -147,7 +147,13 @@ export default function AdminOpeningHoursPage() {
                 Úprava otevírací doby pro jednotlivé dny v týdnu
               </p>
             </div>
-            <div className="flex gap-3">
+            <div className="flex gap-3 flex-wrap">
+              <Link
+                href="/admin/statistiky"
+                className="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-medium transition-colors"
+              >
+                📊 Statistiky
+              </Link>
               <Link
                 href="/admin/rezervace"
                 className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
