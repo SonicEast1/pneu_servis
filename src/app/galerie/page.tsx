@@ -27,7 +27,7 @@ export default function GalleryPage() {
             Naše <span className="gradient-tech">práce</span>
           </h1>
           <p className="text-theme-secondary text-lg max-w-2xl mx-auto animate-fadeInUp stagger-2">
-            Ukázky naší práce a vybavení provozovny — již brzy.
+            Ukázky naší práce a vybavení provozovny. Již brzy.
           </p>
         </div>
       </section>

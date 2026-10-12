@@ -66,7 +66,6 @@ export default function Navigation() {
           <div className="hidden md:flex items-center gap-3">
             <ThemeToggle />
             <a href={`tel:${CONTACT_INFO.phone.raw}`} className="btn-tech-primary text-xs py-2.5 px-4">
-              <span>📞</span>
               <span>{CONTACT_INFO.phone.display}</span>
             </a>
           </div>
@@ -107,7 +106,7 @@ export default function Navigation() {
               href={`tel:${CONTACT_INFO.phone.raw}`}
               className="btn-tech-primary w-full mt-3 text-xs"
             >
-              📞 {CONTACT_INFO.phone.display}
+              {CONTACT_INFO.phone.display}
             </a>
           </div>
         </div>

@@ -34,7 +34,7 @@ function useSizeFocus() {
 }
 
 function sizeChipLabel(key: string, label: string): ReactNode {
-  if (key === 'van') return <>VAN/SUV<br />15&Prime;–17&Prime;</>;
+  if (key === 'van') return <>VAN/SUV<br />15&Prime;-17&Prime;</>;
   if (key === 'suv') return <>SUV/Offroad<br />18&Prime;+</>;
   return label;
 }

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSummary, recordEvent, type AnalyticsEvent, type ClickCategory } from '@/lib/analytics';
+import { STATS_COOKIE, verifySessionToken } from '@/lib/adminAuth';
 
 const hits = new Map<string, { count: number; resetAt: number }>();
 
@@ -26,6 +27,10 @@ function rateLimited(key: string): boolean {
 }
 
 export async function GET(request: NextRequest) {
+  if (!verifySessionToken(request.cookies.get(STATS_COOKIE)?.value)) {
+    return NextResponse.json({ error: 'Přihlášení vypršelo.' }, { status: 401 });
+  }
+
   const daysRaw = request.nextUrl.searchParams.get('days');
   const parsed = daysRaw ? Number(daysRaw) : 7;
   const days = !Number.isFinite(parsed) || parsed <= 0 ? null : Math.min(90, Math.floor(parsed));

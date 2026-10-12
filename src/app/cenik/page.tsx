@@ -41,13 +41,13 @@ export default function CenikPage() {
       </section>
 
       <SizeFocusProvider>
-        {/* Size categories — aligned with tables */}
+        {/* Size categories , aligned with tables */}
         <section className="border-b border-theme bg-surface-alt py-8 sm:py-10 transition-colors duration-400">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex flex-wrap items-baseline justify-between gap-2 mb-4">
               <p className="section-tag">Rozměrové kategorie</p>
               <p className="text-theme-secondary text-xs font-mono-tech uppercase tracking-widest">
-                Klikněte na rozměr — zvýrazní se ceny v tabulkách níže
+                Klikněte na rozměr a zvýrazní se ceny v tabulkách níže
               </p>
             </div>
             <SizeCategoryChips />
@@ -108,7 +108,7 @@ export default function CenikPage() {
       <MascotCTA
         tag="Máte dotaz k cenám?"
         title="Nejste si jistí, co vybrat?"
-        subtitle="Zavolejte nám nebo nás kontaktujte — poradíme s výběrem služby i rozměru."
+        subtitle="Zavolejte nám nebo nás kontaktujte. Poradíme s výběrem služby i rozměru."
         actions={[
           { label: BOOKING_CTA_LABEL, href: bookingHref(), variant: 'primary' },
           { label: 'Zavolat nyní', href: '', isPhone: true, variant: 'secondary' },

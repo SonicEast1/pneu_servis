@@ -37,7 +37,7 @@ const reasons = [
   {
     icon: '🔧',
     title: 'Dlouholetá praxe',
-    description: 'Více než 15 let zkušeností — Run-flat, nízkoprofilové i terénní pneumatiky bez problémů.',
+    description: 'Více než 15 let zkušeností. Run-flat, nízkoprofilové i terénní pneumatiky bez problémů.',
   },
   {
     icon: '✓',
@@ -47,7 +47,7 @@ const reasons = [
   {
     icon: '🛡',
     title: 'Záruka kvality',
-    description: 'Plná záruka na služby i materiál — ventily, závaží, opravné sady. Bezpečnost na prvním místě.',
+    description: 'Plná záruka na služby i materiál: ventily, závaží, opravné sady. Bezpečnost na prvním místě.',
   },
 ];
 
@@ -60,22 +60,21 @@ export default function HomePage() {
           <Image src="/pictures_web/hero_tire.png" alt="" fill className="object-cover" sizes="100vw" priority />
           <div className="absolute inset-0" style={{ background: 'var(--hero-overlay)' }} />
         </div>
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-            {/* Left — copy */}
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
             <div>
-              <p className="section-tag mb-4 animate-fadeInUp">Pneuservis na maximum</p>
-              <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold text-theme leading-[1.05] mb-6 animate-fadeInUp">
+              <p className="section-tag mb-4">Pneuservis na maximum</p>
+              <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold text-theme leading-[1.05] mb-5">
                 Pneuservis<span className="text-accent">VMK</span>
                 <br />
                 <span className="gradient-tech">Jaroměř</span>
               </h1>
 
-              <p className="text-theme-secondary text-lg leading-relaxed mb-8 max-w-lg animate-fadeInUp stagger-2">
-                Pneuservis v Jaroměři na Náchodské 118. Přezutí a výměna pneumatik, vyvážení kol a uskladnění pneu. Vždy nám na každém kole záleží.
+              <p className="text-theme-secondary text-lg leading-relaxed mb-6 max-w-[65ch]">
+                Přezutí, vyvážení a uskladnění pneu v Jaroměři. Náchodská 118.
               </p>
 
-              <div className="flex flex-col sm:flex-row gap-3 animate-fadeInUp stagger-3">
+              <div className="flex flex-col sm:flex-row gap-3">
                 <Link href={bookingHref()} className="btn-tech-primary">
                   {BOOKING_CTA_LABEL}
                 </Link>
@@ -83,28 +82,17 @@ export default function HomePage() {
                   {CONTACT_INFO.phone.display}
                 </a>
               </div>
-
-              {/* Stats row */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-12 animate-fadeInUp stagger-4">
-                {stats.map((s) => (
-                  <div key={s.label} className="stat-readout">
-                    <div className="value">{s.value}</div>
-                    <div className="label">{s.label}</div>
-                  </div>
-                ))}
-              </div>
             </div>
 
-            {/* Right — mascot */}
-            <div className="relative flex items-center justify-center animate-fadeInUp stagger-2">
+            <div className="relative flex items-center justify-center">
               <Image
                 src="/pictures_web/mascot_thumbsup.png"
-                alt="Maskot VMK Pneuservis"
+                alt="Maskot PneuservisVMK"
                 width={580}
                 height={620}
                 style={{
                   mixBlendMode: 'multiply',
-                  maxHeight: '540px',
+                  maxHeight: '420px',
                   width: 'auto',
                 }}
                 priority
@@ -114,11 +102,23 @@ export default function HomePage() {
         </div>
       </section>
 
+      <section className="border-b border-theme bg-surface-alt">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+            {stats.map((s) => (
+              <div key={s.label} className="stat-readout">
+                <div className="value">{s.value}</div>
+                <div className="label">{s.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ── WHY US ── */}
       <section className="py-20 lg:py-28">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-14 max-w-2xl">
-            <p className="section-tag">Proč my</p>
             <h2 className="section-title text-3xl sm:text-4xl lg:text-5xl mb-4">
               Řemeslná preciznost,<br />
               <span className="text-accent">lidský přístup</span>
@@ -152,7 +152,6 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
             <div>
-              <p className="section-tag">Kde nás najdete</p>
               <h3 className="font-display text-2xl font-bold text-theme">Nová provozovna v Jaroměři</h3>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -178,9 +177,8 @@ export default function HomePage() {
 
       {/* ── CTA ── */}
       <MascotCTA
-        tag={RESERVATIONS_ENABLED ? 'Rezervace online' : 'Kontakt'}
         title="Potřebujete přezout nebo vyvážit kola?"
-        subtitle={RESERVATIONS_ENABLED ? 'Rezervujte si termín online během 2 minut, nebo nám rovnou zavolejte.' : 'Kontaktujte nás telefonicky nebo e-mailem — rádi domluvíme termín.'}
+        subtitle={RESERVATIONS_ENABLED ? 'Rezervujte si termín online během 2 minut, nebo nám rovnou zavolejte.' : 'Kontaktujte nás telefonicky nebo e-mailem. Rádi domluvíme termín.'}
         actions={[
           { label: BOOKING_CTA_LABEL_ONLINE, href: bookingHref(), variant: 'primary' },
           { label: 'Zavolat nyní', href: '', isPhone: true, variant: 'secondary' },

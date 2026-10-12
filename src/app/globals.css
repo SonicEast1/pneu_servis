@@ -33,7 +33,8 @@
   --grid-color: rgba(30, 27, 20, 0.035);
   --grid-accent: rgba(232, 77, 0, 0.025);
   --nav-bg: rgba(240, 237, 232, 0.72);
-  --ease-spring: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-out-quint: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out-cubic: cubic-bezier(0.645, 0.045, 0.355, 1);
   --hero-overlay: linear-gradient(135deg, rgba(226, 223, 216, 0.96) 0%, rgba(226, 223, 216, 0.7) 50%, rgba(214, 210, 203, 0.88) 100%);
   --shadow: 0 2px 12px rgba(30, 27, 20, 0.08);
   --shadow-lg: 0 8px 28px rgba(30, 27, 20, 0.14);
@@ -79,7 +80,8 @@
   --grid-color: rgba(160, 149, 133, 0.05);
   --grid-accent: rgba(255, 85, 0, 0.03);
   --nav-bg: rgba(16, 14, 8, 0.62);
-  --ease-spring: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-out-quint: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out-cubic: cubic-bezier(0.645, 0.045, 0.355, 1);
   --hero-overlay: linear-gradient(135deg, rgba(16, 14, 8, 0.96) 0%, rgba(16, 14, 8, 0.78) 50%, rgba(26, 24, 18, 0.92) 100%);
   --shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
   --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.55);
@@ -103,7 +105,7 @@ body {
   line-height: 1.5;
   letter-spacing: -0.011em;
   -webkit-font-smoothing: antialiased;
-  transition: background-color 0.45s var(--ease-spring), color 0.45s var(--ease-spring);
+  transition: background-color 250ms var(--ease-in-out-cubic), color 250ms var(--ease-in-out-cubic);
 }
 
 .site-header {
@@ -129,7 +131,7 @@ body {
   color: var(--text-secondary);
   background: transparent;
   overflow: hidden;
-  transition: color 0.35s var(--ease-spring);
+  transition: color 150ms ease;
 }
 
 .status-bar-inner {
@@ -173,7 +175,7 @@ body {
 }
 
 .status-dot-live {
-  animation: status-ping 1.8s ease-out infinite;
+  animation: none;
 }
 
 @keyframes status-ping {
@@ -268,7 +270,7 @@ body {
   box-shadow: var(--shadow-lg);
   border-radius: 22px;
   overflow: hidden;
-  transition: transform 0.4s var(--ease-spring), box-shadow 0.4s var(--ease-spring);
+  transition: box-shadow 150ms ease, border-color 150ms ease;
 }
 
 /* No corner bracket pseudo elements */
@@ -291,7 +293,7 @@ body {
   position: relative;
   overflow: hidden;
   box-shadow: var(--shadow);
-  transition: transform 0.4s var(--ease-spring), box-shadow 0.4s var(--ease-spring), border-color 0.4s var(--ease-spring);
+  transition: border-color 150ms ease;
 }
 
 /* Remove the tech gradient top bar */
@@ -320,13 +322,12 @@ body {
   text-transform: uppercase;
   border: none;
   border-radius: 980px;
-  transition: transform 0.4s var(--ease-spring), background 0.2s ease, box-shadow 0.4s var(--ease-spring);
+  transition: background-color 150ms ease, transform 100ms var(--ease-out-quint);
   box-shadow: 0 8px 24px var(--accent-glow);
 }
 
 .btn-tech-primary:hover {
   background: var(--accent-hover);
-  box-shadow: 0 10px 28px var(--accent-glow);
 }
 
 .btn-tech-primary:active {
@@ -349,7 +350,7 @@ body {
   text-transform: uppercase;
   border: 1px solid var(--border-strong);
   border-radius: 980px;
-  transition: transform 0.4s var(--ease-spring), background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease, transform 100ms var(--ease-out-quint);
 }
 
 .btn-tech-secondary:hover {
@@ -360,7 +361,6 @@ body {
 
 .btn-tech-secondary:active {
   transform: scale(0.97);
-  transition: transform 100ms ease-out;
 }
 
 /* ─── Badge ─── */
@@ -388,7 +388,7 @@ body {
   border-radius: 50%;
   background: var(--accent);
   box-shadow: 0 0 8px var(--accent-glow);
-  animation: pulse-dot 2s ease-in-out infinite;
+  animation: none;
 }
 
 /* ─── Section headers ─── */
@@ -424,7 +424,7 @@ h2 {
   letter-spacing: -0.035em;
   line-height: 1.05;
   font-optical-sizing: auto;
-  transition: color 0.4s var(--ease-spring);
+  transition: color 150ms ease;
 }
 
 /* ─── Gradient accent text — warm orange ─── */
@@ -505,12 +505,11 @@ h2 {
   padding: 0.5rem 0.85rem;
   border-radius: 980px;
   border: 1px solid transparent;
-  transition: transform 0.4s var(--ease-spring), background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  transition: background-color 150ms ease, color 150ms ease, border-color 150ms ease, transform 100ms var(--ease-out-quint);
 }
 
 .nav-link-tech:active {
   transform: scale(0.97);
-  transition: transform 100ms ease-out;
 }
 
 .nav-link-tech:hover {
@@ -566,8 +565,8 @@ h2 {
 
 /* ─── Animations ─── */
 @keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translateY(12px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 @keyframes fadeInDown {
@@ -590,10 +589,25 @@ h2 {
   50% { opacity: 0.5; transform: scale(0.8); }
 }
 
-.animate-fadeInUp { animation: fadeInUp 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-.animate-fadeInDown { animation: fadeInDown 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-.animate-slideDown { animation: slideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-.animate-slideUp { animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+.animate-fadeInUp { animation: fadeInUp 280ms var(--ease-out-quint) both; }
+.animate-fadeInDown { animation: fadeInDown 240ms var(--ease-out-quint) both; }
+.animate-slideDown { animation: slideDown 250ms var(--ease-out-quint) both; }
+.animate-slideUp { animation: slideUp 220ms var(--ease-out-quint) both; }
+
+html.reveal-ready .animate-fadeInUp:not(.in-view),
+html.reveal-ready .animate-fadeInDown:not(.in-view) {
+  animation: none;
+  opacity: 0;
+  transform: translateY(12px) scale(0.98);
+}
+
+html.reveal-ready .animate-fadeInUp.in-view {
+  animation: fadeInUp 280ms var(--ease-out-quint) both;
+}
+
+html.reveal-ready .animate-fadeInDown.in-view {
+  animation: fadeInDown 240ms var(--ease-out-quint) both;
+}
 
 .stagger-1 { animation-delay: 0.05s; opacity: 0; }
 .stagger-2 { animation-delay: 0.12s; opacity: 0; }
@@ -1062,7 +1076,7 @@ h2 {
   background: var(--accent);
   border-radius: 99px;
   transform-origin: left;
-  animation: statsBarIn 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: statsBarIn 280ms var(--ease-out-quint) both;
 }
 
 .stats-rank-row {
@@ -1155,7 +1169,7 @@ h2 {
   background: var(--accent);
   border-radius: 3px 3px 0 0;
   transform-origin: bottom;
-  animation: statsColIn 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: statsColIn 280ms var(--ease-out-quint) both;
   transition: filter 0.15s ease;
 }
 
@@ -1245,19 +1259,31 @@ h2 {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
+  html {
+    scroll-behavior: auto;
   }
 
-  .btn-tech-primary:active,
-  .btn-tech-secondary:active,
-  .nav-link-tech:active {
+  .animate-fadeInUp,
+  .animate-fadeInDown,
+  .animate-slideDown,
+  .animate-slideUp,
+  .stats-chart-col,
+  .stats-bar > span,
+  .status-dot-live,
+  .tech-badge-live::before {
+    animation: none;
+    opacity: 1;
     transform: none;
+  }
+
+  .btn-tech-primary,
+  .btn-tech-secondary,
+  .nav-link-tech,
+  .tech-panel,
+  .hud-frame,
+  body,
+  .site-header {
+    transition: none;
   }
 }
 

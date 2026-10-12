@@ -22,7 +22,7 @@ interface Service {
 }
 
 const processSteps = [
-  { title: 'Rezervace', description: 'Zarezervujte si termín online nebo zavolejte — rychle a bez čekání.' },
+  { title: 'Rezervace', description: 'Zarezervujte si termín online nebo zavolejte. Rychle a bez čekání.' },
   { title: 'Příjezd', description: 'Přijeďte v domluvený čas. Přijmeme váš vůz a domluvíme podrobnosti.' },
   { title: 'Servis', description: 'Profesionální přezutí nebo vyvážení na kalibrovaných strojích.' },
   { title: 'Platba', description: 'Transparentní cena dle ceníku, platba v hotovosti nebo kartou.' },

@@ -85,7 +85,7 @@ export default function KontaktyPage() {
               <span className="text-theme-muted text-sm">({CONTACT_INFO.address.part})</span>
             </p>
             <p className="text-theme-muted text-sm leading-relaxed border-t border-theme pt-4 mb-6">
-              Veškeré pneuservisní služby — přezouvání, vyvažování, opravy defektů, výdej a uskladnění pneumatik.
+              Veškeré pneuservisní služby: přezouvání, vyvažování, opravy defektů, výdej a uskladnění pneumatik.
             </p>
             <a
               href="https://www.google.com/maps/search/?api=1&query=Nachodska+118+Jaromer"
@@ -197,7 +197,7 @@ export default function KontaktyPage() {
       {/* CTA */}
       <MascotCTA
         title="Máte dotaz nebo zájem o přezutí?"
-        subtitle="Neváhejte nás kontaktovat — rádi zodpovíme dotazy nebo naplánujeme termín."
+        subtitle="Neváhejte nás kontaktovat. Rádi zodpovíme dotazy nebo naplánujeme termín."
         actions={[
           { label: 'Zavolat nyní', href: '', isPhone: true, variant: 'primary' },
           { label: 'Poslat e-mail', href: '', isEmail: true, variant: 'secondary' },

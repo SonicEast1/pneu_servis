@@ -26,12 +26,12 @@ const values = [
   {
     icon: '🤝',
     title: 'Poctivost',
-    description: 'Transparentní ceník, žádné skryté poplatky. Řekneme vám pravdu o stavu vašich pneumatik — i kdyby to pro nás znamenalo méně práce.',
+    description: 'Transparentní ceník, žádné skryté poplatky. Řekneme vám pravdu o stavu vašich pneumatik, i kdyby to pro nás znamenalo méně práce.',
   },
   {
     icon: '⚡',
     title: 'Rychlost',
-    description: 'Vaše auto potřebujete brzy zpátky. Snažíme se o maximální efektivitu bez ztráty kvality — přezutí 4 kol na počkání.',
+    description: 'Vaše auto potřebujete brzy zpátky. Snažíme se o maximální efektivitu bez ztráty kvality. Přezutí 4 kol na počkání.',
   },
 ];
 
@@ -66,13 +66,13 @@ export default function ONasPage() {
               </h2>
               <div className="space-y-4 text-theme-secondary text-base leading-relaxed">
                 <p>
-                  PneuservisVMK vznikl z jednoduché myšlenky: dělat pneuservis poctivě, rychle a za férovou cenu. Od prvního dne nám záleží na každém zákazníkovi — ať přijede s osobákem nebo s SUV.
+                  PneuservisVMK vznikl z jednoduché myšlenky: dělat pneuservis poctivě, rychle a za férovou cenu. Od prvního dne nám záleží na každém zákazníkovi, ať přijede s osobákem nebo s SUV.
                 </p>
                 <p>
-                  Za roky praxe jsme se setkali s pneumatikami všeho druhu — run-flat, nízkoprofilové, terénní offroad i těžká nákladní kola. Každý případ nás naučil něco nového.
+                  Za roky praxe jsme se setkali s pneumatikami všeho druhu: run-flat, nízkoprofilové, terénní offroad i těžká nákladní kola. Každý případ nás naučil něco nového.
                 </p>
                 <p>
-                  Nová provozovna v Jaroměři je vybavena moderními stroji pro montáž, demontáž a vyvažování kol. Ale co nás táhne dopředu, jsou spokojení zákazníci — a to se za 15 let nezměnilo.
+                  Nová provozovna v Jaroměři je vybavena moderními stroji pro montáž, demontáž a vyvažování kol. Ale co nás táhne dopředu, jsou spokojení zákazníci. A to se za 15 let nezměnilo.
                 </p>
               </div>
             </div>
@@ -136,7 +136,7 @@ export default function ONasPage() {
       <MascotCTA
         tag="Přidejte se k nám"
         title="Připojte se k tisícům spokojených zákazníků"
-        subtitle={RESERVATIONS_ENABLED ? 'Rezervujte termín online nebo nám zavolejte — rádi se postaráme o vaše kola.' : 'Kontaktujte nás telefonicky nebo e-mailem — rádi se postaráme o vaše kola.'}
+        subtitle={RESERVATIONS_ENABLED ? 'Rezervujte termín online nebo nám zavolejte. Rádi se postaráme o vaše kola.' : 'Kontaktujte nás telefonicky nebo e-mailem. Rádi se postaráme o vaše kola.'}
         actions={[
           { label: BOOKING_CTA_LABEL, href: bookingHref(), variant: 'primary' },
           { label: 'Zavolat nyní', href: '', isPhone: true, variant: 'secondary' },

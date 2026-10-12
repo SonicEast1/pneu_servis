@@ -5,6 +5,7 @@ import Footer from "@/components/Footer";
 import CookieBanner from "@/components/CookieBanner";
 import StructuredData from "@/components/StructuredData";
 import AnalyticsTracker from "@/components/AnalyticsTracker";
+import ScrollReveal from "@/components/ScrollReveal";
 import { SITE_CONFIG } from "@/constants/metadata";
 
 export const metadata: Metadata = {
@@ -106,6 +107,7 @@ export default function RootLayout({
         <Footer />
         <CookieBanner />
         <AnalyticsTracker />
+        <ScrollReveal />
       </body>
     </html>
   );

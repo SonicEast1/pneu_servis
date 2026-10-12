@@ -6,9 +6,9 @@ export const PRICING_META = {
 
 export const SIZE_COLUMNS = [
   { key: 'r12', label: 'R12', hint: 'Malé rezervní a dojezdové ráfky, přípojné vozíky.' },
-  { key: 'r13', label: 'R13', hint: 'Drobné městské vozy — např. Fabia I, Fiesta, Polo.' },
+  { key: 'r13', label: 'R13', hint: 'Drobné městské vozy, např. Fabia I, Fiesta, Polo.' },
   { key: 'r14', label: 'R14', hint: 'Kompaktní vozy a starší rodinné modely.' },
-  { key: 'r15', label: 'R15', hint: 'Střední třída — např. Octavia, Golf, Focus.' },
+  { key: 'r15', label: 'R15', hint: 'Střední třída, např. Octavia, Golf, Focus.' },
   { key: 'r16', label: 'R16', hint: 'Rodinné vozy a kombi, nejoblíbenější rozměr.' },
   { key: 'r17', label: 'R17', hint: 'Vyšší střední třída a menší crossovery.' },
   { key: 'r18', label: 'R18', hint: 'SUV a prémiové sedany.' },
@@ -17,8 +17,8 @@ export const SIZE_COLUMNS = [
   { key: 'r21', label: 'R21', hint: 'Velká SUV a pick-upy.' },
   { key: 'r22', label: 'R22', hint: 'Prémiové offroady a upravená vozidla.' },
   { key: 'r23', label: 'R23', hint: 'Extra velké ráfky, individuální úpravy.' },
-  { key: 'r24', label: 'R24', hint: 'Největší ráfky — luxusní pick-upy a SUV.' },
-  { key: 'van', label: 'VAN/SUV 15"–17"', hint: 'Dodávky a menší SUV s ráfky 15"–17".' },
+  { key: 'r24', label: 'R24', hint: 'Největší ráfky, luxusní pick-upy a SUV.' },
+  { key: 'van', label: 'VAN/SUV 15"-17"', hint: 'Dodávky a menší SUV s ráfky 15"-17".' },
   { key: 'suv', label: 'SUV/Offroad 18" a více', hint: 'Terénní vozidla a velká SUV s ráfky 18" a více.' },
 ] as const;
 
@@ -39,27 +39,27 @@ export interface SupplementaryPriceRow {
 
 export const SERVICE_PACKAGES: SizedPriceRow[] = [
   {
-    name: 'Set 1 – KOMPLETNÍ PŘEZUTÍ',
+    name: 'Set 1 - KOMPLETNÍ PŘEZUTÍ',
     description: 'výměna kola z osy na osu, výměna pneu, vyvážení, závaží, ventil',
     prices: { r12: 170, r13: 185, r14: 200, r15: 225, r16: 250, r17: 300, r18: 325, r19: 350, r20: 375, r21: 400, r22: 425, r23: 450, r24: 500, van: 375, suv: 425 },
   },
   {
-    name: 'Set 2 – VÝMĚNA KOLA + VYVÁŽENÍ',
+    name: 'Set 2 - VÝMĚNA KOLA + VYVÁŽENÍ',
     description: 'výměna kola z osy na osu, vyvážení, závaží',
     prices: { r12: 115, r13: 125, r14: 125, r15: 150, r16: 165, r17: 205, r18: 220, r19: 235, r20: 250, r21: 265, r22: 280, r23: 295, r24: 335, van: 225, suv: 255 },
   },
   {
-    name: 'Set 3 – VÝMĚNA KOLA',
+    name: 'Set 3 - VÝMĚNA KOLA',
     description: 'výměna kola z osy na osu, bez vyvážení',
     prices: { r12: 50, r13: 65, r14: 75, r15: 75, r16: 85, r17: 95, r18: 105, r19: 110, r20: 115, r21: 120, r22: 130, r23: 130, r24: 130, van: 115, suv: 125 },
   },
   {
-    name: 'Set 4 – VÝMĚNA PNEU + VYVÁŽENÍ',
+    name: 'Set 4 - VÝMĚNA PNEU + VYVÁŽENÍ',
     description: 'výměna pneu, vyvážení, závaží, ventil',
     prices: { r12: 120, r13: 140, r14: 150, r15: 175, r16: 190, r17: 205, r18: 220, r19: 240, r20: 260, r21: 270, r22: 280, r23: 290, r24: 300, van: 260, suv: 300 },
   },
   {
-    name: 'Set 5 – MONTÁŽ PNEU + VYVÁŽENÍ',
+    name: 'Set 5 - MONTÁŽ PNEU + VYVÁŽENÍ',
     description: 'montáž pneu na disk, vyvážení, ventil, závaží',
     prices: { r12: 95, r13: 100, r14: 110, r15: 125, r16: 135, r17: 145, r18: 155, r19: 165, r20: 175, r21: 185, r22: 195, r23: 205, r24: 215, van: 180, suv: 205 },
   },
@@ -67,7 +67,7 @@ export const SERVICE_PACKAGES: SizedPriceRow[] = [
 
 export const ADDITIONAL_SERVICES: SizedPriceRow[] = [
   {
-    name: 'Set 3 – VÝMĚNA KOLA',
+    name: 'Set 3 - VÝMĚNA KOLA',
     description: 'výměna kola z osy na osu, bez vyvážení',
     prices: { r12: 50, r13: 55, r14: 60, r15: 65, r16: 75, r17: 90, r18: 95, r19: 100, r20: 105, r21: 110, r22: 115, r23: 120, r24: 125, van: 105, suv: 115 },
   },
@@ -100,10 +100,10 @@ export const ADDITIONAL_SERVICES: SizedPriceRow[] = [
 export const SUPPLEMENTARY_SERVICES: SupplementaryPriceRow[] = [
   { name: 'OPRAVA PNEU', unit: '1 ks', note: 'včetně materiálu i práce s pneu', price: 300 },
   { name: 'PŘÍPLATEK ZA SERVIS RUNFLAT PNEU', unit: '1 ks', price: 75 },
-  { name: 'TPMS – montáž/demontáž senzoru', unit: '1 ks', price: 25 },
-  { name: 'TPMS – programování/spárování senzoru', unit: '1 vozidlo', price: 250 },
-  { name: 'TPMS – kontrola senzorů', unit: '1 vozidlo', price: 80 },
-  { name: 'TPMS – aktivace přímého systému měření', unit: '1 vozidlo', price: 80 },
+  { name: 'TPMS - montáž/demontáž senzoru', unit: '1 ks', price: 25 },
+  { name: 'TPMS - programování/spárování senzoru', unit: '1 vozidlo', price: 250 },
+  { name: 'TPMS - kontrola senzorů', unit: '1 vozidlo', price: 80 },
+  { name: 'TPMS - aktivace přímého systému měření', unit: '1 vozidlo', price: 80 },
   { name: 'Odvoz pneumatiky k likvidaci', unit: '1 ks', price: 50 },
   { name: 'Ostatní mechanické práce', unit: '1 hodina', note: 'účtováno po 1/2 hodiny dle skutečného času', price: 500 },
 ];
