@@ -6,6 +6,7 @@ import CookieBanner from "@/components/CookieBanner";
 import StructuredData from "@/components/StructuredData";
 import AnalyticsTracker from "@/components/AnalyticsTracker";
 import ScrollReveal from "@/components/ScrollReveal";
+import MascotChat from "@/components/MascotChat";
 import { SITE_CONFIG } from "@/constants/metadata";
 
 export const metadata: Metadata = {
@@ -106,6 +107,7 @@ export default function RootLayout({
         </main>
         <Footer />
         <CookieBanner />
+        <MascotChat />
         <AnalyticsTracker />
         <ScrollReveal />
       </body>

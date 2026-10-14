@@ -17,6 +17,7 @@ export interface AnalyticsEvent {
   label?: string;
   category?: ClickCategory;
   sessionNew?: boolean;
+  source?: string;
 }
 
 export interface RankedItem {
@@ -44,5 +45,6 @@ export interface AnalyticsSummary {
   pages: RankedItem[];
   clicks: RankedItem[];
   cards: RankedItem[];
+  sources: RankedItem[];
   daily: DailyPoint[];
 }

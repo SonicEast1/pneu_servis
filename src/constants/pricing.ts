@@ -69,7 +69,7 @@ export const ADDITIONAL_SERVICES: SizedPriceRow[] = [
   {
     name: 'Set 3 - VÝMĚNA KOLA',
     description: 'výměna kola z osy na osu, bez vyvážení',
-    prices: { r12: 50, r13: 55, r14: 60, r15: 65, r16: 75, r17: 90, r18: 95, r19: 100, r20: 105, r21: 110, r22: 115, r23: 120, r24: 125, van: 105, suv: 115 },
+    prices: { r12: 50, r13: 65, r14: 75, r15: 75, r16: 85, r17: 95, r18: 105, r19: 110, r20: 115, r21: 120, r22: 130, r23: 130, r24: 130, van: 115, suv: 125 },
   },
   {
     name: 'VÝMĚNA PNEU',

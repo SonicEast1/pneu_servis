@@ -417,6 +417,15 @@ export default function AdminStatsPage() {
 
           <section className="py-8 lg:py-10">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="tech-panel stats-panel mb-3">
+                <p className="section-tag">Zdroje</p>
+                <h2 className="section-title text-xl font-bold mb-3">Odkud přišli</h2>
+                <RankList
+                  items={data.sources ?? []}
+                  empty="Zatím nevíme, odkud návštěvy přišly. Počítá se to od této úpravy, jednou za otevření webu."
+                  unit="návštěv"
+                />
+              </div>
               <div className="grid grid-cols-1 xl:grid-cols-3 gap-3">
                 <div className="tech-panel stats-panel">
                   <p className="section-tag">Stránky</p>

@@ -71,6 +71,7 @@ export async function POST(request: NextRequest) {
     label: typeof body.label === 'string' ? body.label : undefined,
     category: body.category as ClickCategory | undefined,
     sessionNew: Boolean(body.sessionNew),
+    source: typeof body.source === 'string' ? body.source : undefined,
   };
 
   try {

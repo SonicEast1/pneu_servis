@@ -18,6 +18,7 @@ interface DayBucket {
   sessions: number;
   pages: Record<string, number>;
   clicksByKey: Record<string, number>;
+  sources: Record<string, number>;
 }
 
 interface AnalyticsStore {
@@ -28,11 +29,24 @@ interface AnalyticsStore {
 const FILE = path.join(process.cwd(), 'data', 'analytics.json');
 const MAX_DAYS = 90;
 const ALLOWED_CATEGORIES: ClickCategory[] = ['card', 'cta', 'nav', 'click'];
+const ALLOWED_SOURCES = new Set([
+  'Google',
+  'Seznam',
+  'Facebook',
+  'Instagram',
+  'TikTok',
+  'Firmy.cz',
+  'Mapy',
+  'Bing',
+  'YouTube',
+  'Jiný web',
+  'Přímý vstup',
+]);
 
 let writeQueue: Promise<unknown> = Promise.resolve();
 
 function emptyDay(): DayBucket {
-  return { pageviews: 0, clicks: 0, sessions: 0, pages: {}, clicksByKey: {} };
+  return { pageviews: 0, clicks: 0, sessions: 0, pages: {}, clicksByKey: {}, sources: {} };
 }
 
 export function pragueDateKey(date = new Date()): string {
@@ -135,7 +149,14 @@ export async function recordEvent(event: AnalyticsEvent): Promise<boolean> {
     if (event.type === 'pageview') {
       day.pageviews += 1;
       day.pages[pathName] = (day.pages[pathName] ?? 0) + 1;
-      if (event.sessionNew) day.sessions += 1;
+      if (event.sessionNew) {
+        day.sessions += 1;
+        const source = ALLOWED_SOURCES.has(event.source ?? '') ? event.source! : '';
+        if (source) {
+          if (!day.sources) day.sources = {};
+          day.sources[source] = (day.sources[source] ?? 0) + 1;
+        }
+      }
     } else {
       const label = sanitizeLabel(event.label);
       if (!label) return false;
@@ -186,6 +207,7 @@ export async function getSummary(days: number | null): Promise<AnalyticsSummary>
 
   const pages: Record<string, number> = {};
   const clicksByKey: Record<string, number> = {};
+  const sources: Record<string, number> = {};
   let pageviews = 0;
   let clicks = 0;
   let sessions = 0;
@@ -198,8 +220,11 @@ export async function getSummary(days: number | null): Promise<AnalyticsSummary>
     for (const [p, n] of Object.entries(bucket.pages)) {
       pages[p] = (pages[p] ?? 0) + n;
     }
-    for (const [k, n] of Object.entries(bucket.clicksByKey)) {
+    for (const [k, n] of Object.entries(bucket.clicksByKey ?? {})) {
       clicksByKey[k] = (clicksByKey[k] ?? 0) + n;
+    }
+    for (const [k, n] of Object.entries(bucket.sources ?? {})) {
+      sources[k] = (sources[k] ?? 0) + n;
     }
     return {
       date,
@@ -218,6 +243,7 @@ export async function getSummary(days: number | null): Promise<AnalyticsSummary>
     pages: rank(pages),
     clicks: rankedClicks,
     cards: rankedClicks.filter((item) => item.category === 'card'),
+    sources: rank(sources),
     daily,
   };
 }
