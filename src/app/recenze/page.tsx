@@ -59,7 +59,7 @@ export default function ReviewsPage() {
                   rel="noopener noreferrer"
                   className="btn-tech-primary"
                 >
-                  Zobrazit recenze na Firmy.cz →
+                  Zobrazit recenze na Firmy.cz <span className="btn-arrow" aria-hidden="true">→</span>
                 </a>
                 <a
                   href={s.addRatingUrl}

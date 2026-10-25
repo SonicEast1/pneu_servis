@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type CSSProperties } from 'react';
 import TechBackground from '@/components/TechBackground';
 import MascotCTA from '@/components/MascotCTA';
 import { bookingHref, BOOKING_CTA_LABEL, RESERVATIONS_ENABLED } from '@/constants/reservation';
@@ -119,7 +119,7 @@ export default function SluzbyPage() {
       )}
 
       {/* Process */}
-      <section className="border-y border-theme bg-surface-alt py-16 lg:py-20 transition-colors duration-400">
+      <section className="border-y border-theme bg-surface-alt py-16 lg:py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <p className="section-tag justify-center">Jak to funguje</p>
@@ -127,22 +127,20 @@ export default function SluzbyPage() {
               Od rezervace po dokončení
             </h2>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <ol className="process-steps reveal-steps">
             {processSteps.map((step, index) => (
-              <div key={index} className={`animate-fadeInUp stagger-${index + 1}`}>
-                <div className="relative mb-4 flex items-center gap-3">
-                  <div className="w-12 h-12 bg-accent flex items-center justify-center text-white font-display font-bold text-xl rounded-sm flex-shrink-0">
-                    {index + 1}
-                  </div>
-                  {index < processSteps.length - 1 && (
-                    <div className="hidden md:block absolute left-12 top-6 w-full h-0.5 bg-[var(--border-strong)]" />
-                  )}
+              <li key={step.title} className="process-step" style={{ '--i': index } as CSSProperties}>
+                <span className="process-step-num" aria-hidden="true">
+                  {index + 1}
+                </span>
+                {index < processSteps.length - 1 && <span className="process-step-line" aria-hidden="true" />}
+                <div className="process-step-body">
+                  <h3 className="font-display text-lg font-bold text-theme mb-2">{step.title}</h3>
+                  <p className="text-theme-secondary text-sm leading-relaxed">{step.description}</p>
                 </div>
-                <h3 className="font-display text-lg font-bold text-theme mb-2">{step.title}</h3>
-                <p className="text-theme-secondary text-sm leading-relaxed">{step.description}</p>
-              </div>
+              </li>
             ))}
-          </div>
+          </ol>
         </div>
       </section>
 
@@ -157,7 +155,7 @@ export default function SluzbyPage() {
             Kompletní přehled cen včetně servisních paketů, montáže, vyvážení a doplňkových služeb.
           </p>
           <Link href="/cenik" className="btn-tech-primary">
-            Zobrazit ceník →
+            Zobrazit ceník <span className="btn-arrow" aria-hidden="true">→</span>
           </Link>
         </div>
       </section>

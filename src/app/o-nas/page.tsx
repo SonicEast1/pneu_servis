@@ -2,6 +2,7 @@ import Image from 'next/image';
 import type { Metadata } from 'next';
 import TechBackground from '@/components/TechBackground';
 import MascotCTA from '@/components/MascotCTA';
+import { IconCheckCircle, IconClock, IconTarget } from '@/components/Icons';
 import { bookingHref, BOOKING_CTA_LABEL, RESERVATIONS_ENABLED } from '@/constants/reservation';
 
 export const metadata: Metadata = {
@@ -19,17 +20,17 @@ const stats = [
 
 const values = [
   {
-    icon: '🎯',
+    Icon: IconTarget,
     title: 'Kvalita',
     description: 'Každé kolo bereme vážně. Používáme kalibrované stroje, originální závaží a ventily, a nikdy nespěcháme na úkor přesnosti.',
   },
   {
-    icon: '🤝',
+    Icon: IconCheckCircle,
     title: 'Poctivost',
     description: 'Transparentní ceník, žádné skryté poplatky. Řekneme vám pravdu o stavu vašich pneumatik, i kdyby to pro nás znamenalo méně práce.',
   },
   {
-    icon: '⚡',
+    Icon: IconClock,
     title: 'Rychlost',
     description: 'Vaše auto potřebujete brzy zpátky. Snažíme se o maximální efektivitu bez ztráty kvality. Přezutí 4 kol na počkání.',
   },
@@ -76,23 +77,31 @@ export default function ONasPage() {
                 </p>
               </div>
             </div>
-            <div className="animate-fadeInUp stagger-2">
-              <div className="hud-frame p-2 overflow-hidden relative aspect-square">
-                <Image
-                  src="/pictures_web/VMKLogo.png"
-                  alt="PneuservisVMK"
-                  fill
-                  className="object-cover rounded-sm"
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                />
-              </div>
+            {/* Bez vstupní animace: opacity/transform na obalu by vytvořily nový
+                stacking context a rozbily mix-blend-mode maskota (bílé pozadí). */}
+            <div className="flex items-center justify-center">
+              <Image
+                src="/pictures_web/mascot_thumbsup.png"
+                alt="Maskot PneuservisVMK"
+                width={1536}
+                height={1024}
+                sizes="(max-width: 1024px) 80vw, 40vw"
+                // Pevná šířka + height: auto — s width: auto by líně načítaný
+                // obrázek měl 0×0 px a nikdy by se nenačetl
+                style={{
+                  mixBlendMode: 'multiply',
+                  width: '100%',
+                  maxWidth: '600px',
+                  height: 'auto',
+                }}
+              />
             </div>
           </div>
         </div>
       </section>
 
       {/* Stats */}
-      <section className="border-y border-theme bg-surface-alt py-16 lg:py-20 transition-colors duration-400">
+      <section className="border-y border-theme bg-surface-alt py-16 lg:py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <p className="section-tag justify-center mb-10">Naše čísla</p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -123,7 +132,9 @@ export default function ONasPage() {
                 data-track={`Karta: ${v.title}`}
                 data-track-cat="card"
               >
-                <div className="text-4xl mb-4">{v.icon}</div>
+                <div className="icon-tile mb-5">
+                  <v.Icon />
+                </div>
                 <h3 className="font-display text-xl font-bold text-theme mb-2">{v.title}</h3>
                 <p className="text-theme-secondary text-sm leading-relaxed">{v.description}</p>
               </div>

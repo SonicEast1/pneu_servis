@@ -70,7 +70,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="cs" className="transition-colors duration-400" suppressHydrationWarning>
+    <html lang="cs" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -100,7 +100,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="min-h-screen flex flex-col bg-page text-theme transition-colors duration-400">
+      <body className="min-h-screen flex flex-col bg-page text-theme">
         <Navigation />
         <main className="flex-1 mt-[var(--header-h)]">
           {children}

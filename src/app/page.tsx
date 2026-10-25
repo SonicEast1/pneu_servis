@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 import { CONTACT_INFO } from '@/constants/contact';
 import TechBackground from '@/components/TechBackground';
 import MascotCTA from '@/components/MascotCTA';
+import { IconBolt, IconPhone, IconShieldCheck, IconTag, IconWrench } from '@/components/Icons';
 import { bookingHref, BOOKING_CTA_LABEL, BOOKING_CTA_LABEL_ONLINE, RESERVATIONS_ENABLED } from '@/constants/reservation';
 
 export const metadata: Metadata = {
@@ -30,22 +31,22 @@ const stats = [
 
 const reasons = [
   {
-    icon: '⚡',
+    Icon: IconBolt,
     title: 'Rychlost & Preciznost',
     description: 'Přezutí a vyvážení na počkání s kalibrovanými stroji a maximální přesností každého kroku.',
   },
   {
-    icon: '🔧',
+    Icon: IconWrench,
     title: 'Dlouholetá praxe',
     description: 'Více než 15 let zkušeností. Run-flat, nízkoprofilové i terénní pneumatiky bez problémů.',
   },
   {
-    icon: '✓',
+    Icon: IconTag,
     title: 'Férové ceny',
     description: 'Transparentní ceník bez skrytých poplatků. Platíte za kvalitu, ne za překvapení.',
   },
   {
-    icon: '🛡',
+    Icon: IconShieldCheck,
     title: 'Záruka kvality',
     description: 'Plná záruka na služby i materiál: ventily, závaží, opravné sady. Bezpečnost na prvním místě.',
   },
@@ -63,27 +64,31 @@ export default function HomePage() {
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
             <div>
-              <p className="section-tag mb-4">Pneuservis na maximum</p>
-              <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold text-theme leading-[1.05] mb-5">
+              <p className="section-tag mb-4 animate-fadeInUp">Pneuservis na maximum</p>
+              <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold text-theme leading-[1.05] mb-5 animate-fadeInUp stagger-1">
                 Pneuservis<span className="text-accent">VMK</span>
                 <br />
                 <span className="gradient-tech">Jaroměř</span>
               </h1>
 
-              <p className="text-theme-secondary text-lg leading-relaxed mb-6 max-w-[65ch]">
+              <p className="text-theme-secondary text-lg leading-relaxed mb-6 max-w-[65ch] animate-fadeInUp stagger-2">
                 Přezutí, vyvážení a uskladnění pneu v Jaroměři. Náchodská 118.
               </p>
 
-              <div className="flex flex-col sm:flex-row gap-3">
+              <div className="flex flex-col sm:flex-row gap-3 animate-fadeInUp stagger-3">
                 <Link href={bookingHref()} className="btn-tech-primary">
                   {BOOKING_CTA_LABEL}
+                  <span className="btn-arrow" aria-hidden="true">→</span>
                 </Link>
                 <a href={`tel:${CONTACT_INFO.phone.raw}`} className="btn-tech-secondary">
+                  <IconPhone />
                   {CONTACT_INFO.phone.display}
                 </a>
               </div>
             </div>
 
+            {/* Bez vstupní animace: opacity/transform na obalu by vytvořily nový
+                stacking context a rozbily mix-blend-mode maskota (bílé pozadí). */}
             <div className="relative flex items-center justify-center">
               <Image
                 src="/pictures_web/mascot_thumbsup.png"
@@ -105,8 +110,8 @@ export default function HomePage() {
       <section className="border-b border-theme bg-surface-alt">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-            {stats.map((s) => (
-              <div key={s.label} className="stat-readout">
+            {stats.map((s, i) => (
+              <div key={s.label} className={`stat-readout animate-fadeInUp stagger-${i + 1}`}>
                 <div className="value">{s.value}</div>
                 <div className="label">{s.label}</div>
               </div>
@@ -136,8 +141,8 @@ export default function HomePage() {
                 data-track={`Karta: ${r.title}`}
                 data-track-cat="card"
               >
-                <div className="mb-4">
-                  <span className="text-3xl">{r.icon}</span>
+                <div className="icon-tile mb-5">
+                  <r.Icon />
                 </div>
                 <h3 className="font-display font-semibold text-theme text-lg mb-2">{r.title}</h3>
                 <p className="text-theme-secondary text-sm leading-relaxed">{r.description}</p>
@@ -148,7 +153,7 @@ export default function HomePage() {
       </section>
 
       {/* ── LOCATION STRIP ── */}
-      <section className="border-y border-theme bg-surface-alt transition-colors duration-400">
+      <section className="border-y border-theme bg-surface-alt">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
             <div>
@@ -161,14 +166,15 @@ export default function HomePage() {
               </div>
               <div>
                 <span className="font-display text-xs font-bold tracking-widest uppercase text-theme-muted block mb-1">Telefon:</span>
-                <a href={`tel:${CONTACT_INFO.phone.raw}`} className="text-accent font-semibold hover:underline">
+                <a href={`tel:${CONTACT_INFO.phone.raw}`} className="text-accent font-semibold underline-offset-4 decoration-2 hover:underline">
                   {CONTACT_INFO.phone.display}
                 </a>
               </div>
             </div>
             <div className="text-center lg:text-right">
               <Link href="/kontakty" className="btn-tech-secondary">
-                Zobrazit na mapě →
+                Zobrazit na mapě
+                <span className="btn-arrow" aria-hidden="true">→</span>
               </Link>
             </div>
           </div>

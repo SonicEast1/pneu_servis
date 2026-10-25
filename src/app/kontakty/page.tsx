@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { CONTACT_INFO } from '@/constants/contact';
 import TechBackground from '@/components/TechBackground';
 import MascotCTA from '@/components/MascotCTA';
+import { IconMail, IconPhone } from '@/components/Icons';
 
 interface OpeningHour {
   id: string;
@@ -49,8 +50,8 @@ export default function KontaktyPage() {
         {/* Quick contact */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
           <a href={`tel:${CONTACT_INFO.phone.raw}`} className="tech-panel flex items-center gap-5 group animate-fadeInUp stagger-1 no-underline">
-            <div className="w-14 h-14 border border-theme rounded-sm flex items-center justify-center text-2xl text-accent group-hover:border-[var(--accent)] transition-colors flex-shrink-0">
-              📞
+            <div className="icon-tile icon-tile-lg">
+              <IconPhone />
             </div>
             <div>
               <span className="font-display text-xs font-bold tracking-widest uppercase text-theme-muted block mb-0.5">Telefon</span>
@@ -61,8 +62,8 @@ export default function KontaktyPage() {
           </a>
 
           <a href={`mailto:${CONTACT_INFO.email.raw}`} className="tech-panel flex items-center gap-5 group animate-fadeInUp stagger-2 no-underline">
-            <div className="w-14 h-14 border border-theme rounded-sm flex items-center justify-center text-2xl text-accent group-hover:border-[var(--accent)] transition-colors flex-shrink-0">
-              ✉
+            <div className="icon-tile icon-tile-lg">
+              <IconMail />
             </div>
             <div>
               <span className="font-display text-xs font-bold tracking-widest uppercase text-theme-muted block mb-0.5">E-mail</span>
@@ -93,7 +94,7 @@ export default function KontaktyPage() {
               rel="noopener noreferrer"
               className="btn-tech-secondary text-xs"
             >
-              Otevřít v Mapách →
+              Otevřít v Mapách <span className="btn-arrow" aria-hidden="true">→</span>
             </a>
           </div>
 
@@ -184,9 +185,9 @@ export default function KontaktyPage() {
                   href={s.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-3 p-3 border border-theme rounded text-theme-secondary hover:text-accent hover:border-[var(--accent)] transition-all font-display font-semibold text-sm"
+                  className="flex items-center gap-3 p-3 border border-theme rounded text-theme-secondary hover:text-accent hover:border-[var(--accent)] transition-[color,border-color,scale] duration-150 ease-[var(--ease-out-quint)] font-display font-semibold text-sm active:scale-[0.98] motion-reduce:active:scale-100"
                 >
-                  → {s.label}
+                  <span className="btn-arrow" aria-hidden="true">→</span> {s.label}
                 </a>
               ))}
             </div>

@@ -1,18 +1,38 @@
 'use client';
 
 import { useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 
-const SELECTOR = '.animate-fadeInUp, .animate-fadeInDown';
+const SELECTOR = '.animate-fadeInUp, .animate-fadeInDown, .reveal-clip, .reveal-steps';
 
+/**
+ * Odhalení obsahu při scrollu.
+ *
+ * Prvky, které jsou při startu už ve viewportu, dostanou .in-view ještě
+ * PŘED zapnutím html.reveal-ready. Jejich vstupní CSS animace tak doběhne
+ * jen jednou — dřív se po hydrataci schovaly a přehrály znovu (probliknutí).
+ */
 export default function ScrollReveal() {
+  const pathname = usePathname();
+
   useEffect(() => {
+    const root = document.documentElement;
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (reduce) {
-      document.documentElement.classList.remove('reveal-ready');
+      root.classList.remove('reveal-ready');
       return;
     }
 
-    document.documentElement.classList.add('reveal-ready');
+    const isInViewport = (el: Element) => {
+      const rect = el.getBoundingClientRect();
+      return rect.top < window.innerHeight && rect.bottom > 0;
+    };
+
+    document.querySelectorAll(SELECTOR).forEach((el) => {
+      if (isInViewport(el)) el.classList.add('in-view');
+    });
+
+    root.classList.add('reveal-ready');
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -48,7 +68,7 @@ export default function ScrollReveal() {
       observer.disconnect();
       mutationObserver.disconnect();
     };
-  }, []);
+  }, [pathname]);
 
   return null;
 }

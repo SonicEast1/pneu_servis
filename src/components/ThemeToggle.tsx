@@ -1,6 +1,7 @@
 'use client';
 
 import { useSyncExternalStore } from 'react';
+import { IconMoon, IconSun } from '@/components/Icons';
 
 function subscribe(onStoreChange: () => void) {
   const observer = new MutationObserver(onStoreChange);
@@ -16,38 +17,53 @@ function getTheme(): 'light' | 'dark' {
   return document.documentElement.classList.contains('dark') ? 'dark' : 'light';
 }
 
+/**
+ * Přepne motiv najednou. Bez toho by každý prvek přecházel barvou vlastní
+ * rychlostí (150 / 300 / 400 ms) a stránka by se na okamžik „rozpadla".
+ */
+function applyTheme(newTheme: 'light' | 'dark') {
+  const root = document.documentElement;
+  root.classList.add('theme-switching');
+
+  root.classList.toggle('dark', newTheme === 'dark');
+  root.setAttribute('data-theme', newTheme);
+  try {
+    localStorage.setItem('theme', newTheme);
+  } catch {}
+
+  // Vynutí přepočet stylů s vypnutými přechody, pak je vrátí.
+  void window.getComputedStyle(root).opacity;
+  requestAnimationFrame(() => root.classList.remove('theme-switching'));
+}
+
 export default function ThemeToggle() {
   const theme = useSyncExternalStore(subscribe, getTheme, () => 'light' as const);
 
-  const setThemeMode = (newTheme: 'light' | 'dark') => {
-    if (newTheme === 'dark') {
-      document.documentElement.classList.add('dark');
-      document.documentElement.setAttribute('data-theme', 'dark');
-      localStorage.setItem('theme', 'dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      document.documentElement.setAttribute('data-theme', 'light');
-      localStorage.setItem('theme', 'light');
-    }
-  };
-
   return (
     <div className="theme-pill" role="group" aria-label="Přepnout vzhled">
+      {/* Posuvný ukazatel — vyjmutý z .theme-switching, takže sjede i při přepnutí */}
+      <span className="theme-pill-thumb" aria-hidden="true" />
       <button
-        onClick={() => setThemeMode('light')}
-        className={`theme-pill-btn ${theme === 'light' ? 'active' : ''}`}
+        type="button"
+        onClick={() => theme !== 'light' && applyTheme('light')}
+        className="theme-pill-btn"
+        data-mode="light"
         aria-pressed={theme === 'light'}
         aria-label="Světlý motiv"
       >
-        ☀ Světlý
+        <IconSun />
+        <span className="hidden sm:inline lg:hidden xl:inline">Světlý</span>
       </button>
       <button
-        onClick={() => setThemeMode('dark')}
-        className={`theme-pill-btn ${theme === 'dark' ? 'active' : ''}`}
+        type="button"
+        onClick={() => theme !== 'dark' && applyTheme('dark')}
+        className="theme-pill-btn"
+        data-mode="dark"
         aria-pressed={theme === 'dark'}
         aria-label="Tmavý motiv"
       >
-        ◑ Tmavý
+        <IconMoon />
+        <span className="hidden sm:inline lg:hidden xl:inline">Tmavý</span>
       </button>
     </div>
   );

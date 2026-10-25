@@ -33,8 +33,15 @@
   --grid-color: rgba(30, 27, 20, 0.035);
   --grid-accent: rgba(232, 77, 0, 0.025);
   --nav-bg: rgba(240, 237, 232, 0.72);
-  --ease-out-quint: cubic-bezier(0.23, 1, 0.32, 1);
-  --ease-in-out-cubic: cubic-bezier(0.645, 0.045, 0.355, 1);
+
+  /* Motion tokens — jediný zdroj pravdy pro easing a délky */
+  --ease-out-quint: cubic-bezier(0.23, 1, 0.32, 1);       /* vstupy, výstupy, stisk */
+  --ease-in-out-cubic: cubic-bezier(0.645, 0.045, 0.355, 1); /* pohyb po obrazovce (indikátory) */
+  --ease-in-out-strong: cubic-bezier(0.77, 0, 0.175, 1);  /* odhalení obrázků (marketing) */
+  --dur-press: 140ms;
+  --dur-hover: 150ms;
+  --dur-popover: 200ms;
+  --dur-exit: 150ms;
   --hero-overlay: linear-gradient(135deg, rgba(226, 223, 216, 0.96) 0%, rgba(226, 223, 216, 0.7) 50%, rgba(214, 210, 203, 0.88) 100%);
   --shadow: 0 2px 12px rgba(30, 27, 20, 0.08);
   --shadow-lg: 0 8px 28px rgba(30, 27, 20, 0.14);
@@ -44,7 +51,6 @@
   --tech-soft: var(--iron-soft);
   --tech-glow: rgba(90, 82, 72, 0.15);
   --ring-color: rgba(232, 77, 0, 0.25);
-  --border-strong: rgba(30, 27, 20, 0.22);
 
   /* Fonty — načteny přes <link> v layout.tsx (viz head), ne next/font */
   --font-sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -80,8 +86,6 @@
   --grid-color: rgba(160, 149, 133, 0.05);
   --grid-accent: rgba(255, 85, 0, 0.03);
   --nav-bg: rgba(16, 14, 8, 0.62);
-  --ease-out-quint: cubic-bezier(0.23, 1, 0.32, 1);
-  --ease-in-out-cubic: cubic-bezier(0.645, 0.045, 0.355, 1);
   --hero-overlay: linear-gradient(135deg, rgba(16, 14, 8, 0.96) 0%, rgba(16, 14, 8, 0.78) 50%, rgba(26, 24, 18, 0.92) 100%);
   --shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
   --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.55);
@@ -105,7 +109,28 @@ body {
   line-height: 1.5;
   letter-spacing: -0.011em;
   -webkit-font-smoothing: antialiased;
-  transition: background-color 250ms var(--ease-in-out-cubic), color 250ms var(--ease-in-out-cubic);
+  text-rendering: optimizeLegibility;
+}
+
+p, li, h1, h2, h3 {
+  text-wrap: pretty;
+}
+
+h1, h2 {
+  text-wrap: balance;
+}
+
+/* Přepnutí motivu: všechno najednou, žádné rozjeté crossfady různých délek.
+   Výjimka: posuvný ukazatel v přepínači — ten má ukázat, co se stalo. */
+html.theme-switching *:not(.theme-pill-thumb),
+html.theme-switching *::before,
+html.theme-switching *::after {
+  transition: none !important;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 .site-header {
@@ -270,7 +295,6 @@ body {
   box-shadow: var(--shadow-lg);
   border-radius: 22px;
   overflow: hidden;
-  transition: box-shadow 150ms ease, border-color 150ms ease;
 }
 
 /* No corner bracket pseudo elements */
@@ -293,7 +317,7 @@ body {
   position: relative;
   overflow: hidden;
   box-shadow: var(--shadow);
-  transition: border-color 150ms ease;
+  transition: border-color var(--dur-hover) ease, box-shadow 200ms ease;
 }
 
 /* Remove the tech gradient top bar */
@@ -301,9 +325,20 @@ body {
   content: none;
 }
 
-.tech-panel:hover {
-  border-color: var(--border-strong);
-  box-shadow: var(--shadow-lg);
+@media (hover: hover) and (pointer: fine) {
+  .tech-panel:hover {
+    border-color: var(--border-strong);
+    box-shadow: var(--shadow-lg);
+  }
+}
+
+/* Klikací karty (odkazy) — jemná zpětná vazba na stisk */
+a.tech-panel {
+  transition: border-color var(--dur-hover) ease, box-shadow 200ms ease, transform var(--dur-press) var(--ease-out-quint);
+}
+
+a.tech-panel:active {
+  transform: scale(0.985);
 }
 
 /* ─── Buttons ─── */
@@ -322,17 +357,20 @@ body {
   text-transform: uppercase;
   border: none;
   border-radius: 980px;
-  transition: background-color 150ms ease, transform 100ms var(--ease-out-quint);
+  cursor: pointer;
+  transition: background-color var(--dur-hover) ease, box-shadow 200ms ease, transform var(--dur-press) var(--ease-out-quint);
   box-shadow: 0 8px 24px var(--accent-glow);
 }
 
-.btn-tech-primary:hover {
-  background: var(--accent-hover);
+@media (hover: hover) and (pointer: fine) {
+  .btn-tech-primary:hover {
+    background: var(--accent-hover);
+    box-shadow: 0 10px 28px var(--accent-glow);
+  }
 }
 
 .btn-tech-primary:active {
   transform: scale(0.97);
-  transition: transform 100ms ease-out;
 }
 
 .btn-tech-secondary {
@@ -350,17 +388,41 @@ body {
   text-transform: uppercase;
   border: 1px solid var(--border-strong);
   border-radius: 980px;
-  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease, transform 100ms var(--ease-out-quint);
+  cursor: pointer;
+  transition: background-color var(--dur-hover) ease, border-color var(--dur-hover) ease, color var(--dur-hover) ease, transform var(--dur-press) var(--ease-out-quint);
 }
 
-.btn-tech-secondary:hover {
-  border-color: var(--accent);
-  color: var(--accent);
-  background: var(--accent-soft);
+@media (hover: hover) and (pointer: fine) {
+  .btn-tech-secondary:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--accent-soft);
+  }
+}
+
+/* Šipka v tlačítku/odkazu: na hover popojede směrem, kam vede */
+.btn-arrow {
+  display: inline-block;
+  transition: transform 200ms var(--ease-out-quint);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  a:hover > .btn-arrow,
+  button:hover > .btn-arrow {
+    transform: translateX(3px);
+  }
 }
 
 .btn-tech-secondary:active {
   transform: scale(0.97);
+}
+
+/* Menší varianta (hlavička, cookie lišta) — utility py-/px- nepomůžou,
+   CSS mimo @layer je přebije. Musí stát až za oběma tlačítky. */
+.btn-compact {
+  padding: 0.65rem 1rem;
+  font-size: 0.75rem;
+  white-space: nowrap;
 }
 
 /* ─── Badge ─── */
@@ -378,7 +440,6 @@ body {
   background: var(--accent-soft);
   border: 1.5px solid var(--accent);
   border-radius: 3px;
-  transition: all 0.3s ease;
 }
 
 .tech-badge-live::before {
@@ -442,7 +503,6 @@ h2 {
   color: #f0ede6;
   position: relative;
   overflow: hidden;
-  transition: background-color 0.4s ease;
 }
 
 .dark .cta-band {
@@ -474,7 +534,6 @@ h2 {
   border: 1px solid var(--border);
   border-radius: 4px;
   background: var(--bg-surface);
-  transition: all 0.3s ease;
 }
 
 .stat-readout .value {
@@ -483,6 +542,7 @@ h2 {
   font-weight: 700;
   color: var(--accent);
   line-height: 1;
+  font-variant-numeric: tabular-nums;
 }
 
 .stat-readout .label {
@@ -505,39 +565,180 @@ h2 {
   padding: 0.5rem 0.85rem;
   border-radius: 980px;
   border: 1px solid transparent;
-  transition: background-color 150ms ease, color 150ms ease, border-color 150ms ease, transform 100ms var(--ease-out-quint);
+  white-space: nowrap;
+  transition: background-color var(--dur-hover) ease, color var(--dur-hover) ease, border-color var(--dur-hover) ease, transform var(--dur-press) var(--ease-out-quint);
 }
 
 .nav-link-tech:active {
   transform: scale(0.97);
 }
 
-.nav-link-tech:hover {
-  color: var(--text-primary);
-  background: var(--iron-soft);
-  border-color: var(--border);
+@media (hover: hover) and (pointer: fine) {
+  .nav-link-tech:hover {
+    color: var(--text-primary);
+    background: var(--iron-soft);
+    border-color: var(--border);
+  }
 }
 
-.nav-link-tech.active {
+.nav-link-tech.active,
+.nav-link-tech.active:hover {
   color: #fff;
   background: var(--accent);
   border-color: var(--accent);
   box-shadow: 0 3px 12px var(--accent-glow);
 }
 
-/* ─── Theme toggle pill ─── */
-.theme-pill {
+/* ─── Desktop nav: aktivní pilulka, která přejede na novou stránku ───
+   Duplikát řádku odkazů v aktivním stylu, oříznutý clip-path na aktivní
+   položku. Animuje se jen clip-path → barvy textu přechází dokonale. */
+.nav-links {
+  position: relative;
+}
+
+.nav-links-active {
+  position: absolute;
+  inset: 0;
   display: flex;
   align-items: center;
-  gap: 0;
+  gap: inherit;
+  pointer-events: none;
+  opacity: 0;
+  /* Pozadí na kontejneru, ne na položkách → v mezerách mezi odkazy
+     během přejezdu nevznikají švy */
+  background: var(--accent);
+  clip-path: inset(0 100% 0 0 round 980px);
+}
+
+.nav-links-active[data-ready='true'] {
+  opacity: 1;
+  transition: clip-path 260ms var(--ease-in-out-cubic);
+}
+
+.nav-links-active .nav-link-tech {
+  color: #fff;
+  background: transparent;
+  border-color: transparent;
+}
+
+/* ─── Mobilní menu: vždy v DOM, otevření/zavření přes data-open ─── */
+.mobile-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--bg-surface);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow-lg);
+  transform-origin: top center;
+  opacity: 0;
+  transform: translateY(-6px) scale(0.98);
+  visibility: hidden;
+  pointer-events: none;
+  /* zavření: rychlé */
+  transition:
+    opacity var(--dur-exit) var(--ease-out-quint),
+    transform var(--dur-exit) var(--ease-out-quint),
+    visibility 0s linear var(--dur-exit);
+}
+
+.mobile-menu[data-open='true'] {
+  opacity: 1;
+  transform: none;
+  visibility: visible;
+  pointer-events: auto;
+  /* otevření: o chlup delší */
+  transition:
+    opacity 220ms var(--ease-out-quint),
+    transform 220ms var(--ease-out-quint),
+    visibility 0s;
+}
+
+/* Hamburger → křížek: tři čárky se přetočí (stavová indikace) */
+.menu-toggle {
+  position: relative;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: color var(--dur-hover) ease, border-color var(--dur-hover) ease, transform var(--dur-press) var(--ease-out-quint);
+}
+
+.menu-toggle:active {
+  transform: scale(0.95);
+}
+
+.menu-toggle-bars {
+  position: relative;
+  width: 18px;
+  height: 12px;
+}
+
+.menu-toggle-bars span {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  border-radius: 2px;
+  background: currentColor;
+  transition: transform 220ms var(--ease-out-quint), opacity 150ms ease;
+}
+
+.menu-toggle-bars span:nth-child(1) { top: 0; }
+.menu-toggle-bars span:nth-child(2) { top: 5px; }
+.menu-toggle-bars span:nth-child(3) { top: 10px; }
+
+.menu-toggle[aria-expanded='true'] {
+  color: var(--text-primary);
+  border-color: var(--border-strong);
+}
+
+.menu-toggle[aria-expanded='true'] .menu-toggle-bars span:nth-child(1) { transform: translateY(5px) rotate(45deg); }
+.menu-toggle[aria-expanded='true'] .menu-toggle-bars span:nth-child(2) { opacity: 0; }
+.menu-toggle[aria-expanded='true'] .menu-toggle-bars span:nth-child(3) { transform: translateY(-5px) rotate(-45deg); }
+
+/* ─── Theme toggle pill — posuvný „palec" (transform, ne pozice) ─── */
+.theme-pill {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   padding: 3px;
   border-radius: 6px;
   border: 1px solid var(--border-strong);
   background: var(--bg-surface-alt);
-  transition: all 0.4s ease;
+}
+
+.theme-pill-thumb {
+  position: absolute;
+  top: 3px;
+  bottom: 3px;
+  left: 3px;
+  width: calc(50% - 3px);
+  border-radius: 4px;
+  background: var(--bg-surface);
+  box-shadow: var(--shadow);
+  transition: transform 240ms var(--ease-in-out-cubic);
+}
+
+/* Řízeno třídou na <html> (nastaví ji inline skript před vykreslením),
+   ne stavem Reactu — po hydrataci tak ukazatel neodjede sám od sebe. */
+.dark .theme-pill-thumb {
+  transform: translateX(100%);
+  background: var(--bg-elevated);
 }
 
 .theme-pill-btn {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
   padding: 0.4rem 0.65rem;
   font-family: var(--font-display), sans-serif;
   font-size: 0.65rem;
@@ -547,72 +748,267 @@ h2 {
   border-radius: 4px;
   border: none;
   cursor: pointer;
-  transition: all 0.25s ease;
   color: var(--text-muted);
   background: transparent;
+  transition: color var(--dur-hover) ease, transform var(--dur-press) var(--ease-out-quint);
 }
 
-.theme-pill-btn.active {
+.theme-pill-btn svg {
+  width: 0.8rem;
+  height: 0.8rem;
+}
+
+.theme-pill-btn:active {
+  transform: scale(0.96);
+}
+
+:root:not(.dark) .theme-pill-btn[data-mode='light'],
+.dark .theme-pill-btn[data-mode='dark'] {
   color: var(--text-primary);
-  background: var(--bg-surface);
-  box-shadow: var(--shadow);
 }
 
-.dark .theme-pill-btn.active {
-  color: var(--text-invert);
-  background: var(--bg-elevated);
+@media (hover: hover) and (pointer: fine) {
+  :root:not(.dark) .theme-pill-btn[data-mode='dark']:hover,
+  .dark .theme-pill-btn[data-mode='light']:hover {
+    color: var(--text-secondary);
+  }
 }
 
-/* ─── Animations ─── */
+/* ─── Ikony (inline SVG, místo emoji) ─── */
+.icon {
+  width: 1em;
+  height: 1em;
+  flex-shrink: 0;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.icon-tile {
+  width: 3rem;
+  height: 3rem;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  color: var(--accent);
+  background: var(--accent-soft);
+  border: 1px solid color-mix(in srgb, var(--accent) 22%, transparent);
+  font-size: 1.35rem;
+  transition: background-color var(--dur-hover) ease, border-color var(--dur-hover) ease;
+}
+
+.icon-tile-lg {
+  width: 3.5rem;
+  height: 3.5rem;
+  font-size: 1.5rem;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .group:hover .icon-tile {
+    border-color: var(--accent);
+  }
+}
+
+/* ─── Animations ───
+   Vstupy a odhalení při scrollu: CSS animace (běží mimo main thread,
+   zůstanou plynulé i když se stránka ještě načítá). Jednorázové → keyframes OK.
+   Prvky nad ohybem dostanou .in-view hned při startu (viz ScrollReveal),
+   takže se jejich vstupní animace nepřehrává dvakrát. */
 @keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(12px) scale(0.98); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+  from { opacity: 0; transform: translateY(14px) scale(0.985); }
+  /* transform: none → po doběhnutí nezůstane zbytečný stacking context */
+  to { opacity: 1; transform: none; }
 }
 
 @keyframes fadeInDown {
-  from { opacity: 0; transform: translateY(-16px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translateY(-12px); }
+  to { opacity: 1; transform: none; }
 }
 
-@keyframes slideDown {
-  from { transform: translateY(-100%); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
-
-@keyframes slideUp {
-  from { transform: translateY(100%); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
-
-@keyframes pulse-dot {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.5; transform: scale(0.8); }
-}
-
-.animate-fadeInUp { animation: fadeInUp 280ms var(--ease-out-quint) both; }
-.animate-fadeInDown { animation: fadeInDown 240ms var(--ease-out-quint) both; }
-.animate-slideDown { animation: slideDown 250ms var(--ease-out-quint) both; }
-.animate-slideUp { animation: slideUp 220ms var(--ease-out-quint) both; }
+/* fill-mode: backwards — během zpoždění drží výchozí stav, po doběhnutí
+   předá řízení zpět běžným stylům (např. :active stisk karty funguje). */
+.animate-fadeInUp { animation: fadeInUp 420ms var(--ease-out-quint) backwards; }
+.animate-fadeInDown { animation: fadeInDown 320ms var(--ease-out-quint) backwards; }
 
 html.reveal-ready .animate-fadeInUp:not(.in-view),
 html.reveal-ready .animate-fadeInDown:not(.in-view) {
   animation: none;
   opacity: 0;
-  transform: translateY(12px) scale(0.98);
 }
 
-html.reveal-ready .animate-fadeInUp.in-view {
-  animation: fadeInUp 280ms var(--ease-out-quint) both;
+/* Stagger: 60 ms mezi položkami. Pozor: žádné opacity: 0 natvrdo —
+   skrytí během zpoždění zajišťuje animation-fill-mode: backwards. */
+.stagger-1 { animation-delay: 60ms; }
+.stagger-2 { animation-delay: 120ms; }
+.stagger-3 { animation-delay: 180ms; }
+.stagger-4 { animation-delay: 240ms; }
+.stagger-5 { animation-delay: 300ms; }
+
+/* Odhalení obrázku zdola (clip-path) — jen marketingové plochy */
+.reveal-clip {
+  clip-path: inset(0 0 0 0);
 }
 
-html.reveal-ready .animate-fadeInDown.in-view {
-  animation: fadeInDown 240ms var(--ease-out-quint) both;
+html.reveal-ready .reveal-clip:not(.in-view) {
+  clip-path: inset(0 0 100% 0);
 }
 
-.stagger-1 { animation-delay: 0.05s; opacity: 0; }
-.stagger-2 { animation-delay: 0.12s; opacity: 0; }
-.stagger-3 { animation-delay: 0.2s; opacity: 0; }
-.stagger-4 { animation-delay: 0.28s; opacity: 0; }
+html.reveal-ready .reveal-clip.in-view {
+  transition: clip-path 800ms var(--ease-in-out-strong);
+}
+
+.reveal-clip img {
+  transition: transform 1100ms var(--ease-out-quint);
+}
+
+html.reveal-ready .reveal-clip:not(.in-view) img {
+  transform: scale(1.08);
+}
+
+/* ─── Cookie lišta: vjede zespodu, odjede zespodu ─── */
+.cookie-banner {
+  transform: translateY(0);
+  opacity: 1;
+  transition:
+    transform 260ms var(--ease-out-quint),
+    opacity 260ms var(--ease-out-quint);
+}
+
+@starting-style {
+  .cookie-banner {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+}
+
+.cookie-banner[data-leaving='true'] {
+  transform: translateY(100%);
+  opacity: 0;
+  transition:
+    transform 180ms var(--ease-out-quint),
+    opacity 180ms var(--ease-out-quint);
+}
+
+/* ─── Postup „Jak to funguje" ───
+   Mobil: svislá osa vlevo. Od md: čtyři sloupce, spojnice mezi čísly.
+   Při odhalení naskočí kroky postupně a spojnice se „dotáhne" k dalšímu. */
+.process-steps {
+  display: grid;
+  gap: 2rem;
+  max-width: 64rem;
+  margin-inline: auto;
+}
+
+.process-step {
+  --step-delay: calc(var(--i, 0) * 160ms);
+  position: relative;
+  display: grid;
+  grid-template-columns: 3rem 1fr;
+  column-gap: 1rem;
+  align-items: start;
+}
+
+.process-step-num {
+  position: relative;
+  z-index: 1;
+  width: 3rem;
+  height: 3rem;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  font-family: var(--font-display), sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--accent);
+  background: var(--accent-soft);
+  border: 1.5px solid var(--accent);
+  transition:
+    opacity 420ms var(--ease-out-quint) var(--step-delay),
+    transform 420ms var(--ease-out-quint) var(--step-delay),
+    background-color var(--dur-hover) ease,
+    color var(--dur-hover) ease;
+}
+
+.process-step-body {
+  padding-top: 0.6rem;
+  transition:
+    opacity 420ms var(--ease-out-quint) calc(var(--step-delay) + 60ms),
+    transform 420ms var(--ease-out-quint) calc(var(--step-delay) + 60ms);
+}
+
+.process-step-line {
+  position: absolute;
+  left: calc(1.5rem - 1px);
+  top: 3.75rem;
+  bottom: -1.25rem;
+  width: 2px;
+  border-radius: 2px;
+  background: linear-gradient(to bottom, var(--accent), var(--border-strong));
+  transform-origin: top;
+  transition: transform 520ms var(--ease-in-out-cubic) calc(var(--step-delay) + 200ms);
+}
+
+@media (min-width: 768px) {
+  .process-steps {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1.5rem;
+  }
+
+  .process-step {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    row-gap: 1.25rem;
+    text-align: center;
+  }
+
+  .process-step-body {
+    padding-top: 0;
+    max-width: 15rem;
+  }
+
+  /* Odznak je uprostřed sloupce → spojnice vede od středu ke středu dalšího
+     (minus poloměr odznaku a 0.75rem mezery; 1.5rem = gap mřížky) */
+  .process-step-line {
+    top: calc(1.5rem - 1px);
+    left: calc(50% + 2.25rem);
+    right: calc(-50% + 0.75rem);
+    bottom: auto;
+    width: auto;
+    height: 2px;
+    background: linear-gradient(to right, var(--accent), var(--border-strong));
+    transform-origin: left;
+  }
+}
+
+html.reveal-ready .reveal-steps:not(.in-view) .process-step-num {
+  opacity: 0;
+  transform: scale(0.95);
+}
+
+html.reveal-ready .reveal-steps:not(.in-view) .process-step-body {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+html.reveal-ready .reveal-steps:not(.in-view) .process-step-line {
+  transform: scaleY(0);
+}
+
+@media (min-width: 768px) {
+  html.reveal-ready .reveal-steps:not(.in-view) .process-step-line {
+    transform: scaleX(0);
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .process-step:hover .process-step-num {
+    color: #fff;
+    background: var(--accent);
+  }
+}
 
 /* ─── Nedostupná služba ─── */
 .service-unavailable {
@@ -684,7 +1080,8 @@ html.reveal-ready .animate-fadeInDown.in-view {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 2.5rem;
+  font-size: 2.25rem;
+  color: var(--accent);
   background: var(--accent-soft);
   border: 2px solid var(--accent);
   border-radius: 50%;
@@ -790,14 +1187,29 @@ html.reveal-ready .animate-fadeInDown.in-view {
   border-radius: 4px;
   font-family: inherit;
   cursor: pointer;
-  transition: background-color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, opacity 0.25s ease, transform 0.2s ease;
+  transition:
+    background-color var(--dur-hover) ease,
+    border-color var(--dur-hover) ease,
+    box-shadow 200ms ease,
+    opacity 200ms ease,
+    transform 200ms var(--ease-out-quint);
 }
 
-.price-chip:hover,
 .price-chip:focus-visible {
   background: var(--accent-soft);
   border-color: var(--accent);
   outline: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .price-chip:hover {
+    background: var(--accent-soft);
+    border-color: var(--accent);
+  }
+}
+
+.price-chip:active {
+  transform: scale(0.96);
 }
 
 /* ─── Zvýraznění po kliknutí na rozměr v legendě ─── */
@@ -806,6 +1218,10 @@ html.reveal-ready .animate-fadeInDown.in-view {
   border-color: var(--accent);
   box-shadow: 0 0 0 2px var(--accent);
   transform: translateY(-2px);
+}
+
+.price-chip-active:active {
+  transform: translateY(-2px) scale(0.96);
 }
 
 .price-chip-active .price-chip-label,
@@ -823,7 +1239,8 @@ html.reveal-ready .animate-fadeInDown.in-view {
   bottom: calc(100% + 10px);
   left: 50%;
   width: 190px;
-  transform: translateX(-50%) translateY(4px);
+  transform: translateX(-50%) translateY(4px) scale(0.97);
+  transform-origin: 50% calc(100% + 6px);
   padding: 0.65rem 0.75rem;
   background: var(--bg-invert);
   color: var(--text-invert);
@@ -839,7 +1256,10 @@ html.reveal-ready .animate-fadeInDown.in-view {
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
-  transition: opacity 0.18s ease, transform 0.18s ease;
+  transition:
+    opacity 125ms var(--ease-out-quint),
+    transform 125ms var(--ease-out-quint),
+    visibility 0s linear 125ms;
   z-index: 30;
 }
 
@@ -864,11 +1284,23 @@ html.reveal-ready .animate-fadeInDown.in-view {
   margin-bottom: 0.25rem;
 }
 
+/* Tooltip: krátké zpoždění při prvním najetí (žádné náhodné probliknutí
+   při přejíždění myší přes mřížku), samotné zobrazení rychlé. */
 .price-chip:hover .price-chip-tooltip,
 .price-chip:focus-visible .price-chip-tooltip {
   opacity: 1;
   visibility: visible;
-  transform: translateX(-50%) translateY(0);
+  transform: translateX(-50%) translateY(0) scale(1);
+  transition:
+    opacity 175ms var(--ease-out-quint) 250ms,
+    transform 175ms var(--ease-out-quint) 250ms,
+    visibility 0s linear 250ms;
+}
+
+@media (hover: none) {
+  .price-chip:hover .price-chip-tooltip {
+    transition-delay: 0s;
+  }
 }
 
 .price-chip-label {
@@ -929,7 +1361,16 @@ html.reveal-ready .animate-fadeInDown.in-view {
   background: var(--bg-surface);
   border: 1px solid var(--border-strong);
   cursor: pointer;
-  transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.25s ease, transform 0.2s ease;
+  transition:
+    background-color var(--dur-hover) ease,
+    border-color var(--dur-hover) ease,
+    color var(--dur-hover) ease,
+    box-shadow 200ms ease,
+    transform 200ms var(--ease-out-quint);
+}
+
+.size-category-chip:active {
+  transform: scale(0.96);
 }
 
 @media (min-width: 640px) {
@@ -945,12 +1386,19 @@ html.reveal-ready .animate-fadeInDown.in-view {
   }
 }
 
-.size-category-chip:hover,
 .size-category-chip:focus-visible {
   background: var(--accent-soft);
   border-color: var(--accent);
   color: var(--accent);
   outline: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .size-category-chip:not(.size-category-chip-active):hover {
+    background: var(--accent-soft);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
 }
 
 .size-category-chip-active {
@@ -1258,32 +1706,86 @@ html.reveal-ready .animate-fadeInDown.in-view {
   }
 }
 
+/* Omezený pohyb = méně a jemněji, ne nula: necháváme průhlednost a barvy,
+   odstraňujeme posuny, zvětšení a odhalování clip-path. */
+@keyframes fadeOnly {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
   }
 
   .animate-fadeInUp,
-  .animate-fadeInDown,
-  .animate-slideDown,
-  .animate-slideUp,
+  .animate-fadeInDown {
+    animation: fadeOnly 200ms ease backwards;
+    animation-delay: 0ms;
+  }
+
   .stats-chart-col,
   .stats-bar > span,
   .status-dot-live,
-  .tech-badge-live::before {
+  .tech-badge-live::before,
+  .mascot-chat-typing i {
     animation: none;
     opacity: 1;
     transform: none;
   }
 
-  .btn-tech-primary,
-  .btn-tech-secondary,
-  .nav-link-tech,
-  .tech-panel,
-  .hud-frame,
-  body,
-  .site-header {
+  .reveal-clip,
+  html.reveal-ready .reveal-clip:not(.in-view) {
+    clip-path: none;
     transition: none;
+  }
+
+  .reveal-clip img,
+  html.reveal-ready .reveal-clip:not(.in-view) img {
+    transform: none;
+  }
+
+  html.reveal-ready .reveal-steps:not(.in-view) .process-step-num,
+  html.reveal-ready .reveal-steps:not(.in-view) .process-step-body,
+  html.reveal-ready .reveal-steps:not(.in-view) .process-step-line {
+    transform: none;
+  }
+
+  .btn-tech-primary:active,
+  .btn-tech-secondary:active,
+  .nav-link-tech:active,
+  .price-chip:active,
+  .size-category-chip:active,
+  .theme-pill-btn:active,
+  .menu-toggle:active,
+  .mascot-chat-launcher:active,
+  a.tech-panel:active {
+    transform: none;
+  }
+
+  .btn-arrow,
+  a:hover > .btn-arrow,
+  button:hover > .btn-arrow {
+    transform: none;
+  }
+
+  .mobile-menu,
+  .mobile-menu[data-open='true'],
+  .mascot-chat-panel,
+  .mascot-chat-panel[data-open='true'],
+  .cookie-banner,
+  .cookie-banner[data-leaving='true'] {
+    transform: none;
+  }
+
+  .nav-links-active[data-ready='true'],
+  .theme-pill-thumb {
+    transition: none;
+  }
+
+  .price-chip-tooltip,
+  .price-chip:hover .price-chip-tooltip {
+    transform: translateX(-50%);
   }
 }
 
@@ -1320,11 +1822,13 @@ html.reveal-ready .animate-fadeInDown.in-view {
   flex-direction: column;
   align-items: flex-end;
   gap: 0.75rem;
-  transition: bottom 250ms var(--ease-in-out-cubic);
+  --chat-raise: 0px;
+  transform: translateY(calc(-1 * var(--chat-raise)));
+  transition: transform 260ms var(--ease-in-out-cubic);
 }
 
 .mascot-chat-raised {
-  bottom: 7.5rem;
+  --chat-raise: 6.25rem;
 }
 
 .mascot-chat-launcher {
@@ -1339,9 +1843,20 @@ html.reveal-ready .animate-fadeInDown.in-view {
   box-shadow: var(--shadow);
   display: grid;
   place-items: center;
+  transition:
+    border-color var(--dur-hover) ease,
+    color var(--dur-hover) ease,
+    transform var(--dur-press) var(--ease-out-quint);
 }
 
+.mascot-chat-launcher:active {
+  transform: scale(0.94);
+}
+
+/* Výměna ikon bublina ↔ křížek: crossfade + blur, aby to působilo jako
+   jedna proměna, ne dvě ikony přes sebe */
 .mascot-chat-launcher svg {
+  grid-area: 1 / 1;
   width: 1.15rem;
   height: 1.15rem;
   fill: none;
@@ -1349,14 +1864,38 @@ html.reveal-ready .animate-fadeInDown.in-view {
   stroke-width: 1.6;
   stroke-linecap: round;
   stroke-linejoin: round;
+  transition:
+    opacity 200ms var(--ease-out-quint),
+    transform 200ms var(--ease-out-quint),
+    filter 200ms var(--ease-out-quint);
 }
 
-.mascot-chat-launcher:hover {
-  border-color: var(--accent);
-  color: var(--accent);
+.mascot-chat-launcher .icon-close,
+.mascot-chat-launcher[aria-expanded='true'] .icon-chat {
+  opacity: 0;
+  transform: scale(0.6) rotate(-45deg);
+  filter: blur(2px);
 }
 
+.mascot-chat-launcher[aria-expanded='true'] .icon-close {
+  opacity: 1;
+  transform: none;
+  filter: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .mascot-chat-launcher:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+}
+
+/* Panel: vždy v DOM, vyroste z tlačítka (origin vpravo dole), zavře se
+   stejnou cestou zpět — rychleji, než se otevřel. */
 .mascot-chat-panel {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 0.75rem);
   width: min(20rem, calc(100vw - 2rem));
   height: min(26rem, calc(100dvh - 7.5rem));
   display: flex;
@@ -1367,13 +1906,26 @@ html.reveal-ready .animate-fadeInDown.in-view {
   border-radius: 18px;
   box-shadow: var(--shadow-lg);
   overflow: hidden;
-  transform-origin: bottom right;
-  animation: mascotChatIn 220ms var(--ease-out-quint);
+  transform-origin: calc(100% - 1.5rem) calc(100% + 1.5rem);
+  opacity: 0;
+  transform: translateY(8px) scale(0.95);
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity var(--dur-exit) var(--ease-out-quint),
+    transform var(--dur-exit) var(--ease-out-quint),
+    visibility 0s linear var(--dur-exit);
 }
 
-@keyframes mascotChatIn {
-  from { opacity: 0; transform: translateY(10px) scale(0.94); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+.mascot-chat-panel[data-open='true'] {
+  opacity: 1;
+  transform: none;
+  visibility: visible;
+  pointer-events: auto;
+  transition:
+    opacity 220ms var(--ease-out-quint),
+    transform 220ms var(--ease-out-quint),
+    visibility 0s;
 }
 
 .mascot-chat-head {
@@ -1427,6 +1979,17 @@ html.reveal-ready .animate-fadeInDown.in-view {
   color: inherit;
   font-size: 1.4rem;
   cursor: pointer;
+  transition: background-color var(--dur-hover) ease, transform var(--dur-press) var(--ease-out-quint);
+}
+
+.mascot-chat-close:active {
+  transform: scale(0.92);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .mascot-chat-close:hover {
+    background: var(--iron-soft);
+  }
 }
 
 .mascot-chat-log {
@@ -1444,6 +2007,19 @@ html.reveal-ready .animate-fadeInDown.in-view {
   align-items: flex-end;
   gap: 0.4rem;
   width: 100%;
+  transition: opacity 240ms var(--ease-out-quint), transform 240ms var(--ease-out-quint);
+}
+
+/* Nová zpráva: zjemní příchod místo „teleportu" do konverzace */
+@starting-style {
+  .mascot-chat-row {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+.mascot-chat-user {
+  transform-origin: bottom right;
 }
 
 .mascot-chat-user {
@@ -1465,7 +2041,27 @@ html.reveal-ready .animate-fadeInDown.in-view {
 }
 
 .mascot-chat-typing {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
   color: var(--text-secondary, inherit);
+}
+
+.mascot-chat-typing i {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.35;
+  animation: typingDot 1s ease-in-out infinite;
+}
+
+.mascot-chat-typing i:nth-child(2) { animation-delay: 150ms; }
+.mascot-chat-typing i:nth-child(3) { animation-delay: 300ms; }
+
+@keyframes typingDot {
+  0%, 60%, 100% { opacity: 0.35; transform: translateY(0); }
+  30% { opacity: 1; transform: translateY(-2px); }
 }
 
 .mascot-chat-user .mascot-chat-bubble {
@@ -1508,6 +2104,28 @@ html.reveal-ready .animate-fadeInDown.in-view {
   padding: 0.35rem 0.7rem;
   font-size: 0.75rem;
   cursor: pointer;
+  transition:
+    border-color var(--dur-hover) ease,
+    color var(--dur-hover) ease,
+    background-color var(--dur-hover) ease,
+    transform var(--dur-press) var(--ease-out-quint);
+}
+
+.mascot-chat-suggestions button:active:not(:disabled) {
+  transform: scale(0.96);
+}
+
+.mascot-chat-suggestions button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .mascot-chat-suggestions button:not(:disabled):hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--accent-soft);
+  }
 }
 
 .mascot-chat-form {
@@ -1526,6 +2144,13 @@ html.reveal-ready .animate-fadeInDown.in-view {
   border-radius: 999px;
   padding: 0.7rem 0.9rem;
   font: inherit;
+  transition: border-color var(--dur-hover) ease, box-shadow var(--dur-hover) ease;
+}
+
+.mascot-chat-form input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
 }
 
 .mascot-chat-form button {
@@ -1538,6 +2163,11 @@ html.reveal-ready .animate-fadeInDown.in-view {
   font-size: 0.8rem;
   padding: 0.7rem 0.85rem;
   cursor: pointer;
+  transition: opacity var(--dur-hover) ease, transform var(--dur-press) var(--ease-out-quint);
+}
+
+.mascot-chat-form button:active:not(:disabled) {
+  transform: scale(0.96);
 }
 
 .mascot-chat-form button:disabled {
@@ -1547,7 +2177,7 @@ html.reveal-ready .animate-fadeInDown.in-view {
 
 @media (max-width: 640px) {
   .mascot-chat-raised {
-    bottom: 11rem;
+    --chat-raise: 9.75rem;
   }
 }
 
@@ -1556,8 +2186,14 @@ html.reveal-ready .animate-fadeInDown.in-view {
     transition: none;
   }
 
-  .mascot-chat-panel {
-    animation: none;
+  .mascot-chat-row {
+    transition: opacity 200ms ease;
+  }
+
+  @starting-style {
+    .mascot-chat-row {
+      transform: none;
+    }
   }
 }
 

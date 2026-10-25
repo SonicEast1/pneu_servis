@@ -30,7 +30,7 @@ export default function Footer() {
   }, []);
 
   return (
-    <footer className="relative z-10 bg-surface border-t border-theme transition-colors duration-400">
+    <footer className="relative z-10 bg-surface border-t border-theme">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
           <div className="space-y-5">
@@ -60,7 +60,7 @@ export default function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   title={s.label}
-                  className="w-9 h-9 border border-theme flex items-center justify-center font-mono-tech text-xs text-theme-muted hover:text-accent hover:border-[var(--accent)] transition-all duration-300"
+                  className="w-9 h-9 border border-theme flex items-center justify-center font-mono-tech text-xs text-theme-muted hover:text-accent hover:border-[var(--accent)] transition-colors duration-150"
                 >
                   {s.icon}
                 </a>

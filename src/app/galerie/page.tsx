@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import TechBackground from '@/components/TechBackground';
 import { CONTACT_INFO } from '@/constants/contact';
 import MascotCTA from '@/components/MascotCTA';
+import { IconCamera } from '@/components/Icons';
 import { bookingHref, BOOKING_CTA_LABEL, RESERVATIONS_ENABLED } from '@/constants/reservation';
 
 export const metadata: Metadata = {
@@ -36,7 +37,9 @@ export default function GalleryPage() {
       <section className="py-20 lg:py-28">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="construction-panel animate-fadeInUp">
-            <div className="construction-icon">📷</div>
+            <div className="construction-icon">
+              <IconCamera />
+            </div>
             <span className="tech-badge tech-badge-live mb-5">Připravujeme</span>
             <h2 className="section-title font-display text-2xl sm:text-3xl font-bold mb-3">
               Fotogalerie se připravuje
@@ -52,7 +55,7 @@ export default function GalleryPage() {
                 rel="noopener noreferrer"
                 className="btn-tech-secondary"
               >
-                Facebook →
+                Facebook <span className="btn-arrow" aria-hidden="true">→</span>
               </a>
               <a
                 href={CONTACT_INFO.socials.instagram}
@@ -60,7 +63,7 @@ export default function GalleryPage() {
                 rel="noopener noreferrer"
                 className="btn-tech-secondary"
               >
-                Instagram →
+                Instagram <span className="btn-arrow" aria-hidden="true">→</span>
               </a>
             </div>
           </div>

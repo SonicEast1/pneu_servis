@@ -5,6 +5,7 @@ import Image from 'next/image';
 import TechBackground from '@/components/TechBackground';
 import { CONTACT_INFO } from '@/constants/contact';
 import MascotCTA from '@/components/MascotCTA';
+import { IconMail, IconPhone } from '@/components/Icons';
 
 interface Service {
   id: string;
@@ -112,7 +113,7 @@ export default function BookingPageContent() {
             <div className="flex items-center justify-center gap-0">
               {[1, 2, 3, 4].map((s, index) => (
                 <div key={s} className="flex items-center">
-                  <div className={`flex items-center justify-center w-10 h-10 font-display font-bold text-sm transition-all border-2 ${
+                  <div className={`flex items-center justify-center w-10 h-10 font-display font-bold text-sm transition-colors duration-200 border-2 ${
                     step >= s
                       ? 'bg-accent border-accent text-white'
                       : 'bg-transparent border-[var(--border-strong)] text-theme-muted'
@@ -120,7 +121,7 @@ export default function BookingPageContent() {
                     {step > s ? '✓' : s}
                   </div>
                   {index < 3 && (
-                    <div className={`w-12 md:w-20 h-0.5 transition-all ${step > s ? 'bg-accent' : 'bg-[var(--border-strong)]'}`} />
+                    <div className={`w-12 md:w-20 h-0.5 transition-colors duration-200 ${step > s ? 'bg-accent' : 'bg-[var(--border-strong)]'}`} />
                   )}
                 </div>
               ))}
@@ -156,7 +157,7 @@ export default function BookingPageContent() {
                           key={service.id}
                           type="button"
                           onClick={() => setFormData({ ...formData, service: service.id })}
-                          className={`p-5 border-2 rounded text-left transition-all ${
+                          className={`p-5 border-2 rounded text-left transition-[border-color,background-color,scale] duration-150 ease-[var(--ease-out-quint)] active:scale-[0.98] motion-reduce:active:scale-100 ${
                             formData.service === service.id
                               ? 'border-accent bg-[var(--accent-soft)]'
                               : 'border-[var(--border-strong)] hover:border-accent'
@@ -202,7 +203,7 @@ export default function BookingPageContent() {
                             type="button"
                             disabled={isBooked}
                             onClick={() => setFormData({ ...formData, time })}
-                            className={`py-2.5 text-sm font-display font-semibold border-2 rounded transition-all ${
+                            className={`py-2.5 text-sm font-display font-semibold border-2 rounded transition-[color,border-color,background-color,scale] duration-150 ease-[var(--ease-out-quint)] enabled:active:scale-[0.96] motion-reduce:active:scale-100 ${
                               isBooked
                                 ? 'border-[var(--border)] text-theme-muted cursor-not-allowed opacity-40'
                                 : formData.time === time
@@ -274,7 +275,7 @@ export default function BookingPageContent() {
                   </div>
                   <div className="bg-[var(--accent-soft)] border border-[var(--accent)] rounded p-4">
                     <p className="text-sm text-theme-secondary">
-                      📧 Potvrzení bude zasláno na <strong>{formData.email}</strong>
+                      <IconMail className="inline-block align-[-0.15em] mr-1.5 text-accent" />Potvrzení bude zasláno na <strong>{formData.email}</strong>
                     </p>
                   </div>
                 </div>
@@ -313,7 +314,8 @@ export default function BookingPageContent() {
           <div className="mt-10 text-center">
             <p className="text-theme-muted mb-4 text-sm">Preferujete telefonickou rezervaci?</p>
             <a href={`tel:${CONTACT_INFO.phone.raw}`} className="btn-tech-secondary">
-              📞 {CONTACT_INFO.phone.display}
+              <IconPhone />
+              {CONTACT_INFO.phone.display}
             </a>
           </div>
         </div>

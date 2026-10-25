@@ -42,7 +42,7 @@ export default function CenikPage() {
 
       <SizeFocusProvider>
         {/* Size categories , aligned with tables */}
-        <section className="border-b border-theme bg-surface-alt py-8 sm:py-10 transition-colors duration-400">
+        <section className="border-b border-theme bg-surface-alt py-8 sm:py-10">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex flex-wrap items-baseline justify-between gap-2 mb-4">
               <p className="section-tag">Rozměrové kategorie</p>
@@ -67,7 +67,7 @@ export default function CenikPage() {
         </section>
 
         {/* Další služby */}
-        <section className="border-t border-theme bg-surface-alt py-16 lg:py-20 transition-colors duration-400">
+        <section className="border-t border-theme bg-surface-alt py-16 lg:py-20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="mb-8">
               <p className="section-tag">Další služby</p>
@@ -91,7 +91,7 @@ export default function CenikPage() {
       </section>
 
       {/* Note */}
-      <section className="border-t border-theme bg-surface-alt py-10 transition-colors duration-400">
+      <section className="border-t border-theme bg-surface-alt py-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="tech-panel max-w-3xl">
             <p className="font-mono-tech text-[0.7rem] text-tech tracking-widest uppercase mb-2">Poznámka</p>
