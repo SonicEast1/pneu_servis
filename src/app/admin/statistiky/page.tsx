@@ -1,9 +1,7 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState, type FormEvent } from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
-import TechBackground from '@/components/TechBackground';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { PageHeader } from '@/components/admin/ui';
 import type { AnalyticsSummary, DailyPoint, RankedItem } from '@/lib/analyticsTypes';
 
 const RANGES = [
@@ -12,15 +10,6 @@ const RANGES = [
   { days: 30, label: '30 dní', hint: 'Posledních 30 dní' },
   { days: 0, label: 'Celkem', hint: 'Od spuštění statistik' },
 ] as const;
-
-const ADMIN_LINKS = [
-  { href: '/admin/statistiky', label: 'Statistiky' },
-  { href: '/admin/rezervace', label: 'Rezervace' },
-  { href: '/admin/sluzby', label: 'Služby' },
-  { href: '/admin/recenze', label: 'Recenze' },
-  { href: '/admin/oteviraci-doba', label: 'Otevírací doba' },
-  { href: '/admin/upload', label: 'Galerie' },
-];
 
 const CATEGORY_LABEL: Record<string, string> = {
   card: 'Karta',
@@ -130,87 +119,7 @@ function DayChart({ points }: { points: DailyPoint[] }) {
   );
 }
 
-function LoginGate({ onSuccess }: { onSuccess: () => void }) {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [pending, setPending] = useState(false);
-
-  const submit = async (event: FormEvent) => {
-    event.preventDefault();
-    setPending(true);
-    setError('');
-    try {
-      const response = await fetch('/api/admin/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password }),
-      });
-      if (!response.ok) {
-        const body = await response.json().catch(() => ({}));
-        setError(typeof body.error === 'string' ? body.error : 'Přihlášení se nepovedlo.');
-        return;
-      }
-      onSuccess();
-    } catch {
-      setError('Přihlášení se nepovedlo.');
-    } finally {
-      setPending(false);
-    }
-  };
-
-  return (
-    <TechBackground>
-      <section className="relative border-b border-theme py-16 lg:py-24 overflow-hidden">
-        <div className="absolute inset-0 opacity-15 pointer-events-none">
-          <Image src="/pictures_web/hero_tire.png" alt="" fill className="object-cover" sizes="100vw" priority />
-          <div className="absolute inset-0" style={{ background: 'var(--hero-overlay)' }} />
-        </div>
-        <div className="relative max-w-md mx-auto px-4">
-          <p className="section-tag mb-3">Admin</p>
-          <h1 className="font-display text-4xl font-bold text-theme mb-3">
-            Přihlášení <span className="gradient-tech">statistik</span>
-          </h1>
-          <p className="text-theme-secondary mb-8">
-            Tahle stránka je jen pro správce webu.
-          </p>
-          <form onSubmit={submit} className="tech-panel stats-panel space-y-4">
-            <label className="block">
-              <span className="font-display text-xs font-bold uppercase tracking-widest text-theme-muted">Jméno</span>
-              <input
-                className="form-input mt-2"
-                name="username"
-                autoComplete="username"
-                value={username}
-                onChange={(event) => setUsername(event.target.value)}
-                required
-              />
-            </label>
-            <label className="block">
-              <span className="font-display text-xs font-bold uppercase tracking-widest text-theme-muted">Heslo</span>
-              <input
-                className="form-input mt-2"
-                name="password"
-                type="password"
-                autoComplete="current-password"
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
-                required
-              />
-            </label>
-            {error && <p className="text-sm text-accent">{error}</p>}
-            <button type="submit" className="btn-tech-primary w-full" disabled={pending}>
-              {pending ? 'Ověřuji...' : 'Vstoupit'}
-            </button>
-          </form>
-        </div>
-      </section>
-    </TechBackground>
-  );
-}
-
 export default function AdminStatsPage() {
-  const [authed, setAuthed] = useState<'checking' | 'yes' | 'no'>('checking');
   const [days, setDays] = useState(7);
   const [data, setData] = useState<AnalyticsSummary | null>(null);
   const [loading, setLoading] = useState(true);
@@ -231,24 +140,10 @@ export default function AdminStatsPage() {
     }
   }, []);
 
+  // Přihlášení hlídá layout adminu
   useEffect(() => {
-    let cancelled = false;
-    fetch('/api/admin/session')
-      .then((response) => {
-        if (!cancelled) setAuthed(response.ok ? 'yes' : 'no');
-      })
-      .catch(() => {
-        if (!cancelled) setAuthed('no');
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  useEffect(() => {
-    if (authed !== 'yes') return;
     load(days);
-  }, [days, load, authed]);
+  }, [days, load]);
 
   const totals = data?.totals;
   const hasData = Boolean(totals && (totals.pageviews || totals.clicks || totals.sessions));
@@ -261,62 +156,13 @@ export default function AdminStatsPage() {
     [data],
   );
 
-  const logout = async () => {
-    await fetch('/api/admin/session', { method: 'DELETE' });
-    setAuthed('no');
-    setData(null);
-  };
-
-  if (authed === 'checking') {
-    return (
-      <TechBackground>
-        <section className="py-24 text-center">
-          <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-[var(--accent)] mx-auto mb-4" />
-          <p className="text-theme-muted">Ověřuji přístup...</p>
-        </section>
-      </TechBackground>
-    );
-  }
-
-  if (authed === 'no') {
-    return <LoginGate onSuccess={() => setAuthed('yes')} />;
-  }
-
   return (
-    <TechBackground>
-      <section className="relative border-b border-theme py-10 lg:py-14 overflow-hidden">
-        <div className="absolute inset-0 opacity-15 pointer-events-none">
-          <Image src="/pictures_web/hero_tire.png" alt="" fill className="object-cover" sizes="100vw" priority />
-          <div className="absolute inset-0" style={{ background: 'var(--hero-overlay)' }} />
-        </div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <p className="section-tag mb-3">Admin</p>
-          <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-theme mb-2">
-            Statistiky <span className="gradient-tech">webu</span>
-          </h1>
-          <p className="text-theme-secondary max-w-2xl">
-            Návštěvy, stránky a kliknutí. Bez IP adres, jen pro vás.
-          </p>
-        </div>
-      </section>
-
-      <section className="border-b border-theme bg-surface-alt py-4 transition-colors duration-400">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-          <nav className="flex flex-wrap gap-1" aria-label="Admin">
-            {ADMIN_LINKS.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`nav-link-tech ${link.href === '/admin/statistiky' ? 'active' : ''}`}
-              >
-                {link.label}
-              </Link>
-            ))}
-          </nav>
+    <div className="admin-stats-page">
+      <PageHeader
+        title="Statistiky"
+        description="Návštěvy, stránky a kliknutí. Bez IP adres, jen pro vás."
+        action={
           <div className="flex flex-wrap items-center gap-1" role="group" aria-label="Období">
-            <button type="button" onClick={logout} className="nav-link-tech">
-              Odhlásit
-            </button>
             {RANGES.map((range) => (
               <button
                 key={range.label}
@@ -329,8 +175,8 @@ export default function AdminStatsPage() {
               </button>
             ))}
           </div>
-        </div>
-      </section>
+        }
+      />
 
       {loading && !data && (
         <section className="py-20">
@@ -447,6 +293,6 @@ export default function AdminStatsPage() {
           </section>
         </div>
       )}
-    </TechBackground>
+    </div>
   );
 }

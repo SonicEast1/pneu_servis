@@ -1,13 +1,8 @@
 import { CONTACT_INFO } from '@/constants/contact';
-import { getOpenStatus, type OpeningHour } from '@/lib/openingHours';
-import {
-  SERVICE_PACKAGES,
-  SIZE_COLUMNS,
-  SUPPLEMENTARY_SERVICES,
-  type SizeKey,
-} from '@/constants/pricing';
+import { getOpenStatus } from '@/lib/openingHours';
+import { SIZE_COLUMNS, type SizeKey } from '@/constants/pricing';
 import { RESERVATIONS_ENABLED } from '@/constants/reservation';
-import { TEMPORARILY_UNAVAILABLE_SERVICES } from '@/constants/services';
+import type { ShopFacts } from '@/lib/shopFacts';
 
 export interface ChatLink {
   href: string;
@@ -76,23 +71,28 @@ function sizeFromText(text: string): SizeKey | null {
   return `r${size}` as SizeKey;
 }
 
-function priceLine(key: SizeKey): string {
-  const pack = SERVICE_PACKAGES[0];
+function priceLine(facts: ShopFacts, key: SizeKey): string {
+  const pack = facts.pricing.packages[0];
+  if (!pack) return 'Ceny najdete v ceníku na webu.';
   const label = SIZE_COLUMNS.find((column) => column.key === key)?.label ?? key;
   return `${pack.name} pro ${label} stojí ${pack.prices[key]} Kč za 1 kolo.`;
 }
 
-function hoursText(hours: OpeningHour[]): string {
-  const rows = [...hours].filter((row) => row.aktivni).sort((a, b) => a.poradi - b.poradi);
+function hoursText(facts: ShopFacts): string {
+  const rows = [...facts.hours].filter((row) => row.aktivni).sort((a, b) => a.poradi - b.poradi);
   const lines = rows.map((row) => `${row.den}: ${row.hodiny}`);
-  const status = getOpenStatus(rows, new Date());
+  facts.specials.slice(0, 3).forEach((special) => {
+    const [, month, day] = special.date.split('-').map(Number);
+    lines.push(`${day}. ${month}.: ${special.hodiny}${special.note ? ` (${special.note})` : ''}`);
+  });
+  const status = getOpenStatus(rows, new Date(), facts.specials);
   const now = status.isOpen
     ? `Teď máme otevřeno, ${status.detail}.`
     : `Teď máme zavřeno, ${status.detail}.`;
   return `${now}\n${lines.join('\n')}`;
 }
 
-export function answerMascot(message: string, hours: OpeningHour[]): ChatReply {
+export function answerMascot(message: string, facts: ShopFacts): ChatReply {
   const text = fold(message).trim();
   if (!text) {
     return { text: 'Napište, s čím vám mám pomoct. Třeba s otevírací dobou, cenou nebo adresou.' };
@@ -153,7 +153,7 @@ export function answerMascot(message: string, hours: OpeningHour[]): ChatReply {
   }
 
   if (has(text, ['otevir', 'otvir', 'otevren', 'zavren', 'hodin', 'kdy mate', 'kdy zvlad', 'sobot', 'nedele', 'vikend'])) {
-    return { text: hoursText(hours), suggestions: HOURS_SHORTCUTS };
+    return { text: hoursText(facts), suggestions: HOURS_SHORTCUTS };
   }
 
   if (has(text, ['adres', 'map', 'dojed', 'najdu vas', 'kde vas', 'kde jste', 'kde sid', 'nachodsk', 'provozovn'])) {
@@ -200,7 +200,7 @@ export function answerMascot(message: string, hours: OpeningHour[]): ChatReply {
   }
 
   if (has(text, ['defekt', 'oprava', 'pichl', 'dira', 'zaplat'])) {
-    const repair = SUPPLEMENTARY_SERVICES.find((row) => row.name === 'OPRAVA PNEU');
+    const repair = facts.pricing.supplementary.find((row) => row.name === 'OPRAVA PNEU');
     return {
       text: repair
         ? `Oprava pneumatiky stojí ${repair.price} Kč za 1 kus, včetně materiálu a práce. Když je plášť na boku, nejdřív se na něj podíváme.`
@@ -210,7 +210,7 @@ export function answerMascot(message: string, hours: OpeningHour[]): ChatReply {
   }
 
   if (has(text, ['runflat', 'run flat', 'run-flat'])) {
-    const extra = SUPPLEMENTARY_SERVICES.find((row) => row.name.includes('RUNFLAT'));
+    const extra = facts.pricing.supplementary.find((row) => row.name.includes('RUNFLAT'));
     return {
       text: extra
         ? `Runflat umíme. K ceně servisu se připočte ${extra.price} Kč za 1 kolo.`
@@ -236,7 +236,7 @@ export function answerMascot(message: string, hours: OpeningHour[]): ChatReply {
       };
     }
     return {
-      text: `${priceLine(size)} Cena je včetně DPH. Když chcete jen výměnu kola nebo vyvážení, napište to a rozměr.`,
+      text: `${priceLine(facts, size)} Cena je včetně DPH. Když chcete jen výměnu kola nebo vyvážení, napište to a rozměr.`,
       suggestions: ['Jiný rozměr', 'Jen vyvážení', 'Chci termín', 'Otevírací doba'],
     };
   }
@@ -249,7 +249,7 @@ export function answerMascot(message: string, hours: OpeningHour[]): ChatReply {
   }
 
   if (has(text, ['sluzb', 'delate', 'umite', 'nabid'])) {
-    const paused = TEMPORARILY_UNAVAILABLE_SERVICES.join(', ');
+    const paused = facts.unavailable.join(', ') || 'nic, vše běží';
     return {
       text: `Děláme přezutí, výměnu kol, vyvážení a opravy. Teď neděláme: ${paused}.`,
     };

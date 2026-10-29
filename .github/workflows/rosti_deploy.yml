@@ -30,10 +30,13 @@ jobs:
           mkdir -p ~/.ssh
           ssh-keyscan -p $PORT $HOST >> ~/.ssh/known_hosts
 
+      # Databáze a nahrané fotky leží v /srv/data — mimo /srv/app, takže je deploy nikdy nepřepíše.
+      # Heslo do adminu (ADMIN_PASSWORD) patří do GitHub secretu ENV.
       - name: Create env file
         run: |
           cat << EOF > .env
           ${{ secrets.ENV }}
+          DATA_DIR=/srv/data
           EOF
 
       - name: Install dependencies
@@ -73,6 +76,9 @@ jobs:
               listen 0.0.0.0:8000;
               listen [::]:8000;
 
+              # Nahrávání fotek do galerie (výchozí limit nginx je 1 MB)
+              client_max_body_size 15m;
+
               location / {
                   proxy_pass http://127.0.0.1:8080/;
                   proxy_redirect default;
@@ -104,7 +110,7 @@ jobs:
       - name: Install production deps on Roští and restart
         run: |
           ssh -p $PORT $USER@$HOST "cd /srv/app && npm ci --omit=dev"
-          ssh -p $PORT $USER@$HOST "cd /srv/app && node scripts/sync-opening-hours.mjs"
+          ssh -p $PORT $USER@$HOST "mkdir -p /srv/data/uploads"
           ssh -p $PORT $USER@$HOST supervisorctl reread
           ssh -p $PORT $USER@$HOST supervisorctl update
           ssh -p $PORT $USER@$HOST supervisorctl restart nginx

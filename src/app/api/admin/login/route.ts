@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { STATS_COOKIE, STATS_SESSION_SECONDS, createSessionToken, credentialsMatch } from '@/lib/adminAuth';
+import { ADMIN_COOKIE, ADMIN_SESSION_SECONDS, adminConfigured, createSessionToken, credentialsMatch } from '@/lib/adminAuth';
 
 const attempts = new Map<string, { count: number; resetAt: number }>();
 
@@ -22,6 +22,13 @@ export async function POST(request: NextRequest) {
     }
   }
 
+  if (!adminConfigured()) {
+    return NextResponse.json(
+      { error: 'Heslo do adminu není nastavené (proměnná ADMIN_PASSWORD na serveru).' },
+      { status: 503 },
+    );
+  }
+
   let body: { username?: string; password?: string };
   try {
     body = await request.json();
@@ -37,12 +44,12 @@ export async function POST(request: NextRequest) {
   }
 
   const response = NextResponse.json({ ok: true });
-  response.cookies.set(STATS_COOKIE, createSessionToken(), {
+  response.cookies.set(ADMIN_COOKIE, createSessionToken(), {
     httpOnly: true,
     sameSite: 'lax',
     secure: process.env.NODE_ENV === 'production',
     path: '/',
-    maxAge: STATS_SESSION_SECONDS,
+    maxAge: ADMIN_SESSION_SECONDS,
   });
   return response;
 }

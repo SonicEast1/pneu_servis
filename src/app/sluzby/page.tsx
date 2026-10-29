@@ -1,25 +1,13 @@
-'use client';
-
 import Link from 'next/link';
 import Image from 'next/image';
-import { useEffect, useState, type CSSProperties } from 'react';
+import type { CSSProperties } from 'react';
 import TechBackground from '@/components/TechBackground';
 import MascotCTA from '@/components/MascotCTA';
+import { listServices } from '@/lib/content';
 import { bookingHref, BOOKING_CTA_LABEL, RESERVATIONS_ENABLED } from '@/constants/reservation';
-import { isServiceTemporarilyUnavailable } from '@/constants/services';
 
-interface Service {
-  id: string;
-  nazev: string;
-  popis: string;
-  ikona: string;
-  cenaOsobni: string;
-  cenaSUV: string;
-  features: string;
-  kategorie?: string;
-  aktivni: boolean;
-  poradi?: number;
-}
+// Služby upravuje admin → načíst při každém zobrazení
+export const dynamic = 'force-dynamic';
 
 const processSteps = [
   { title: 'Rezervace', description: 'Zarezervujte si termín online nebo zavolejte. Rychle a bez čekání.' },
@@ -29,29 +17,7 @@ const processSteps = [
 ];
 
 export default function SluzbyPage() {
-  const [services, setServices] = useState<Service[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetch('/api/sluzby')
-      .then((r) => r.json())
-      .then((data) => setServices(data.services || []))
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, []);
-
-  if (loading) {
-    return (
-      <TechBackground>
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-[var(--accent)] mx-auto mb-4" />
-            <p className="text-theme-secondary">Načítám služby...</p>
-          </div>
-        </div>
-      </TechBackground>
-    );
-  }
+  const services = listServices({ onlyVisible: true });
 
   return (
     <TechBackground>
@@ -82,7 +48,7 @@ export default function SluzbyPage() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
               {services.map((service, index) => {
-                const unavailable = isServiceTemporarilyUnavailable(service.nazev);
+                const unavailable = service.nedostupna;
                 return (
                 <div
                   key={service.id}
@@ -100,9 +66,9 @@ export default function SluzbyPage() {
                   <p className={`text-theme-secondary text-sm ${unavailable ? 'relative z-10' : ''} ${unavailable ? 'mb-0' : 'mb-4'}`}>
                     {service.popis}
                   </p>
-                  {service.features && !unavailable && (
+                  {service.features.length > 0 && !unavailable && (
                     <ul className="space-y-1.5">
-                      {service.features.split(';').map((f, i) => (
+                      {service.features.map((f, i) => (
                         <li key={i} className="flex items-center gap-2 text-theme-secondary text-sm">
                           <span className="text-accent font-bold">✓</span>
                           {f.trim()}

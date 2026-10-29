@@ -1,135 +1,36 @@
-# 🔗 Důležité odkazy pro správu webu
+# Správa webu
 
-## 📋 Admin stránky:
+Vše se upravuje na adrese **/admin** (např. https://www.pneuservisvmk.cz/admin).
+Změny se na webu projeví hned po uložení.
 
-### 📅 **Správa rezervací**
-```
-http://localhost:3000/admin/rezervace
-```
-- Zobrazit všechny rezervace
-- Potvrdit/zrušit rezervace
-- Export do Excelu
-- Vyhledávání a filtrování
+| Sekce | Co se tam dělá | Kde se to ukáže na webu |
+|---|---|---|
+| Přehled | Nové rezervace, recenze ke schválení, rychlé odkazy | — |
+| Rezervace | Potvrdit / zrušit / smazat, export do Excelu | — |
+| Otevírací doba | Běžný týden, přestávka, mimořádné dny (svátky, dovolená) | Lišta nahoře, Kontakty, rezervace, chat |
+| Služby | Text, ikona, ceny, „dočasně nedostupná“, pořadí | Služby, výběr služby v rezervaci, patička |
+| Ceník | Ceny podle rozměru, doplňkové služby, platnost | Ceník, chat |
+| Galerie | Nahrání fotek (i z mobilu), popisek, kategorie, skrytí | Galerie |
+| Recenze | Přidat, schválit, skrýt | Recenze |
+| Statistiky | Návštěvnost webu | — |
 
-### ⭐ **Správa recenzí**
-```
-http://localhost:3000/admin/recenze
-```
-- Schvalování recenzí zákazníků
-- Zamítání nevhodných recenzí
-- Mazání recenzí
-- Vyhledávání a filtrování
+## Přihlášení
 
-### 📸 **Správa obrázků**
-```
-http://localhost:3000/admin/upload
-```
-- Nahrávání obrázků na web
-- Galerie nahraných obrázků
-- Kopírování URL obrázků
+Jméno a heslo jsou v proměnných prostředí na serveru, ne v kódu:
 
-### 🖼️ **Galerie obrázků**
-Obrázky pro galerii se přidávají do složky `public/gallery/` a jejich metadata se upravují v JSON souboru `data/gallery_data.json`.
-- Přidejte obrázky (JPG, PNG, GIF, WEBP) do složky `public/gallery/`
-- Upravte texty, kategorie a URL obrázků v JSON souboru `data/gallery_data.json`
-- Více informací: `GALERIE_NAVOD.md`
+- `ADMIN_PASSWORD` – heslo (povinné, bez něj se nikdo nepřihlásí)
+- `ADMIN_USERNAME` – jméno (nepovinné, výchozí `admin`)
 
-### 🔧 **Správa služeb a ceníku**
-```
-http://localhost:3000/admin/sluzby
-```
-- Přidávání nových služeb
-- Úprava názvů, popisů a cen služeb
-- Aktivace/deaktivace služeb
-- Správa ceníku přes Excel
+Na Rosti se nastavují přes GitHub secret `ENV` (Settings → Secrets and variables → Actions),
+jeden řádek na proměnnou, např. `ADMIN_PASSWORD=…`. Po změně stačí znovu nasadit.
+Změna hesla odhlásí všechny přihlášené.
 
-### 🕐 **Správa otevírací doby**
-```
-http://localhost:3000/admin/oteviraci-doba
-```
-- Úprava otevírací doby pro jednotlivé dny
-- Přidávání nových dnů
-- Aktivace/deaktivace dnů
-- Správa přes Excel
+Při vývoji na počítači (bez nastaveného hesla) platí `admin` / `admin`.
 
----
+## Kde jsou data
 
-## 🌐 Veřejné stránky:
+- Databáze: `DATA_DIR/pneuservis.db` (SQLite, na Rosti `/srv/data`)
+- Nahrané fotky: `DATA_DIR/uploads`
 
-### 🏠 **Homepage**
-```
-http://localhost:3000/
-```
-
-### 📅 **Rezervace (formulář)**
-```
-http://localhost:3000/rezervace
-```
-
-### 📝 **Recenze**
-```
-http://localhost:3000/recenze
-```
-
-### 🖼️ **Galerie**
-```
-http://localhost:3000/galerie
-```
-
-### 🔧 **Služby**
-```
-http://localhost:3000/sluzby
-```
-
----
-
-## 📊 Stažení dat:
-
-### **Stáhnout Excel soubor s rezervacemi**
-Použít tlačítko v admin rozhraní nebo přímý odkaz:
-```
-http://localhost:3000/api/rezervace/export
-```
-Stáhne se soubor `rezervace_all.xlsx` - přímo otevřitelný v Excelu!
-
----
-
-## 📁 Důležité soubory:
-
-| Soubor | Účel |
-|--------|------|
-| `data/rezervace_all.xlsx` | Excel soubor se všemi rezervacemi |
-| `data/recenze_all.xlsx` | Excel soubor se všemi recenzemi |
-| `data/cenik_sluzby.xlsx` | Excel soubor se službami a ceníkem |
-| `data/oteviraci_doby.xlsx` | Excel soubor s otevírací dobou |
-| `data/gallery_data.json` | JSON soubor s metadaty obrázků galerie (texty, kategorie, URL) |
-| `public/uploads/` | Nahrané obrázky |
-| `public/gallery/` | Obrázky pro galerii |
-| `public/logoWeb.png` | Logo webu |
-
----
-
-## 🚀 Spuštění webu:
-
-```bash
-cd C:\github\pneu_servis
-npm run dev
-```
-
-Web běží na: **http://localhost:3000**
-
----
-
-## 📞 Užitečné zkratky:
-
-- **Ctrl + C** = Zastavit server
-- **Ctrl + Shift + R** = Hard refresh stránky
-- **F12** = Otevřít Developer Tools
-
----
-
-Pro více informací viz:
-- `REZERVACE_SYSTEM.md` - Systém rezervací
-- `CENIK_SLUZBY_INFO.md` - Systém správy služeb a ceníku
-- `GALERIE_NAVOD.md` - Návod pro správu galerie obrázků
-
+Složka `/srv/data` je mimo nasazovaný kód, takže ji deploy nepřepíše.
+Při prvním spuštění se do databáze jednou převezmou data ze starých Excel souborů v `data/`.

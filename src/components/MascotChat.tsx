@@ -5,7 +5,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useCookieConsent } from '@/hooks/useCookieConsent';
-import { DEFAULT_OPENING_HOURS, type OpeningHour } from '@/lib/openingHours';
+import type { OpeningHour, SpecialDay } from '@/lib/openingHours';
+import { DEFAULT_FACTS, type ShopFacts } from '@/lib/shopFacts';
 import { answerMascot, START_SHORTCUTS, type ChatLink } from '@/lib/mascotChat';
 
 interface ChatMessage {
@@ -41,7 +42,8 @@ export default function MascotChat() {
   const { showBanner } = useCookieConsent();
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState('');
-  const [hours, setHours] = useState<OpeningHour[]>(DEFAULT_OPENING_HOURS);
+  // Záloha pro odpovědi bez serveru; hodiny se dotáhnou z API
+  const [facts, setFacts] = useState<ShopFacts>(DEFAULT_FACTS);
   const [messages, setMessages] = useState<ChatMessage[]>([WELCOME]);
   const [pending, setPending] = useState(false);
   const [ready, setReady] = useState(false);
@@ -64,8 +66,9 @@ export default function MascotChat() {
   useEffect(() => {
     fetch('/api/oteviraci-doba')
       .then((response) => response.json())
-      .then((data: { hours?: OpeningHour[] }) => {
-        if (Array.isArray(data.hours) && data.hours.length > 0) setHours(data.hours);
+      .then((data: { hours?: OpeningHour[]; specials?: SpecialDay[] }) => {
+        if (!Array.isArray(data.hours) || data.hours.length === 0) return;
+        setFacts((current) => ({ ...current, hours: data.hours!, specials: data.specials ?? [] }));
       })
       .catch(() => {});
   }, []);
@@ -117,12 +120,12 @@ export default function MascotChat() {
       });
       const data = await response.json() as { text?: string; suggestions?: string[] };
       if (!response.ok || typeof data.text !== 'string' || !data.text.trim()) {
-        finish(answerMascot(text, hours));
+        finish(answerMascot(text, facts));
       } else {
         finish({ text: data.text, suggestions: data.suggestions });
       }
     } catch {
-      finish(answerMascot(text, hours));
+      finish(answerMascot(text, facts));
     } finally {
       pendingRef.current = false;
       setPending(false);

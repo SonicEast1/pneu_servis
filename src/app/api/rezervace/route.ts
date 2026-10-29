@@ -1,341 +1,109 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { mkdir, access, readFile, writeFile } from 'fs/promises';
-import path from 'path';
-import * as XLSX from 'xlsx';
+import { denyUnlessAdmin } from '@/lib/adminAuth';
+import {
+  createReservation,
+  deleteReservation,
+  listReservations,
+  listServices,
+  setReservationStatus,
+  takenTimes,
+  type ReservationStatus,
+} from '@/lib/content';
+import { pragueDate } from '@/lib/openingHours';
 import { RESERVATIONS_ENABLED } from '@/constants/reservation';
 
-interface Reservation {
-  id: string;
-  service: string;
-  date: string;
-  time: string;
-  name: string;
-  email: string;
-  phone: string;
-  car?: string;
-  note?: string;
-  createdAt: string;
-  status: 'pending' | 'confirmed' | 'cancelled';
+export const dynamic = 'force-dynamic';
+
+const STATUSES: ReservationStatus[] = ['pending', 'confirmed', 'cancelled'];
+const clip = (value: unknown, max: number) => String(value ?? '').trim().slice(0, max);
+
+// Jednoduchá ochrana proti zahlcení formuláře: max. 5 rezervací za 10 minut z jedné IP
+const recent = new Map<string, number[]>();
+function allowed(request: NextRequest): boolean {
+  const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'local';
+  const now = Date.now();
+  const hits = (recent.get(ip) ?? []).filter((stamp) => now - stamp < 10 * 60_000);
+  if (hits.length >= 5) return false;
+  recent.set(ip, [...hits, now]);
+  return true;
 }
 
-// Načíst názvy služeb z Excelu
-async function getServiceNames(): Promise<Record<string, string>> {
-  try {
-    const servicesFile = path.join(process.cwd(), 'data', 'cenik_sluzby.xlsx');
-    const exists = await fileExists(servicesFile);
-    if (!exists) {
-      // Fallback na výchozí hodnoty, pokud soubor neexistuje
-      return {
-        'vymena': 'Výměna pneumatik',
-        'vyvazeni': 'Vyvážení kol',
-        'uskladneni': 'Uskladnění pneu',
-        'oprava': 'Oprava pneumatik',
-        'prodej': 'Prodej + montáž',
-      };
-    }
-
-    const fileBuffer = await readFile(servicesFile);
-    const workbook = XLSX.read(fileBuffer, { type: 'buffer' });
-    const sheetName = workbook.SheetNames[0];
-    const worksheet = workbook.Sheets[sheetName];
-    const data = XLSX.utils.sheet_to_json<Record<string, unknown>>(worksheet);
-
-    // Vytvořit mapování ID -> Název služby
-    const serviceMap: Record<string, string> = {};
-    data.forEach((row) => {
-      const id = String(row['ID'] ?? '');
-      const nazev = String(row['Název služby'] ?? '');
-      if (id && nazev) {
-        serviceMap[id] = nazev;
-      }
-    });
-
-    return serviceMap;
-  } catch (error) {
-    console.error('Chyba při načítání názvů služeb:', error);
-    // Fallback
-    return {
-      'vymena': 'Výměna pneumatik',
-      'vyvazeni': 'Vyvážení kol',
-      'uskladneni': 'Uskladnění pneu',
-      'oprava': 'Oprava pneumatik',
-      'prodej': 'Prodej + montáž',
-    };
-  }
-}
-
-const statusLabels: Record<string, string> = {
-  'pending': 'Čeká na potvrzení',
-  'confirmed': 'Potvrzeno',
-  'cancelled': 'Zrušeno',
-};
-
-const EXCEL_FILE = path.join(process.cwd(), 'data', 'rezervace_all.xlsx');
-
-// Zajistit, že složka data existuje
-async function ensureDataDir() {
-  const dataDir = path.join(process.cwd(), 'data');
-  await mkdir(dataDir, { recursive: true });
-}
-
-// Zkontrolovat, zda soubor existuje
-async function fileExists(filePath: string): Promise<boolean> {
-  try {
-    await access(filePath);
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-// Načíst všechny rezervace z Excel souboru
-async function getReservations(): Promise<Reservation[]> {
-  try {
-    const exists = await fileExists(EXCEL_FILE);
-    if (!exists) {
-      return [];
-    }
-
-    const fileBuffer = await readFile(EXCEL_FILE);
-    const workbook = XLSX.read(fileBuffer, { type: 'buffer' });
-    const sheetName = workbook.SheetNames[0];
-    const worksheet = workbook.Sheets[sheetName];
-    const data = XLSX.utils.sheet_to_json<Record<string, unknown>>(worksheet);
-
-    // Načíst názvy služeb z Excelu
-    const serviceNamesMap = await getServiceNames();
-    const reverseServiceMap: Record<string, string> = {};
-    Object.entries(serviceNamesMap).forEach(([id, nazev]) => {
-      reverseServiceMap[nazev] = id;
-    });
-
-    // Převést zpět na interní formát
-    return data.map((row) => ({
-      id: String(row['ID'] ?? ''),
-      service: reverseServiceMap[String(row['Služba'] ?? '')] || String(row['Služba'] ?? ''),
-      date: row['Datum'] ? new Date(String(row['Datum'])).toISOString().split('T')[0] : '',
-      time: String(row['Čas'] ?? ''),
-      name: String(row['Jméno'] ?? ''),
-      email: String(row['Email'] ?? ''),
-      phone: String(row['Telefon'] ?? ''),
-      car: String(row['Vozidlo'] ?? ''),
-      note: String(row['Poznámka'] ?? ''),
-      createdAt: String(row['Vytvořeno'] ?? ''),
-      status: row['Status'] === 'Potvrzeno' ? 'confirmed' as const :
-              row['Status'] === 'Zrušeno' ? 'cancelled' as const : 'pending' as const
-    }));
-  } catch (error) {
-    console.error('Chyba při čtení Excel souboru:', error);
-    return [];
-  }
-}
-
-// Uložit rezervace do Excel souboru
-async function saveReservations(reservations: Reservation[]) {
-  await ensureDataDir();
-
-  // Načíst názvy služeb z Excelu
-  const serviceNamesMap = await getServiceNames();
-
-  // Převést rezervace na formát pro Excel
-  const excelData = reservations.map(r => ({
-    'ID': r.id,
-    'Služba': serviceNamesMap[r.service] || r.service,
-    'Datum': r.date,
-    'Čas': r.time,
-    'Jméno': r.name,
-    'Email': r.email,
-    'Telefon': r.phone,
-    'Vozidlo': r.car || '',
-    'Poznámka': r.note || '',
-    'Vytvořeno': new Date(r.createdAt).toLocaleString('cs-CZ'),
-    'Status': statusLabels[r.status]
-  }));
-
-  // Vytvořit worksheet a workbook
-  const worksheet = XLSX.utils.json_to_sheet(excelData);
-  
-  // Nastavit šířku sloupců
-  const columnWidths = [
-    { wch: 25 }, // ID
-    { wch: 20 }, // Služba
-    { wch: 12 }, // Datum
-    { wch: 8 },  // Čas
-    { wch: 20 }, // Jméno
-    { wch: 25 }, // Email
-    { wch: 15 }, // Telefon
-    { wch: 20 }, // Vozidlo
-    { wch: 30 }, // Poznámka
-    { wch: 18 }, // Vytvořeno
-    { wch: 18 }, // Status
-  ];
-  worksheet['!cols'] = columnWidths;
-
-  const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, worksheet, 'Rezervace');
-
-  // Uložit soubor pomocí buffer
-  const buffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
-  await writeFile(EXCEL_FILE, buffer);
-}
-
-// POST - Vytvořit novou rezervaci
+/** Veřejné: nová rezervace z formuláře. */
 export async function POST(request: NextRequest) {
   if (!RESERVATIONS_ENABLED) {
     return NextResponse.json(
       { error: 'Online rezervace jsou dočasně nedostupné. Kontaktujte nás prosím telefonicky nebo e-mailem.' },
-      { status: 503 }
+      { status: 503 },
     );
   }
-
-  try {
-    const body = await request.json();
-    
-    // Validace
-    if (!body.service || !body.date || !body.time || !body.name || !body.email || !body.phone) {
-      return NextResponse.json(
-        { error: 'Všechna povinná pole musí být vyplněna' },
-        { status: 400 }
-      );
-    }
-
-    // Načíst existující rezervace
-    const reservations = await getReservations();
-
-    // Vytvořit novou rezervaci
-    const newReservation: Reservation = {
-      id: `RES-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-      service: body.service,
-      date: body.date,
-      time: body.time,
-      name: body.name,
-      email: body.email,
-      phone: body.phone,
-      car: body.car || '',
-      note: body.note || '',
-      createdAt: new Date().toISOString(),
-      status: 'pending'
-    };
-
-    // Přidat k existujícím
-    reservations.push(newReservation);
-
-    // Uložit
-    await saveReservations(reservations);
-
-    // Volitelně - odeslat email správci
-   // await sendEmailToAdmin(newReservation);
-
-    return NextResponse.json({
-      success: true,
-      reservation: newReservation,
-      message: 'Rezervace byla úspěšně vytvořena'
-    });
-
-  } catch (error) {
-    console.error('Chyba při vytváření rezervace:', error);
-    return NextResponse.json(
-      { error: 'Nastala chyba při vytváření rezervace' },
-      { status: 500 }
-    );
+  if (!allowed(request)) {
+    return NextResponse.json({ error: 'Příliš mnoho pokusů. Zavolejte nám prosím.' }, { status: 429 });
   }
+
+  const body = await request.json().catch(() => ({}));
+  const input = {
+    service: clip(body.service, 60),
+    date: clip(body.date, 10),
+    time: clip(body.time, 5),
+    name: clip(body.name, 80),
+    email: clip(body.email, 120),
+    phone: clip(body.phone, 30),
+    car: clip(body.car, 80),
+    note: clip(body.note, 500),
+  };
+
+  if (!input.service || !input.date || !input.time || !input.name || !input.email || !input.phone) {
+    return NextResponse.json({ error: 'Všechna povinná pole musí být vyplněna.' }, { status: 400 });
+  }
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(input.date) || input.date < pragueDate()) {
+    return NextResponse.json({ error: 'Vyberte prosím datum od dneška dál.' }, { status: 400 });
+  }
+  if (!/^\d{1,2}:\d{2}$/.test(input.time)) {
+    return NextResponse.json({ error: 'Vyberte prosím čas.' }, { status: 400 });
+  }
+  if (takenTimes(input.date).includes(input.time)) {
+    return NextResponse.json({ error: 'Tento čas už je obsazený. Vyberte prosím jiný.' }, { status: 409 });
+  }
+
+  // Ukládáme název služby, ne id — rezervace zůstane čitelná i po smazání služby
+  const service = listServices().find((item) => item.id === input.service);
+  const reservation = createReservation({ ...input, service: service?.nazev ?? input.service });
+  return NextResponse.json({ success: true, reservation: { id: reservation.id } });
 }
 
-// GET - Získat všechny rezervace (pouze pro admina)
-export async function GET() {
-  try {
-    const reservations = await getReservations();
-    
-    // Seřadit podle data vytvoření (nejnovější první)
-    reservations.sort((a, b) => 
-      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-    );
-
-    return NextResponse.json({ reservations });
-  } catch (error) {
-    console.error('Chyba při načítání rezervací:', error);
-    return NextResponse.json(
-      { error: 'Nastala chyba při načítání rezervací' },
-      { status: 500 }
-    );
+export async function GET(request: NextRequest) {
+  // Veřejně jen obsazené časy pro zvolený den (bez osobních údajů)
+  const date = request.nextUrl.searchParams.get('obsazeno');
+  if (date) {
+    return NextResponse.json({ taken: takenTimes(date) }, { headers: { 'Cache-Control': 'no-store' } });
   }
+
+  const denied = denyUnlessAdmin(request);
+  if (denied) return denied;
+  return NextResponse.json({ reservations: listReservations() }, { headers: { 'Cache-Control': 'no-store' } });
 }
 
-// PUT - Aktualizovat status rezervace
-export async function PUT(request: NextRequest) {
-  try {
-    const { id, status } = await request.json();
-    
-    if (!id || !status) {
-      return NextResponse.json(
-        { error: 'ID a status jsou povinné' },
-        { status: 400 }
-      );
-    }
+export async function PATCH(request: NextRequest) {
+  const denied = denyUnlessAdmin(request);
+  if (denied) return denied;
 
-    const reservations = await getReservations();
-    const index = reservations.findIndex(r => r.id === id);
-    
-    if (index === -1) {
-      return NextResponse.json(
-        { error: 'Rezervace nebyla nalezena' },
-        { status: 404 }
-      );
-    }
-
-    reservations[index].status = status;
-    await saveReservations(reservations);
-
-    return NextResponse.json({
-      success: true,
-      reservation: reservations[index]
-    });
-
-  } catch (error) {
-    console.error('Chyba při aktualizaci rezervace:', error);
-    return NextResponse.json(
-      { error: 'Nastala chyba při aktualizaci rezervace' },
-      { status: 500 }
-    );
+  const body = await request.json().catch(() => ({}));
+  if (typeof body.id !== 'string' || !STATUSES.includes(body.status)) {
+    return NextResponse.json({ error: 'Neplatná data.' }, { status: 400 });
   }
+  if (!setReservationStatus(body.id, body.status)) {
+    return NextResponse.json({ error: 'Rezervace nebyla nalezena.' }, { status: 404 });
+  }
+  return NextResponse.json({ ok: true });
 }
 
-// DELETE - Smazat rezervaci
 export async function DELETE(request: NextRequest) {
-  try {
-    const { searchParams } = new URL(request.url);
-    const id = searchParams.get('id');
-    
-    if (!id) {
-      return NextResponse.json(
-        { error: 'ID je povinné' },
-        { status: 400 }
-      );
-    }
+  const denied = denyUnlessAdmin(request);
+  if (denied) return denied;
 
-    const reservations = await getReservations();
-    const filtered = reservations.filter(r => r.id !== id);
-    
-    if (filtered.length === reservations.length) {
-      return NextResponse.json(
-        { error: 'Rezervace nebyla nalezena' },
-        { status: 404 }
-      );
-    }
-
-    await saveReservations(filtered);
-
-    return NextResponse.json({
-      success: true,
-      message: 'Rezervace byla smazána'
-    });
-
-  } catch (error) {
-    console.error('Chyba při mazání rezervace:', error);
-    return NextResponse.json(
-      { error: 'Nastala chyba při mazání rezervace' },
-      { status: 500 }
-    );
+  const id = request.nextUrl.searchParams.get('id');
+  if (!id || !deleteReservation(id)) {
+    return NextResponse.json({ error: 'Rezervace nebyla nalezena.' }, { status: 404 });
   }
+  return NextResponse.json({ ok: true });
 }
-

@@ -6,23 +6,27 @@ import { CONTACT_INFO } from '@/constants/contact';
 import TechBackground from '@/components/TechBackground';
 import MascotCTA from '@/components/MascotCTA';
 import { IconMail, IconPhone } from '@/components/Icons';
+import type { OpeningHour, SpecialDay } from '@/lib/openingHours';
 
-interface OpeningHour {
-  id: string;
-  den: string;
-  hodiny: string;
-  poradi: number;
-  aktivni: boolean;
+function formatSpecialDate(iso: string): string {
+  const [year, month, day] = iso.split('-').map(Number);
+  const weekday = new Intl.DateTimeFormat('cs-CZ', { weekday: 'long', timeZone: 'UTC' })
+    .format(new Date(Date.UTC(year, month - 1, day)));
+  return `${weekday} ${day}. ${month}.`;
 }
 
 export default function KontaktyPage() {
   const [openingHours, setOpeningHours] = useState<OpeningHour[]>([]);
+  const [specials, setSpecials] = useState<SpecialDay[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch('/api/oteviraci-doba')
       .then((r) => r.json())
-      .then((data) => setOpeningHours(data.hours || []))
+      .then((data) => {
+        setOpeningHours(data.hours || []);
+        setSpecials(data.specials || []);
+      })
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
@@ -165,6 +169,20 @@ export default function KontaktyPage() {
                     <span className="font-display font-semibold text-theme-secondary">{day.hodiny}</span>
                   </div>
                 ))}
+                {specials.length > 0 && (
+                  <div className="special-days">
+                    <p className="font-display text-xs font-bold uppercase tracking-widest text-accent mb-1">Mimořádně</p>
+                    {specials.slice(0, 5).map((special) => (
+                      <div key={special.date} className="flex justify-between items-baseline gap-4 py-2 px-2">
+                        <span className="font-display font-semibold text-theme">
+                          {formatSpecialDate(special.date)}
+                          {special.note && <span className="block text-xs font-normal text-theme-muted">{special.note}</span>}
+                        </span>
+                        <span className="font-display font-semibold text-theme-secondary whitespace-nowrap">{special.hodiny}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
           </div>

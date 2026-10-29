@@ -3,6 +3,8 @@ import type { Metadata } from 'next';
 import TechBackground from '@/components/TechBackground';
 import { CONTACT_INFO } from '@/constants/contact';
 import MascotCTA from '@/components/MascotCTA';
+import GalleryGrid from '@/components/GalleryGrid';
+import { listGallery } from '@/lib/content';
 import { IconCamera } from '@/components/Icons';
 import { bookingHref, BOOKING_CTA_LABEL, RESERVATIONS_ENABLED } from '@/constants/reservation';
 
@@ -13,7 +15,12 @@ export const metadata: Metadata = {
   alternates: { canonical: '/galerie' },
 };
 
+// Fotky nahrává admin → načíst při každém zobrazení
+export const dynamic = 'force-dynamic';
+
 export default function GalleryPage() {
+  const images = listGallery({ onlyVisible: true });
+
   return (
     <TechBackground>
       {/* Hero */}
@@ -28,12 +35,19 @@ export default function GalleryPage() {
             Naše <span className="gradient-tech">práce</span>
           </h1>
           <p className="text-theme-secondary text-lg max-w-2xl mx-auto animate-fadeInUp stagger-2">
-            Ukázky naší práce a vybavení provozovny. Již brzy.
+            Ukázky naší práce a vybavení provozovny.
           </p>
         </div>
       </section>
 
-      {/* Under construction */}
+      {images.length > 0 ? (
+        <section className="py-14 lg:py-20">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <GalleryGrid images={images} />
+          </div>
+        </section>
+      ) : (
+      /* Dokud admin nenahraje první fotku */
       <section className="py-20 lg:py-28">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="construction-panel animate-fadeInUp">
@@ -69,6 +83,7 @@ export default function GalleryPage() {
           </div>
         </div>
       </section>
+      )}
 
       {/* CTA */}
       <MascotCTA

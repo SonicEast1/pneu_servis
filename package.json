@@ -2,12 +2,12 @@
   "name": "pneu_servis",
   "version": "0.1.0",
   "private": true,
- "scripts": {
-  "dev": "next dev -p 8080",
-  "build": "next build --webpack",
-  "start": "next start -p 8080",
-  "lint": "eslint"
-},
+  "scripts": {
+    "dev": "next dev -p 8080",
+    "build": "next build --webpack",
+    "start": "next start -p 8080",
+    "lint": "eslint"
+  },
   "dependencies": {
     "cross-env": "^10.1.0",
     "next": "^16.2.9",
@@ -17,7 +17,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
+    "@types/node": "^22.20.5",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",

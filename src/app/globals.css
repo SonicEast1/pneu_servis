@@ -8,6 +8,11 @@
   --color-orange-600: #e04400;
 }
 
+/* Utility bg-accent / border-accent sledují motiv (světlý / tmavý) */
+@theme inline {
+  --color-accent: var(--accent);
+}
+
 /* ─── Design tokens — Garage / Industrial ─── */
 :root {
   --bg-page: #e2dfd8;
@@ -2205,3 +2210,1096 @@ html.reveal-ready .reveal-steps:not(.in-view) .process-step-line {
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+/* ─── Hlavní obsah pod pevnou hlavičkou (admin má vlastní rozvržení) ─── */
+.site-main {
+  margin-top: var(--header-h);
+}
+
+.site-main:has(> .admin-shell),
+.site-main:has(> .admin-login) {
+  margin-top: 0;
+}
+
+/* ─── Veřejná galerie ─── */
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+@media (min-width: 768px) {
+  .gallery-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+}
+
+@media (min-width: 1200px) {
+  .gallery-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+.gallery-item {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: var(--bg-surface-alt);
+  cursor: zoom-in;
+  transition: transform var(--dur-press) var(--ease-out-quint), border-color var(--dur-hover) ease;
+}
+
+.gallery-item img {
+  transition: transform 400ms var(--ease-out-quint);
+}
+
+.gallery-item:active {
+  transform: scale(0.98);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .gallery-item:hover { border-color: var(--accent); }
+  .gallery-item:hover img { transform: scale(1.03); }
+}
+
+.gallery-caption {
+  position: absolute;
+  inset: auto 0 0 0;
+  padding: 1.5rem 0.75rem 0.6rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #fff;
+  text-align: left;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.65), transparent);
+}
+
+.gallery-lightbox {
+  width: 100vw;
+  max-width: 100vw;
+  height: 100dvh;
+  max-height: 100dvh;
+  margin: 0;
+  padding: 1rem;
+  border: 0;
+  background: rgba(10, 9, 6, 0.92);
+  color: #fff;
+  opacity: 0;
+  transition: opacity 200ms var(--ease-out-quint), overlay 200ms allow-discrete, display 200ms allow-discrete;
+}
+
+.gallery-lightbox[open] {
+  display: grid;
+  place-items: center;
+  opacity: 1;
+}
+
+@starting-style {
+  .gallery-lightbox[open] { opacity: 0; }
+}
+
+.gallery-lightbox::backdrop {
+  background: transparent;
+}
+
+.gallery-lightbox-figure {
+  margin: 0;
+  display: grid;
+  justify-items: center;
+  gap: 0.75rem;
+  max-width: min(92vw, 1400px);
+}
+
+.gallery-lightbox-image {
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: calc(100dvh - 7rem);
+  border-radius: 10px;
+  object-fit: contain;
+}
+
+.gallery-lightbox figcaption {
+  font-size: 0.9rem;
+  opacity: 0.85;
+}
+
+.gallery-lightbox-close,
+.gallery-lightbox-nav {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(0, 0, 0, 0.4);
+  color: #fff;
+  font-size: 1.6rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color var(--dur-hover) ease, transform var(--dur-press) var(--ease-out-quint);
+}
+
+.gallery-lightbox-close { top: 1rem; right: 1rem; }
+.gallery-lightbox-nav { top: 50%; translate: 0 -50%; }
+.gallery-lightbox-nav.is-prev { left: 1rem; }
+.gallery-lightbox-nav.is-next { right: 1rem; }
+
+.gallery-lightbox-close:active,
+.gallery-lightbox-nav:active {
+  transform: scale(0.94);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .gallery-lightbox-close:hover,
+  .gallery-lightbox-nav:hover { background: rgba(255, 255, 255, 0.15); }
+}
+
+/* ─── Recenze na webu ─── */
+.review-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .review-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (min-width: 1200px) {
+  .review-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+.review-card {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.review-stars {
+  color: var(--accent);
+  letter-spacing: 0.1em;
+}
+
+.review-stars span {
+  color: var(--border-strong);
+}
+
+.review-author {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+/* ─── Kontakty: mimořádné dny pod otevírací dobou ─── */
+.special-days {
+  margin-top: 0.75rem;
+  padding: 0.75rem 0.5rem 0.25rem;
+  border-top: 1px dashed var(--border-strong);
+}
+
+/* ═══════════════ Správa webu (admin) ═══════════════ */
+.admin-shell {
+  min-height: 100dvh;
+  display: grid;
+  grid-template-columns: 1fr;
+  background: var(--bg-page);
+}
+
+@media (min-width: 1024px) {
+  .admin-shell { grid-template-columns: 15.5rem minmax(0, 1fr); }
+}
+
+.admin-sidebar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border);
+}
+
+@media (min-width: 1024px) {
+  .admin-sidebar {
+    height: 100dvh;
+    border-bottom: 0;
+    border-right: 1px solid var(--border);
+    padding: 1.5rem 0.9rem;
+  }
+}
+
+.admin-brand {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  padding: 0.85rem 1rem;
+}
+
+.admin-brand-sub {
+  grid-column: 1;
+  font-family: var(--font-display), sans-serif;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.admin-menu-toggle {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  font-family: var(--font-display), sans-serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: transform var(--dur-press) var(--ease-out-quint);
+}
+
+.admin-menu-toggle:active { transform: scale(0.96); }
+
+@media (min-width: 1024px) {
+  .admin-brand { padding: 0 0.6rem 1.5rem; }
+  .admin-menu-toggle { display: none; }
+}
+
+.admin-nav {
+  display: none;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0 0.75rem 1rem;
+}
+
+.admin-sidebar[data-open='true'] .admin-nav { display: flex; }
+
+@media (min-width: 1024px) {
+  .admin-nav { display: flex; flex: 1; padding: 0; }
+}
+
+.admin-nav-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.65rem 0.75rem;
+  border-radius: 10px;
+  font-family: var(--font-display), sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-align: left;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background-color var(--dur-hover) ease, color var(--dur-hover) ease;
+}
+
+.admin-nav-link[aria-current='page'] {
+  color: var(--text-primary);
+  background: var(--accent-soft);
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .admin-nav-link:not([aria-current='page']):hover {
+    color: var(--text-primary);
+    background: var(--iron-soft);
+  }
+}
+
+.admin-nav-foot {
+  margin-top: auto;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border);
+}
+
+.admin-badge {
+  min-width: 1.4rem;
+  padding: 0.05rem 0.4rem;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.admin-main {
+  width: 100%;
+  max-width: 64rem;
+  padding: 1.25rem 1rem 6rem;
+}
+
+@media (min-width: 768px) {
+  .admin-main { padding: 2rem 2rem 6rem; }
+}
+
+@media (min-width: 1024px) {
+  .admin-main { padding: 2.5rem 3rem 6rem; }
+}
+
+.admin-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.admin-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.1rem;
+  box-shadow: var(--shadow);
+}
+
+@media (min-width: 768px) {
+  .admin-card { padding: 1.4rem; }
+}
+
+.admin-card[data-muted='true'] {
+  opacity: 0.6;
+}
+
+.admin-h2,
+.admin-section-head h2 {
+  font-family: var(--font-display), sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.75rem;
+}
+
+.admin-section-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.admin-section-head h2 { margin-bottom: 0.15rem; }
+
+.admin-note {
+  padding: 0.75rem 0.9rem;
+  border-radius: 10px;
+  border: 1px solid var(--accent);
+  background: var(--accent-soft);
+  color: var(--text-primary);
+  font-size: 0.85rem;
+}
+
+/* Přihlášení */
+.admin-login {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: var(--bg-page);
+}
+
+.admin-login-card {
+  width: min(26rem, 100%);
+}
+
+/* Pole formuláře */
+.admin-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-bottom: 0.9rem;
+}
+
+.admin-field > span:first-child {
+  font-family: var(--font-display), sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.admin-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 1rem;
+}
+
+.admin-form-grid .admin-field { grid-column: 1 / -1; }
+
+@media (min-width: 640px) {
+  .admin-form-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .admin-form-grid .admin-field { grid-column: span 2; }
+  .admin-form-grid .admin-field-icon { grid-column: span 1; }
+  .admin-form-grid .admin-field-wide { grid-column: span 3; }
+  .admin-form-grid .admin-field-full { grid-column: 1 / -1; }
+}
+
+.admin-field-icon input { font-size: 1.4rem; text-align: center; padding-block: 0.45rem; }
+
+.admin-form {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+
+/* Přepínač */
+.admin-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  user-select: none;
+}
+
+.admin-switch input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+}
+
+.admin-switch-track {
+  position: relative;
+  flex-shrink: 0;
+  width: 2.5rem;
+  height: 1.45rem;
+  border-radius: 999px;
+  background: var(--border-strong);
+  transition: background-color 180ms ease;
+}
+
+.admin-switch-track::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: calc(1.45rem - 6px);
+  height: calc(1.45rem - 6px);
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  transition: transform 200ms var(--ease-out-quint);
+}
+
+.admin-switch input:checked + .admin-switch-track { background: var(--accent); }
+.admin-switch input:checked + .admin-switch-track::after { transform: translateX(1.05rem); }
+.admin-switch input:focus-visible + .admin-switch-track { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* Segmentové tlačítko */
+.admin-segmented {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  border-radius: 12px;
+  background: var(--bg-surface-alt);
+  border: 1px solid var(--border);
+}
+
+.admin-segmented button {
+  padding: 0.45rem 0.8rem;
+  border-radius: 9px;
+  font-family: var(--font-display), sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background-color var(--dur-hover) ease, color var(--dur-hover) ease, transform var(--dur-press) var(--ease-out-quint);
+}
+
+.admin-segmented button:active { transform: scale(0.96); }
+
+.admin-segmented button[aria-checked='true'] {
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  box-shadow: var(--shadow);
+}
+
+/* Malá tlačítka */
+.admin-icon-button {
+  display: inline-grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 9px;
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  font-size: 1.05rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: border-color var(--dur-hover) ease, color var(--dur-hover) ease, transform var(--dur-press) var(--ease-out-quint);
+}
+
+.admin-icon-button:active:not(:disabled) { transform: scale(0.94); }
+.admin-icon-button:disabled { opacity: 0.35; cursor: default; }
+
+@media (hover: hover) and (pointer: fine) {
+  .admin-icon-button:not(:disabled):hover { border-color: var(--accent); color: var(--accent); }
+  .admin-link-button:hover { text-decoration: underline; }
+}
+
+.admin-icon-button.is-danger,
+.admin-link-button.is-danger { color: #c2410c; }
+
+.dark .admin-icon-button.is-danger,
+.dark .admin-link-button.is-danger { color: #fb923c; }
+
+.admin-link-button {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--accent);
+  cursor: pointer;
+  text-underline-offset: 3px;
+}
+
+/* Štítek stavu */
+.admin-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  white-space: nowrap;
+  border: 1px solid var(--border-strong);
+  color: var(--text-secondary);
+}
+
+.admin-pill[data-tone='visible'] { border-color: #15803d55; background: #15803d1a; color: #15803d; }
+.admin-pill[data-tone='unavailable'] { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+.admin-pill[data-tone='hidden'] { background: var(--bg-surface-alt); color: var(--text-muted); }
+.dark .admin-pill[data-tone='visible'] { color: #4ade80; border-color: #4ade8055; background: #4ade801a; }
+
+/* Seznamy (služby, recenze, rezervace) */
+.admin-list {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.admin-list-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.admin-list-icon {
+  width: 2.75rem;
+  height: 2.75rem;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: var(--accent-soft);
+  font-size: 1.35rem;
+}
+
+.admin-list-main {
+  flex: 1;
+  min-width: 10rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-list-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+/* Lišta Uložit */
+.admin-savebar {
+  position: sticky;
+  bottom: 1rem;
+  z-index: 30;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  padding: 0.75rem 0.75rem 0.75rem 1.1rem;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: var(--bg-surface);
+  color: var(--text-muted);
+  box-shadow: var(--shadow);
+  transition: border-color 200ms ease, box-shadow 200ms ease;
+}
+
+.admin-savebar[data-dirty='true'] {
+  border-color: var(--accent);
+  color: var(--text-primary);
+  font-weight: 600;
+  box-shadow: var(--shadow-lg);
+}
+
+/* Bez změn nepřekrývá obsah a tlačítko vypadá neaktivně */
+.admin-savebar:not([data-dirty='true']) {
+  position: static;
+  box-shadow: none;
+}
+
+.admin-savebar button:disabled {
+  opacity: 0.45;
+  box-shadow: none;
+  cursor: default;
+}
+
+/* Oznámení */
+.admin-toasts {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  left: 1rem;
+  z-index: 60;
+  display: grid;
+  justify-items: end;
+  gap: 0.5rem;
+  pointer-events: none;
+}
+
+.admin-toast {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  max-width: 28rem;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  background: var(--bg-invert);
+  color: var(--text-invert);
+  font-size: 0.875rem;
+  box-shadow: var(--shadow-lg);
+  transition: opacity 220ms var(--ease-out-quint), transform 220ms var(--ease-out-quint);
+}
+
+@starting-style {
+  .admin-toast { opacity: 0; transform: translateY(8px); }
+}
+
+.admin-toast[data-tone='error'] { background: #b91c1c; color: #fff; }
+
+.admin-toast a {
+  margin-left: auto;
+  font-weight: 700;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+.admin-toast[data-tone='error'] a { color: #fff; }
+
+/* Přehled */
+.admin-status {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.admin-dot {
+  flex-shrink: 0;
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 50%;
+  background: var(--text-muted);
+}
+
+.admin-dot.is-open { background: #16a34a; box-shadow: 0 0 0 4px #16a34a26; }
+
+.admin-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+@media (min-width: 900px) {
+  .admin-stats { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+.admin-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  transition: border-color var(--dur-hover) ease, transform var(--dur-press) var(--ease-out-quint);
+}
+
+.admin-stat:active,
+.admin-shortcut:active { transform: scale(0.985); }
+
+.admin-stat[data-highlight='true'] { border-color: var(--accent); }
+
+.admin-stat-label {
+  font-family: var(--font-display), sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.admin-stat-value {
+  font-family: var(--font-display), sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.admin-stat[data-highlight='true'] .admin-stat-value { color: var(--accent); }
+
+.admin-shortcuts {
+  display: grid;
+  gap: 0.75rem;
+}
+
+@media (min-width: 640px) {
+  .admin-shortcuts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+.admin-shortcut {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  transition: border-color var(--dur-hover) ease, transform var(--dur-press) var(--ease-out-quint);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .admin-stat:hover,
+  .admin-shortcut:hover { border-color: var(--accent); }
+}
+
+/* Otevírací doba */
+.admin-hours {
+  display: grid;
+}
+
+.admin-hours-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem 1rem;
+  padding: 0.75rem 0;
+  border-top: 1px solid var(--border);
+}
+
+.admin-hours-row:first-child { border-top: 0; padding-top: 0; }
+
+.admin-hours-day {
+  width: 5.5rem;
+  font-family: var(--font-display), sans-serif;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.admin-hours-row .admin-switch { width: 7.5rem; }
+.admin-hours-row[data-closed='true'] .admin-hours-day { color: var(--text-muted); }
+
+.admin-hours-ranges {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.9rem;
+}
+
+.admin-time-range {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.admin-time-range .form-input {
+  width: 7.25rem;
+  padding: 0.5rem 0.6rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.admin-time-range[data-invalid='true'] .form-input {
+  border-color: #dc2626;
+}
+
+.admin-date { width: 10.5rem; padding: 0.5rem 0.6rem; }
+.admin-special-note { flex: 1; min-width: 12rem; padding: 0.5rem 0.75rem; }
+
+/* Ceník */
+.admin-price-rows {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.admin-price-row {
+  padding: 0.9rem;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--bg-surface-alt);
+}
+
+.dark .admin-price-row { background: var(--bg-page); }
+
+.admin-price-row-head {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.6rem;
+}
+
+.admin-price-name { font-weight: 700; }
+
+.admin-price-row .form-input { padding: 0.5rem 0.65rem; }
+
+.admin-price-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(4.75rem, 1fr));
+  gap: 0.45rem;
+}
+
+.admin-price-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.admin-price-cell span {
+  font-family: var(--font-display), sans-serif;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.admin-price-cell input {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.admin-supp-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.5rem;
+  align-items: end;
+}
+
+@media (min-width: 768px) {
+  .admin-supp-row { grid-template-columns: minmax(0, 2fr) 6.5rem minmax(0, 2fr) 6rem auto; }
+}
+
+/* Galerie v adminu */
+.admin-dropzone {
+  width: 100%;
+  display: grid;
+  justify-items: center;
+  gap: 0.25rem;
+  padding: 2rem 1rem;
+  border-radius: 16px;
+  border: 2px dashed var(--border-strong);
+  background: var(--bg-surface);
+  cursor: pointer;
+  transition: border-color var(--dur-hover) ease, background-color var(--dur-hover) ease, transform var(--dur-press) var(--ease-out-quint);
+}
+
+.admin-dropzone:active { transform: scale(0.99); }
+
+.admin-dropzone[data-dragging='true'] {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .admin-dropzone:hover { border-color: var(--accent); }
+}
+
+.admin-uploads {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.admin-uploads li {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.55rem 0.8rem;
+  border-radius: 10px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  font-size: 0.85rem;
+}
+
+.admin-uploads li[data-state='error'] { border-color: var(--accent); }
+
+.admin-photos {
+  display: grid;
+  gap: 0.9rem;
+}
+
+@media (min-width: 640px) {
+  .admin-photos { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (min-width: 1100px) {
+  .admin-photos { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+.admin-photo {
+  padding: 0.75rem;
+}
+
+.admin-photo .admin-field { margin-bottom: 0.6rem; }
+.admin-photo .form-input { padding: 0.5rem 0.65rem; }
+
+.admin-photo-thumb {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  margin-bottom: 0.75rem;
+  overflow: hidden;
+  border-radius: 10px;
+  background: var(--bg-surface-alt);
+}
+
+.admin-photo-flag {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  background: var(--bg-surface);
+}
+
+.admin-photo-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+/* Recenze v adminu */
+.admin-stars {
+  color: var(--accent);
+  letter-spacing: 0.08em;
+}
+
+.admin-stars span { color: var(--border-strong); }
+
+.admin-stars.is-input button {
+  font-size: 1.6rem;
+  line-height: 1;
+  padding: 0 0.1rem;
+  color: var(--border-strong);
+  cursor: pointer;
+  transition: color var(--dur-hover) ease, transform var(--dur-press) var(--ease-out-quint);
+}
+
+.admin-stars.is-input button[data-on='true'] { color: var(--accent); }
+.admin-stars.is-input button:active { transform: scale(0.9); }
+
+.admin-review-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.admin-review-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  margin-top: 0.85rem;
+}
+
+/* Rezervace v adminu */
+.admin-day-title {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.6rem;
+  font-family: var(--font-display), sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.admin-day-title::first-letter { text-transform: uppercase; }
+
+.admin-booking {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.25rem 1rem;
+}
+
+.admin-booking-time {
+  font-family: var(--font-display), sans-serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.admin-booking-main {
+  display: grid;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.admin-booking-note {
+  margin-top: 0.3rem;
+  padding: 0.5rem 0.7rem;
+  border-radius: 8px;
+  background: var(--bg-surface-alt);
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.admin-booking-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  margin-top: 0.6rem;
+}
+
+@media (min-width: 768px) {
+  .admin-booking { grid-template-columns: 4.5rem 1fr auto; }
+  .admin-booking-actions { grid-column: auto; margin-top: 0; align-self: center; }
+}
+
+/* Statistiky uvnitř adminu — bez vlastních okrajů a pásů */
+.admin-stats-page section {
+  padding-block: 0 1.25rem;
+  border: 0;
+  background: none;
+}
+
+.admin-stats-page .max-w-7xl {
+  max-width: none;
+  padding-inline: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gallery-item:active,
+  .admin-stat:active,
+  .admin-shortcut:active,
+  .admin-dropzone:active,
+  .admin-icon-button:active:not(:disabled),
+  .admin-segmented button:active,
+  .admin-menu-toggle:active,
+  .gallery-lightbox-close:active,
+  .gallery-lightbox-nav:active,
+  .admin-stars.is-input button:active {
+    transform: none;
+  }
+
+  .gallery-item:hover img { transform: none; }
+
+  .admin-switch-track::after { transition: none; }
+
+  @starting-style {
+    .admin-toast { transform: none; }
+  }
+}

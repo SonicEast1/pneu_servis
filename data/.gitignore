@@ -7,3 +7,6 @@
 # Kromě tohoto .gitignore
 !.gitignore
 
+*.db
+*.db-*
+uploads/

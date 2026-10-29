@@ -1,5 +1,5 @@
-/** Dočasně vypnuto — nastavte na true pro obnovení online rezervací. */
-export const RESERVATIONS_ENABLED = false;
+/** Online rezervace (false = jen telefon a e-mail, odkazy vedou na Kontakty). */
+export const RESERVATIONS_ENABLED = true;
 
 export const RESERVATION_CONTACT_PATH = '/kontakty';
 

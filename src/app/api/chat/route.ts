@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { readFile } from 'fs/promises';
-import path from 'path';
-import * as XLSX from 'xlsx';
-import { DEFAULT_OPENING_HOURS, type OpeningHour } from '@/lib/openingHours';
+import { getOpeningHours, getPricing, getSpecialDays, listServices } from '@/lib/content';
+import { DEFAULT_FACTS, type ShopFacts } from '@/lib/shopFacts';
 import { answerMascot, blockedChatReply, isBlockedChatTopic, type ChatReply } from '@/lib/mascotChat';
 import { mascotSystemPrompt } from '@/lib/mascotPrompt';
 
@@ -35,27 +33,24 @@ function withinLimit(ip: string): boolean {
   return true;
 }
 
-async function loadHours(): Promise<OpeningHour[]> {
+// Aktuální údaje z databáze — maskot tak zná i změny, které admin právě uložil
+function loadFacts(): ShopFacts {
   try {
-    const fileBuffer = await readFile(path.join(process.cwd(), 'data', 'oteviraci_doby.xlsx'));
-    const workbook = XLSX.read(fileBuffer, { type: 'buffer' });
-    const sheet = workbook.Sheets[workbook.SheetNames[0]];
-    const data = XLSX.utils.sheet_to_json<Record<string, unknown>>(sheet);
-    const hours = data.map((row) => ({
-      id: String(row['ID'] ?? ''),
-      den: String(row['Den'] ?? ''),
-      hodiny: String(row['Hodiny'] ?? ''),
-      poradi: Number(row['Pořadí'] ?? 0),
-      aktivni: row['Aktivní'] === 'Ano' || row['Aktivní'] === true,
-    }));
-    return hours.length > 0 ? hours : DEFAULT_OPENING_HOURS;
+    return {
+      hours: getOpeningHours(),
+      specials: getSpecialDays(),
+      pricing: getPricing(),
+      unavailable: listServices({ onlyVisible: true })
+        .filter((service) => service.nedostupna)
+        .map((service) => service.nazev),
+    };
   } catch {
-    return DEFAULT_OPENING_HOURS;
+    return DEFAULT_FACTS;
   }
 }
 
-function localReply(message: string, hours: OpeningHour[]): ChatReply {
-  const local = answerMascot(message, hours);
+function localReply(message: string, facts: ShopFacts): ChatReply {
+  const local = answerMascot(message, facts);
   if (!local.fallback) return local;
   return {
     text: 'Teď se mi nedaří odpovědět pořádně. Napište to ještě jednou, nebo zavolejte na +420 604 355 902.',
@@ -116,7 +111,7 @@ function providers(): Array<{ url: string; model: string }> {
 
 async function askProvider(
   provider: { url: string; model: string },
-  hours: OpeningHour[],
+  facts: ShopFacts,
   messages: IncomingMessage[],
 ): Promise<ChatReply | null> {
   const headers: Record<string, string> = { 'Content-Type': 'application/json' };
@@ -132,7 +127,7 @@ async function askProvider(
       model: provider.model,
       temperature: 0.4,
       messages: [
-        { role: 'system', content: mascotSystemPrompt(hours) },
+        { role: 'system', content: mascotSystemPrompt(facts) },
         ...messages.map((message) => ({
           role: message.role === 'mascot' ? 'assistant' : 'user',
           content: message.text,
@@ -148,10 +143,10 @@ async function askProvider(
   return parseModel(content);
 }
 
-async function askModel(hours: OpeningHour[], messages: IncomingMessage[]): Promise<ChatReply | null> {
+async function askModel(facts: ShopFacts, messages: IncomingMessage[]): Promise<ChatReply | null> {
   for (const provider of providers()) {
     try {
-      const reply = await askProvider(provider, hours, messages);
+      const reply = await askProvider(provider, facts, messages);
       if (reply?.text) return reply;
     } catch {
       /* další model */
@@ -190,15 +185,15 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ text: reply.text });
   }
 
-  const hours = await loadHours();
+  const facts = loadFacts();
 
   if (!withinLimit(clientIp(request))) {
-    const reply = localReply(latest.text, hours);
+    const reply = localReply(latest.text, facts);
     return NextResponse.json({ text: reply.text, suggestions: reply.suggestions });
   }
 
   try {
-    const reply = await askModel(hours, messages);
+    const reply = await askModel(facts, messages);
     if (reply?.text) {
       return NextResponse.json({ text: reply.text, suggestions: reply.suggestions ?? [] });
     }
@@ -206,6 +201,6 @@ export async function POST(request: NextRequest) {
     /* model nedostupný */
   }
 
-  const reply = localReply(latest.text, hours);
+  const reply = localReply(latest.text, facts);
   return NextResponse.json({ text: reply.text, suggestions: reply.suggestions ?? [] });
 }

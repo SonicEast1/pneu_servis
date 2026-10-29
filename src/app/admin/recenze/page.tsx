@@ -1,7 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
+import { useCallback, useEffect, useState, type FormEvent } from 'react';
+import { api, Loading, PageHeader } from '@/components/admin/ui';
+import { useToast } from '@/components/admin/AdminShell';
+
+type Status = 'pending' | 'approved' | 'hidden';
 
 interface Review {
   id: string;
@@ -9,341 +12,178 @@ interface Review {
   email: string;
   rating: number;
   text: string;
+  status: Status;
   createdAt: string;
-  status: 'pending' | 'approved' | 'rejected';
 }
 
-const statusLabels: Record<string, string> = {
-  'pending': 'Čeká na schválení',
-  'approved': 'Schváleno',
-  'rejected': 'Zamítnuto',
+const STATUS_LABEL: Record<Status, string> = {
+  pending: 'Čeká na schválení',
+  approved: 'Na webu',
+  hidden: 'Skrytá',
 };
 
-const statusColors: Record<string, string> = {
-  'pending': 'bg-yellow-500/20 text-yellow-500 border-yellow-500',
-  'approved': 'bg-green-500/20 text-green-500 border-green-500',
-  'rejected': 'bg-red-500/20 text-red-500 border-red-500',
-};
+const dateFormat = new Intl.DateTimeFormat('cs-CZ', { day: 'numeric', month: 'numeric', year: 'numeric' });
 
-export default function AdminReviewsPage() {
-  const [reviews, setReviews] = useState<Review[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState<'all' | 'pending' | 'approved' | 'rejected'>('all');
-  const [searchTerm, setSearchTerm] = useState('');
-
-  useEffect(() => {
-    loadReviews();
-  }, []);
-
-  const loadReviews = async () => {
-    try {
-      const response = await fetch('/api/recenze');
-      const data = await response.json();
-      setReviews(data.reviews || []);
-    } catch (error) {
-      console.error('Chyba při načítání recenzí:', error);
-      alert('Nepodařilo se načíst recenze');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const updateStatus = async (id: string, status: 'pending' | 'approved' | 'rejected') => {
-    try {
-      const response = await fetch('/api/recenze', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, status }),
-      });
-
-      if (response.ok) {
-        await loadReviews();
-      } else {
-        alert('Nepodařilo se aktualizovat status');
-      }
-    } catch (error) {
-      console.error('Chyba při aktualizaci statusu:', error);
-      alert('Nepodařilo se aktualizovat status');
-    }
-  };
-
-  const deleteReview = async (id: string) => {
-    if (!confirm('Opravdu chcete smazat tuto recenzi?')) return;
-
-    try {
-      const response = await fetch(`/api/recenze?id=${id}`, {
-        method: 'DELETE',
-      });
-
-      if (response.ok) {
-        await loadReviews();
-      } else {
-        alert('Nepodařilo se smazat recenzi');
-      }
-    } catch (error) {
-      console.error('Chyba při mazání recenze:', error);
-      alert('Nepodařilo se smazat recenzi');
-    }
-  };
-
-  const filteredReviews = reviews
-    .filter(r => filter === 'all' || r.status === filter)
-    .filter(r => 
-      searchTerm === '' ||
-      r.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      r.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      r.text.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-
-  const stats = {
-    total: reviews.length,
-    pending: reviews.filter(r => r.status === 'pending').length,
-    approved: reviews.filter(r => r.status === 'approved').length,
-    rejected: reviews.filter(r => r.status === 'rejected').length,
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-orange-500 mx-auto mb-4"></div>
-          <p className="text-gray-600 text-lg">Načítám recenze...</p>
-        </div>
-      </div>
-    );
+function Stars({ value, onChange }: { value: number; onChange?: (value: number) => void }) {
+  if (!onChange) {
+    return <span className="admin-stars" aria-label={`${value} z 5`}>{'★'.repeat(value)}<span>{'★'.repeat(5 - value)}</span></span>;
   }
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-12">
-      <div className="container mx-auto px-4">
-        {/* Header */}
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-            <div>
-              <h1 className="text-4xl font-bold text-gray-800 mb-2">
-                Správa recenzí
-              </h1>
-              <p className="text-gray-600">
-                Schvalování a správa zákaznických recenzí
-              </p>
-            </div>
-            <div className="flex gap-3 flex-wrap">
-              <Link
-                href="/admin/statistiky"
-                className="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-medium transition-colors"
-              >
-                📊 Statistiky
-              </Link>
-              <Link
-                href="/admin/rezervace"
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
-              >
-                📅 Rezervace
-              </Link>
-              <Link
-                href="/admin/upload"
-                className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-medium transition-colors"
-              >
-                📸 Galerie
-              </Link>
-              <button
-                onClick={loadReviews}
-                className="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-medium transition-colors"
-              >
-                🔄 Obnovit
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Statistics */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="text-3xl font-bold text-gray-800">{stats.total}</div>
-            <div className="text-gray-600 mt-1">Celkem recenzí</div>
-          </div>
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="text-3xl font-bold text-yellow-600">{stats.pending}</div>
-            <div className="text-gray-600 mt-1">Čeká na schválení</div>
-          </div>
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="text-3xl font-bold text-green-600">{stats.approved}</div>
-            <div className="text-gray-600 mt-1">Schváleno</div>
-          </div>
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="text-3xl font-bold text-red-600">{stats.rejected}</div>
-            <div className="text-gray-600 mt-1">Zamítnuto</div>
-          </div>
-        </div>
-
-        {/* Filters */}
-        <div className="bg-white rounded-lg shadow p-6 mb-6">
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="flex-1">
-              <input
-                type="text"
-                placeholder="🔍 Hledat podle jména, emailu nebo textu..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
-              />
-            </div>
-            <div className="flex gap-2">
-              <button
-                onClick={() => setFilter('all')}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                  filter === 'all'
-                    ? 'bg-orange-600 text-white'
-                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                }`}
-              >
-                Vše ({stats.total})
-              </button>
-              <button
-                onClick={() => setFilter('pending')}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                  filter === 'pending'
-                    ? 'bg-yellow-600 text-white'
-                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                }`}
-              >
-                Čeká ({stats.pending})
-              </button>
-              <button
-                onClick={() => setFilter('approved')}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                  filter === 'approved'
-                    ? 'bg-green-600 text-white'
-                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                }`}
-              >
-                Schváleno ({stats.approved})
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Reviews List */}
-        {filteredReviews.length === 0 ? (
-          <div className="bg-white rounded-lg shadow p-12 text-center">
-            <div className="text-6xl mb-4">⭐</div>
-            <h3 className="text-2xl font-bold text-gray-800 mb-2">
-              Žádné recenze
-            </h3>
-            <p className="text-gray-600">
-              {searchTerm || filter !== 'all' 
-                ? 'Zkuste změnit filtr nebo vyhledávání'
-                : 'Zatím nebyly odeslány žádné recenze'}
-            </p>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            {filteredReviews.map((review) => (
-              <div
-                key={review.id}
-                className="bg-white rounded-lg shadow hover:shadow-lg transition-shadow p-6"
-              >
-                <div className="flex flex-col lg:flex-row gap-6">
-                  {/* Left side - Info */}
-                  <div className="flex-1 space-y-3">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <h3 className="text-xl font-bold text-gray-800">
-                          {review.name}
-                        </h3>
-                        <a
-                          href={`mailto:${review.email}`}
-                          className="text-sm text-orange-600 hover:underline"
-                        >
-                          {review.email}
-                        </a>
-                      </div>
-                      <span
-                        className={`px-3 py-1 rounded-full text-sm font-medium border ${
-                          statusColors[review.status]
-                        }`}
-                      >
-                        {statusLabels[review.status]}
-                      </span>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <span className="text-gray-500">Hodnocení:</span>
-                      <div className="flex">
-                        {[...Array(5)].map((_, i) => (
-                          <span
-                            key={i}
-                            className={`text-xl ${
-                              i < review.rating ? 'text-orange-500' : 'text-gray-300'
-                            }`}
-                          >
-                            ★
-                          </span>
-                        ))}
-                      </div>
-                      <span className="text-gray-700 font-semibold">
-                        {review.rating}/5
-                      </span>
-                    </div>
-
-                    <div className="bg-gray-50 rounded p-4">
-                      <p className="text-gray-800 leading-relaxed">{review.text}</p>
-                    </div>
-
-                    <div className="text-sm text-gray-500">
-                      📅 Odesláno: {new Date(review.createdAt).toLocaleString('cs-CZ')}
-                    </div>
-                  </div>
-
-                  {/* Right side - Actions */}
-                  <div className="flex flex-col gap-2 lg:w-48">
-                    <button
-                      onClick={() => updateStatus(review.id, 'approved')}
-                      disabled={review.status === 'approved'}
-                      className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                        review.status === 'approved'
-                          ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                          : 'bg-green-600 hover:bg-green-700 text-white'
-                      }`}
-                    >
-                      ✅ Schválit
-                    </button>
-                    <button
-                      onClick={() => updateStatus(review.id, 'pending')}
-                      disabled={review.status === 'pending'}
-                      className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                        review.status === 'pending'
-                          ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                          : 'bg-yellow-600 hover:bg-yellow-700 text-white'
-                      }`}
-                    >
-                      ⏳ Čeká
-                    </button>
-                    <button
-                      onClick={() => updateStatus(review.id, 'rejected')}
-                      disabled={review.status === 'rejected'}
-                      className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                        review.status === 'rejected'
-                          ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                          : 'bg-red-600 hover:bg-red-700 text-white'
-                      }`}
-                    >
-                      ❌ Zamítnout
-                    </button>
-                    <button
-                      onClick={() => deleteReview(review.id)}
-                      className="px-4 py-2 bg-gray-700 hover:bg-gray-800 text-white rounded-lg font-medium transition-colors"
-                    >
-                      🗑️ Smazat
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
+    <span className="admin-stars is-input" role="radiogroup" aria-label="Hodnocení">
+      {[1, 2, 3, 4, 5].map((star) => (
+        <button
+          key={star}
+          type="button"
+          role="radio"
+          aria-checked={value === star}
+          aria-label={`${star} z 5`}
+          data-on={star <= value}
+          onClick={() => onChange(star)}
+        >
+          ★
+        </button>
+      ))}
+    </span>
   );
 }
 
+export default function AdminReviewsPage() {
+  const toast = useToast();
+  const [reviews, setReviews] = useState<Review[] | null>(null);
+  const [adding, setAdding] = useState(false);
+  const [draft, setDraft] = useState({ name: '', rating: 5, text: '' });
+  const [saving, setSaving] = useState(false);
+
+  const load = useCallback(() => {
+    api<{ reviews: Review[] }>('/api/recenze?all=1')
+      .then((data) => setReviews(data.reviews))
+      .catch((error: Error) => toast({ text: error.message, tone: 'error' }));
+  }, [toast]);
+
+  useEffect(load, [load]);
+
+  const setStatus = async (review: Review, status: Status) => {
+    try {
+      await api('/api/recenze', { method: 'PATCH', json: { id: review.id, status } });
+      setReviews((list) => list?.map((item) => (item.id === review.id ? { ...item, status } : item)) ?? null);
+      toast({
+        text: status === 'approved' ? 'Recenze je na webu.' : 'Recenze skryta.',
+        tone: 'ok',
+        link: status === 'approved' ? { href: '/recenze', label: 'Zobrazit' } : undefined,
+      });
+    } catch (error) {
+      toast({ text: (error as Error).message, tone: 'error' });
+    }
+  };
+
+  const remove = async (review: Review) => {
+    if (!window.confirm(`Smazat recenzi od ${review.name}? Tohle nejde vrátit.`)) return;
+    try {
+      await api(`/api/recenze?id=${encodeURIComponent(review.id)}`, { method: 'DELETE' });
+      setReviews((list) => list?.filter((item) => item.id !== review.id) ?? null);
+      toast({ text: 'Recenze smazána.', tone: 'ok' });
+    } catch (error) {
+      toast({ text: (error as Error).message, tone: 'error' });
+    }
+  };
+
+  const add = async (event: FormEvent) => {
+    event.preventDefault();
+    setSaving(true);
+    try {
+      await api('/api/recenze', { method: 'POST', json: draft });
+      setDraft({ name: '', rating: 5, text: '' });
+      setAdding(false);
+      toast({ text: 'Recenze přidána na web.', tone: 'ok', link: { href: '/recenze', label: 'Zobrazit' } });
+      load();
+    } catch (error) {
+      toast({ text: (error as Error).message, tone: 'error' });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (!reviews) return <Loading />;
+
+  // Čekající nahoru, pak podle data
+  const sorted = [...reviews].sort((a, b) => Number(b.status === 'pending') - Number(a.status === 'pending'));
+
+  return (
+    <>
+      <PageHeader
+        title="Recenze"
+        description="Recenze na stránce Recenze. Na webu jsou jen ty se stavem „Na webu“."
+        action={
+          <button type="button" className="btn-tech-primary btn-compact" onClick={() => setAdding((open) => !open)}>
+            {adding ? 'Zavřít' : '+ Přidat recenzi'}
+          </button>
+        }
+      />
+
+      {adding && (
+        <form onSubmit={add} className="admin-card mb-6">
+          <h2 className="admin-h2">Nová recenze</h2>
+          <p className="text-theme-secondary text-sm mb-4">
+            Třeba recenze, kterou vám zákazník napsal do zprávy. Po uložení se hned ukáže na webu.
+          </p>
+          <div className="admin-form-grid">
+            <label className="admin-field admin-field-wide">
+              <span>Jméno zákazníka</span>
+              <input className="form-input" value={draft.name} maxLength={60} onChange={(e) => setDraft({ ...draft, name: e.target.value })} required />
+            </label>
+            <div className="admin-field">
+              <span>Hodnocení</span>
+              <Stars value={draft.rating} onChange={(rating) => setDraft({ ...draft, rating })} />
+            </div>
+            <label className="admin-field admin-field-full">
+              <span>Text recenze</span>
+              <textarea className="form-input" rows={4} value={draft.text} maxLength={1000} onChange={(e) => setDraft({ ...draft, text: e.target.value })} required />
+            </label>
+          </div>
+          <div className="flex justify-end mt-4">
+            <button type="submit" className="btn-tech-primary btn-compact" disabled={saving}>
+              {saving ? 'Ukládám…' : 'Přidat na web'}
+            </button>
+          </div>
+        </form>
+      )}
+
+      {sorted.length === 0 ? (
+        <p className="admin-card text-theme-secondary text-sm">Zatím žádné recenze. Přidejte první tlačítkem nahoře.</p>
+      ) : (
+        <ul className="admin-list">
+          {sorted.map((review) => (
+            <li key={review.id} className="admin-card admin-review" data-muted={review.status === 'hidden'}>
+              <div className="admin-review-head">
+                <div>
+                  <span className="font-display font-semibold text-theme">{review.name}</span>
+                  <span className="text-theme-muted text-xs ml-2">{dateFormat.format(new Date(review.createdAt))}</span>
+                </div>
+                <Stars value={review.rating} />
+                <span className="admin-pill" data-tone={review.status === 'approved' ? 'visible' : review.status === 'pending' ? 'unavailable' : 'hidden'}>
+                  {STATUS_LABEL[review.status]}
+                </span>
+              </div>
+              <p className="text-theme-secondary text-sm leading-relaxed">{review.text}</p>
+              <div className="admin-review-actions">
+                {review.status !== 'approved' && (
+                  <button type="button" className="btn-tech-primary btn-compact" onClick={() => setStatus(review, 'approved')}>
+                    Zobrazit na webu
+                  </button>
+                )}
+                {review.status !== 'hidden' && (
+                  <button type="button" className="btn-tech-secondary btn-compact" onClick={() => setStatus(review, 'hidden')}>
+                    Skrýt
+                  </button>
+                )}
+                <button type="button" className="admin-link-button is-danger" onClick={() => remove(review)}>
+                  Smazat
+                </button>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+    </>
+  );
+}

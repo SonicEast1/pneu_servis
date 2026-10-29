@@ -7,6 +7,7 @@ import StructuredData from "@/components/StructuredData";
 import AnalyticsTracker from "@/components/AnalyticsTracker";
 import ScrollReveal from "@/components/ScrollReveal";
 import MascotChat from "@/components/MascotChat";
+import PublicOnly from "@/components/PublicOnly";
 import { SITE_CONFIG } from "@/constants/metadata";
 
 export const metadata: Metadata = {
@@ -101,13 +102,17 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-screen flex flex-col bg-page text-theme">
-        <Navigation />
-        <main className="flex-1 mt-[var(--header-h)]">
+        <PublicOnly>
+          <Navigation />
+        </PublicOnly>
+        <main className="site-main flex-1">
           {children}
         </main>
-        <Footer />
-        <CookieBanner />
-        <MascotChat />
+        <PublicOnly>
+          <Footer />
+          <CookieBanner />
+          <MascotChat />
+        </PublicOnly>
         <AnalyticsTracker />
         <ScrollReveal />
       </body>

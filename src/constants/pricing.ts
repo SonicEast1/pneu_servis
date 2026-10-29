@@ -1,8 +1,14 @@
-export const PRICING_META = {
+export interface PricingMeta {
+  vatNote: string;
+  validFrom: string;
+  perUnitNote: string;
+}
+
+const PRICING_META: PricingMeta = {
   vatNote: 'Ceny jsou uvedeny v Kč včetně DPH 21 %.',
   validFrom: '1. 10. 2026',
   perUnitNote: 'Cena za 1 ks v Kč včetně DPH.',
-} as const;
+};
 
 export const SIZE_COLUMNS = [
   { key: 'r12', label: 'R12', hint: 'Malé rezervní a dojezdové ráfky, přípojné vozíky.' },
@@ -37,7 +43,7 @@ export interface SupplementaryPriceRow {
   price: number;
 }
 
-export const SERVICE_PACKAGES: SizedPriceRow[] = [
+const SERVICE_PACKAGES: SizedPriceRow[] = [
   {
     name: 'Set 1 - KOMPLETNÍ PŘEZUTÍ',
     description: 'výměna kola z osy na osu, výměna pneu, vyvážení, závaží, ventil',
@@ -65,7 +71,7 @@ export const SERVICE_PACKAGES: SizedPriceRow[] = [
   },
 ];
 
-export const ADDITIONAL_SERVICES: SizedPriceRow[] = [
+const ADDITIONAL_SERVICES: SizedPriceRow[] = [
   {
     name: 'Set 3 - VÝMĚNA KOLA',
     description: 'výměna kola z osy na osu, bez vyvážení',
@@ -97,7 +103,7 @@ export const ADDITIONAL_SERVICES: SizedPriceRow[] = [
   },
 ];
 
-export const SUPPLEMENTARY_SERVICES: SupplementaryPriceRow[] = [
+const SUPPLEMENTARY_SERVICES: SupplementaryPriceRow[] = [
   { name: 'OPRAVA PNEU', unit: '1 ks', note: 'včetně materiálu i práce s pneu', price: 300 },
   { name: 'PŘÍPLATEK ZA SERVIS RUNFLAT PNEU', unit: '1 ks', price: 75 },
   { name: 'TPMS - montáž/demontáž senzoru', unit: '1 ks', price: 25 },
@@ -107,6 +113,22 @@ export const SUPPLEMENTARY_SERVICES: SupplementaryPriceRow[] = [
   { name: 'Odvoz pneumatiky k likvidaci', unit: '1 ks', price: 50 },
   { name: 'Ostatní mechanické práce', unit: '1 hodina', note: 'účtováno po 1/2 hodiny dle skutečného času', price: 500 },
 ];
+
+/** Celý ceník — v databázi uložený jako jeden dokument, admin ho upravuje najednou. */
+export interface Pricing {
+  meta: PricingMeta;
+  packages: SizedPriceRow[];
+  additional: SizedPriceRow[];
+  supplementary: SupplementaryPriceRow[];
+}
+
+/** Výchozí ceník — naplní databázi při prvním spuštění. */
+export const DEFAULT_PRICING: Pricing = {
+  meta: PRICING_META,
+  packages: SERVICE_PACKAGES,
+  additional: ADDITIONAL_SERVICES,
+  supplementary: SUPPLEMENTARY_SERVICES,
+};
 
 export function formatPrice(amount: number): string {
   return `${amount} Kč`;

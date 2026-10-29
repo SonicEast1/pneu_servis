@@ -2,13 +2,11 @@
 
 import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react';
 import {
-  ADDITIONAL_SERVICES,
   formatPrice,
-  SERVICE_PACKAGES,
   SIZE_COLUMNS,
-  SUPPLEMENTARY_SERVICES,
   type SizedPriceRow,
   type SizeKey,
+  type SupplementaryPriceRow,
 } from '@/constants/pricing';
 
 type SizeColumn = (typeof SIZE_COLUMNS)[number];
@@ -97,18 +95,19 @@ function SizedPriceCards({ rows }: { rows: SizedPriceRow[] }) {
   );
 }
 
-export function ServicePackagesTable() {
-  return <SizedPriceCards rows={SERVICE_PACKAGES} />;
+/** Řádky ceníku přichází z databáze (stránka /cenik je čte na serveru). */
+export function ServicePackagesTable({ rows }: { rows: SizedPriceRow[] }) {
+  return <SizedPriceCards rows={rows} />;
 }
 
-export function AdditionalServicesTable() {
-  return <SizedPriceCards rows={ADDITIONAL_SERVICES} />;
+export function AdditionalServicesTable({ rows }: { rows: SizedPriceRow[] }) {
+  return <SizedPriceCards rows={rows} />;
 }
 
-export function SupplementaryServicesTable() {
+export function SupplementaryServicesTable({ rows }: { rows: SupplementaryPriceRow[] }) {
   return (
     <div className="price-card-grid">
-      {SUPPLEMENTARY_SERVICES.map((row) => (
+      {rows.map((row) => (
         <div
           key={row.name}
           className="tech-panel price-card price-card-simple"

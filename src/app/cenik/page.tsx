@@ -10,7 +10,7 @@ import {
   SizeFocusProvider,
   SupplementaryServicesTable,
 } from '@/components/PricingTables';
-import { PRICING_META } from '@/constants/pricing';
+import { getPricing } from '@/lib/content';
 import { bookingHref, BOOKING_CTA_LABEL } from '@/constants/reservation';
 
 export const metadata: Metadata = {
@@ -20,7 +20,13 @@ export const metadata: Metadata = {
   alternates: { canonical: '/cenik' },
 };
 
+// Ceny upravuje admin → stránka se skládá při každém načtení
+export const dynamic = 'force-dynamic';
+
 export default function CenikPage() {
+  const pricing = getPricing();
+  const PRICING_META = pricing.meta;
+
   return (
     <TechBackground>
       {/* Hero */}
@@ -62,7 +68,7 @@ export default function CenikPage() {
               <h2 className="section-title text-3xl sm:text-4xl font-bold mb-2">Servisní pakety</h2>
               <p className="text-theme-secondary text-sm">{PRICING_META.perUnitNote}</p>
             </div>
-            <ServicePackagesTable />
+            <ServicePackagesTable rows={pricing.packages} />
           </div>
         </section>
 
@@ -74,7 +80,7 @@ export default function CenikPage() {
               <h2 className="section-title text-3xl sm:text-4xl font-bold mb-2">Další služby</h2>
               <p className="text-theme-secondary text-sm">{PRICING_META.perUnitNote}</p>
             </div>
-            <AdditionalServicesTable />
+            <AdditionalServicesTable rows={pricing.additional} />
           </div>
         </section>
       </SizeFocusProvider>
@@ -86,7 +92,7 @@ export default function CenikPage() {
             <p className="section-tag">Doplňkové služby</p>
             <h2 className="section-title text-3xl sm:text-4xl font-bold mb-2">Ostatní doplňkové služby</h2>
           </div>
-          <SupplementaryServicesTable />
+          <SupplementaryServicesTable rows={pricing.supplementary} />
         </div>
       </section>
 

@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import TechBackground from '@/components/TechBackground';
 import { CONTACT_INFO } from '@/constants/contact';
 import MascotCTA from '@/components/MascotCTA';
+import { listReviews } from '@/lib/content';
 
 export const metadata: Metadata = {
   title: 'Recenze',
@@ -11,8 +12,14 @@ export const metadata: Metadata = {
   alternates: { canonical: '/recenze' },
 };
 
+// Recenze schvaluje admin → načíst při každém zobrazení
+export const dynamic = 'force-dynamic';
+
+const dateFormat = new Intl.DateTimeFormat('cs-CZ', { month: 'long', year: 'numeric', timeZone: 'Europe/Prague' });
+
 export default function ReviewsPage() {
   const s = CONTACT_INFO.seznam;
+  const reviews = listReviews({ onlyApproved: true });
 
   return (
     <>
@@ -74,6 +81,32 @@ export default function ReviewsPage() {
 
           </div>
         </section>
+
+        {reviews.length > 0 && (
+          <section className="border-t border-theme bg-surface-alt py-16 lg:py-20">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="mb-8">
+                <p className="section-tag">Od zákazníků</p>
+                <h2 className="section-title text-3xl sm:text-4xl font-bold">Co nám napsali</h2>
+              </div>
+              <div className="review-grid">
+                {reviews.map((review) => (
+                  <figure key={review.id} className="tech-panel review-card">
+                    <p className="review-stars" aria-label={`Hodnocení ${review.rating} z 5`}>
+                      {'★'.repeat(review.rating)}
+                      <span aria-hidden="true">{'★'.repeat(5 - review.rating)}</span>
+                    </p>
+                    <blockquote className="text-theme-secondary leading-relaxed">{review.text}</blockquote>
+                    <figcaption className="review-author">
+                      <span className="font-display font-semibold text-theme">{review.name}</span>
+                      <span className="text-theme-muted text-xs">{dateFormat.format(new Date(review.createdAt))}</span>
+                    </figcaption>
+                  </figure>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
       </TechBackground>
 
       <MascotCTA

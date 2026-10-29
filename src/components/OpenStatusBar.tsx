@@ -6,10 +6,12 @@ import {
   DEFAULT_OPENING_HOURS,
   getOpenStatus,
   type OpeningHour,
+  type SpecialDay,
 } from '@/lib/openingHours';
 
 export default function OpenStatusBar() {
   const [hours, setHours] = useState<OpeningHour[]>(DEFAULT_OPENING_HOURS);
+  const [specials, setSpecials] = useState<SpecialDay[]>([]);
   const [now, setNow] = useState<number | null>(null);
 
   useEffect(() => {
@@ -19,9 +21,10 @@ export default function OpenStatusBar() {
     let cancelled = false;
     fetch('/api/oteviraci-doba')
       .then((response) => response.json())
-      .then((data: { hours?: OpeningHour[] }) => {
+      .then((data: { hours?: OpeningHour[]; specials?: SpecialDay[] }) => {
         if (!cancelled && Array.isArray(data.hours) && data.hours.length > 0) {
           setHours(data.hours);
+          setSpecials(data.specials ?? []);
         }
       })
       .catch(() => {});
@@ -41,7 +44,7 @@ export default function OpenStatusBar() {
 
   const ready = now !== null;
   const status = ready
-    ? getOpenStatus(hours, new Date(now))
+    ? getOpenStatus(hours, new Date(now), specials)
     : { isOpen: false, label: 'Otevírací doba', detail: 'Jaroměř', todayHours: '' };
 
   return (

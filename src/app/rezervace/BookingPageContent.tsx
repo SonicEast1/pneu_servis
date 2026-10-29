@@ -5,27 +5,15 @@ import Image from 'next/image';
 import TechBackground from '@/components/TechBackground';
 import { CONTACT_INFO } from '@/constants/contact';
 import MascotCTA from '@/components/MascotCTA';
-import { IconMail, IconPhone } from '@/components/Icons';
-
-interface Service {
-  id: string;
-  nazev: string;
-  popis: string;
-  ikona: string;
-  cenaOsobni: string;
-  cenaSUV: string;
-  features: string;
-  kategorie?: string;
-  aktivni: boolean;
-  poradi?: number;
-}
-
-const timeSlots = [
-  '08:00', '08:30', '09:00', '09:30', '10:00', '10:30',
-  '11:00', '11:30', '12:00', '12:30', '13:00', '13:30',
-  '14:00', '14:30', '15:00', '15:30', '16:00', '16:30',
-  '17:00', '17:30',
-];
+import { IconCheckCircle, IconPhone } from '@/components/Icons';
+import type { Service } from '@/constants/services';
+import {
+  bookingSlots,
+  DEFAULT_OPENING_HOURS,
+  pragueDate,
+  type OpeningHour,
+  type SpecialDay,
+} from '@/lib/openingHours';
 
 const stepLabels = ['Služba', 'Termín', 'Údaje', 'Potvrzení'];
 
@@ -43,8 +31,12 @@ export default function BookingPageContent() {
   });
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
-  const [bookedSlots] = useState(['09:00', '10:30', '14:00']);
+  const [hours, setHours] = useState<OpeningHour[]>(DEFAULT_OPENING_HOURS);
+  const [specials, setSpecials] = useState<SpecialDay[]>([]);
+  const [bookedSlots, setBookedSlots] = useState<string[]>([]);
   const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState('');
+  const [done, setDone] = useState(false);
 
   useEffect(() => {
     fetch('/api/sluzby')
@@ -52,11 +44,37 @@ export default function BookingPageContent() {
       .then((data) => setServices(data.services || []))
       .catch(() => {})
       .finally(() => setLoading(false));
+    fetch('/api/oteviraci-doba')
+      .then((r) => r.json())
+      .then((data) => {
+        if (Array.isArray(data.hours) && data.hours.length > 0) setHours(data.hours);
+        setSpecials(data.specials || []);
+      })
+      .catch(() => {});
   }, []);
+
+  // Obsazené časy pro vybraný den — bez osobních údajů, jen časy
+  useEffect(() => {
+    if (!formData.date) return;
+    let cancelled = false;
+    fetch(`/api/rezervace?obsazeno=${formData.date}`)
+      .then((r) => r.json())
+      .then((data) => {
+        if (!cancelled) setBookedSlots(data.taken || []);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [formData.date]);
+
+  // Časy podle otevírací doby (včetně mimořádných dnů), ne natvrdo
+  const timeSlots = formData.date ? bookingSlots(hours, specials, formData.date) : [];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
+    setError('');
     try {
       const response = await fetch('/api/rezervace', {
         method: 'POST',
@@ -65,17 +83,21 @@ export default function BookingPageContent() {
       });
       const data = await response.json();
       if (response.ok) {
-        alert(`✅ Rezervace úspěšně odeslána!\n\nID: ${data.reservation.id}\n\nBudeme vás kontaktovat na ${formData.email} nebo ${formData.phone}.`);
-        setFormData({ service: '', date: '', time: '', name: '', email: '', phone: '', car: '', note: '' });
-        setStep(1);
+        setDone(true);
       } else {
-        alert(`❌ Chyba: ${data.error || 'Nepodařilo se vytvořit rezervaci'}`);
+        setError(data.error || 'Rezervaci se nepodařilo odeslat. Zkuste to prosím znovu.');
       }
     } catch {
-      alert('❌ Nastala chyba při odesílání. Zkuste to prosím znovu.');
+      setError('Rezervaci se nepodařilo odeslat. Zkontrolujte připojení a zkuste to znovu.');
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const startOver = () => {
+    setFormData({ service: '', date: '', time: '', name: '', email: '', phone: '', car: '', note: '' });
+    setStep(1);
+    setDone(false);
   };
 
   const canProceed = (s: number) => {
@@ -136,6 +158,21 @@ export default function BookingPageContent() {
           </div>
 
           {/* Form Card */}
+          {done ? (
+            <div className="tech-panel animate-fadeInUp text-center py-10">
+              <div className="icon-tile icon-tile-lg mx-auto mb-5">
+                <IconCheckCircle />
+              </div>
+              <h2 className="font-display text-2xl font-bold text-theme mb-2">Rezervace odeslána</h2>
+              <p className="text-theme-secondary max-w-md mx-auto mb-6">
+                Děkujeme. Termín {new Date(formData.date).toLocaleDateString('cs-CZ')} v {formData.time} brzy potvrdíme
+                na telefonu {formData.phone} nebo e-mailem.
+              </p>
+              <button type="button" onClick={startOver} className="btn-tech-secondary">
+                Nová rezervace
+              </button>
+            </div>
+          ) : (
           <div className="tech-panel animate-fadeInUp">
             <form onSubmit={handleSubmit}>
 
@@ -187,13 +224,24 @@ export default function BookingPageContent() {
                     <input
                       type="date"
                       value={formData.date}
-                      onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                      min={new Date().toISOString().split('T')[0]}
+                      onChange={(e) => {
+                        setBookedSlots([]);
+                        setFormData({ ...formData, date: e.target.value, time: '' });
+                      }}
+                      min={pragueDate()}
                       className="form-input"
                     />
                   </div>
                   <div>
                     <label className="form-label">Čas</label>
+                    {!formData.date && (
+                      <p className="text-theme-muted text-sm mt-1">Nejdřív vyberte datum.</p>
+                    )}
+                    {formData.date && timeSlots.length === 0 && (
+                      <p className="text-theme-secondary text-sm mt-1">
+                        V tento den máme zavřeno nebo už nejsou volné časy. Vyberte prosím jiný den.
+                      </p>
+                    )}
                     <div className="grid grid-cols-4 md:grid-cols-6 gap-2 mt-1">
                       {timeSlots.map((time) => {
                         const isBooked = bookedSlots.includes(time);
@@ -275,10 +323,14 @@ export default function BookingPageContent() {
                   </div>
                   <div className="bg-[var(--accent-soft)] border border-[var(--accent)] rounded p-4">
                     <p className="text-sm text-theme-secondary">
-                      <IconMail className="inline-block align-[-0.15em] mr-1.5 text-accent" />Potvrzení bude zasláno na <strong>{formData.email}</strong>
+                      Termín vám potvrdíme telefonicky nebo e-mailem na <strong>{formData.email}</strong>.
                     </p>
                   </div>
                 </div>
+              )}
+
+              {error && (
+                <p className="mt-6 text-sm text-accent" role="alert">{error}</p>
               )}
 
               {/* Navigation */}
@@ -309,6 +361,7 @@ export default function BookingPageContent() {
               </div>
             </form>
           </div>
+          )}
 
           {/* Phone fallback */}
           <div className="mt-10 text-center">
