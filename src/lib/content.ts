@@ -124,8 +124,18 @@ export interface GalleryImage {
   id: string;
   url: string;
   title: string;
-  category: string;
+  description: string;
+  categories: string[];
   visible: boolean;
+}
+
+function parseList(value: unknown): string[] {
+  try {
+    const list = JSON.parse(str(value));
+    return Array.isArray(list) ? list.map(String).filter(Boolean) : [];
+  } catch {
+    return [];
+  }
 }
 
 function toImage(row: Row): GalleryImage {
@@ -133,7 +143,8 @@ function toImage(row: Row): GalleryImage {
     id: str(row.id),
     url: `/media/${str(row.file)}`,
     title: str(row.title),
-    category: str(row.category),
+    description: str(row.description),
+    categories: parseList(row.categories),
     visible: row.visible === 1,
   };
 }
@@ -144,24 +155,28 @@ export function listGallery({ onlyVisible = false } = {}): GalleryImage[] {
   return rows.map(toImage);
 }
 
-export function addGalleryImage(file: string, title: string, category: string): GalleryImage {
+export function addGalleryImage(file: string, title: string, categories: string[]): GalleryImage {
   const connection = db();
   const id = newId('IMG');
   // Nové fotky nahoru: posuneme ostatní o jedno níž
   transaction((tx) => {
     tx.prepare('UPDATE gallery SET position = position + 1').run();
-    tx.prepare('INSERT INTO gallery (id, file, title, category, visible, position, created_at) VALUES (?, ?, ?, ?, 1, 1, ?)')
-      .run(id, file, title, category, new Date().toISOString());
+    tx.prepare('INSERT INTO gallery (id, file, title, categories, visible, position, created_at) VALUES (?, ?, ?, ?, 1, 1, ?)')
+      .run(id, file, title, JSON.stringify(categories), new Date().toISOString());
   });
   return toImage(connection.prepare('SELECT * FROM gallery WHERE id = ?').get(id) as Row);
 }
 
-export function updateGalleryImage(id: string, patch: { title?: string; category?: string; visible?: boolean }) {
+export function updateGalleryImage(
+  id: string,
+  patch: { title?: string; description?: string; categories?: string[]; visible?: boolean },
+) {
   const current = db().prepare('SELECT * FROM gallery WHERE id = ?').get(id) as Row | undefined;
   if (!current) return null;
-  db().prepare('UPDATE gallery SET title = ?, category = ?, visible = ? WHERE id = ?').run(
+  db().prepare('UPDATE gallery SET title = ?, description = ?, categories = ?, visible = ? WHERE id = ?').run(
     patch.title ?? str(current.title),
-    patch.category ?? str(current.category),
+    patch.description ?? str(current.description),
+    patch.categories ? JSON.stringify(patch.categories) : str(current.categories),
     patch.visible === undefined ? Number(current.visible) : patch.visible ? 1 : 0,
     id,
   );
@@ -243,6 +258,7 @@ export interface Reservation {
   email: string;
   phone: string;
   car: string;
+  wheelSize: string;
   note: string;
   status: ReservationStatus;
   createdAt: string;
@@ -258,6 +274,7 @@ function toReservation(row: Row): Reservation {
     email: str(row.email),
     phone: str(row.phone),
     car: str(row.car),
+    wheelSize: str(row.wheel_size),
     note: str(row.note),
     status: str(row.status) as ReservationStatus,
     createdAt: str(row.created_at),
@@ -280,9 +297,12 @@ export function takenTimes(date: string): string[] {
 export function createReservation(input: Omit<Reservation, 'id' | 'status' | 'createdAt'>): Reservation {
   const id = newId('RES');
   db().prepare(`
-    INSERT INTO reservations (id, service, date, time, name, email, phone, car, note, status, created_at)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?)
-  `).run(id, input.service, input.date, input.time, input.name, input.email, input.phone, input.car, input.note, new Date().toISOString());
+    INSERT INTO reservations (id, service, date, time, name, email, phone, car, wheel_size, note, status, created_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?)
+  `).run(
+    id, input.service, input.date, input.time, input.name, input.email, input.phone,
+    input.car, input.wheelSize, input.note, new Date().toISOString(),
+  );
   return toReservation(db().prepare('SELECT * FROM reservations WHERE id = ?').get(id) as Row);
 }
 

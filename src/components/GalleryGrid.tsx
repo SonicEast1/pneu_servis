@@ -7,7 +7,8 @@ export interface GalleryItem {
   id: string;
   url: string;
   title: string;
-  category: string;
+  description: string;
+  categories: string[];
 }
 
 const ALL = 'Vše';
@@ -19,11 +20,11 @@ export default function GalleryGrid({ images }: { images: GalleryItem[] }) {
   const dialogRef = useRef<HTMLDialogElement>(null);
 
   const categories = useMemo(() => {
-    const unique = Array.from(new Set(images.map((image) => image.category).filter(Boolean)));
+    const unique = Array.from(new Set(images.flatMap((image) => image.categories)));
     return unique.length > 1 ? [ALL, ...unique] : [];
   }, [images]);
 
-  const visible = filter === ALL ? images : images.filter((image) => image.category === filter);
+  const visible = filter === ALL ? images : images.filter((image) => image.categories.includes(filter));
   const current = openIndex === null ? null : visible[openIndex];
 
   useEffect(() => {
@@ -98,10 +99,23 @@ export default function GalleryGrid({ images }: { images: GalleryItem[] }) {
               alt={current.title || 'Fotka z pneuservisu'}
               width={1600}
               height={1200}
-              sizes="100vw"
+              sizes="(max-width: 900px) 100vw, 70vw"
               className="gallery-lightbox-image"
             />
-            {current.title && <figcaption>{current.title}</figcaption>}
+            {(current.title || current.description || current.categories.length > 0) && (
+              <figcaption className="gallery-lightbox-info">
+                {current.categories.length > 0 && (
+                  <ul className="gallery-lightbox-tags" aria-label="Kategorie">
+                    {current.categories.map((category) => <li key={category}>{category}</li>)}
+                  </ul>
+                )}
+                {current.title && <h2>{current.title}</h2>}
+                {current.description && <p>{current.description}</p>}
+                {visible.length > 1 && (
+                  <span className="gallery-lightbox-count">{(openIndex ?? 0) + 1} / {visible.length}</span>
+                )}
+              </figcaption>
+            )}
           </figure>
         )}
         <button type="button" className="gallery-lightbox-close" onClick={() => setOpenIndex(null)} aria-label="Zavřít">

@@ -105,6 +105,8 @@ jobs:
             --exclude=data/*.xlsx \
             --exclude=data/*.xls \
             --exclude='public/uploads/*' \
+            --exclude='data/*.db*' \
+            --exclude='data/uploads/' \
             ./ $USER@$HOST:/srv/app/
 
       - name: Install production deps on Roští and restart

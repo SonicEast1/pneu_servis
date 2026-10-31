@@ -7,6 +7,7 @@ import { CONTACT_INFO } from '@/constants/contact';
 import MascotCTA from '@/components/MascotCTA';
 import { IconCheckCircle, IconPhone } from '@/components/Icons';
 import type { Service } from '@/constants/services';
+import { BOOKING_SLOT_MINUTES, WHEEL_SIZE_OPTIONS } from '@/constants/reservation';
 import {
   bookingSlots,
   DEFAULT_OPENING_HOURS,
@@ -17,18 +18,23 @@ import {
 
 const stepLabels = ['Služba', 'Termín', 'Údaje', 'Potvrzení'];
 
+const EMPTY_FORM = {
+  service: '',
+  date: '',
+  time: '',
+  name: '',
+  email: '',
+  phone: '',
+  car: '',
+  wheelSize: '',
+  note: '',
+};
+
+const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 export default function BookingPageContent() {
   const [step, setStep] = useState(1);
-  const [formData, setFormData] = useState({
-    service: '',
-    date: '',
-    time: '',
-    name: '',
-    email: '',
-    phone: '',
-    car: '',
-    note: '',
-  });
+  const [formData, setFormData] = useState(EMPTY_FORM);
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
   const [hours, setHours] = useState<OpeningHour[]>(DEFAULT_OPENING_HOURS);
@@ -69,7 +75,7 @@ export default function BookingPageContent() {
   }, [formData.date]);
 
   // Časy podle otevírací doby (včetně mimořádných dnů), ne natvrdo
-  const timeSlots = formData.date ? bookingSlots(hours, specials, formData.date) : [];
+  const timeSlots = formData.date ? bookingSlots(hours, specials, formData.date, BOOKING_SLOT_MINUTES) : [];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -95,15 +101,24 @@ export default function BookingPageContent() {
   };
 
   const startOver = () => {
-    setFormData({ service: '', date: '', time: '', name: '', email: '', phone: '', car: '', note: '' });
+    setFormData(EMPTY_FORM);
     setStep(1);
     setDone(false);
   };
 
+  // Povinné je vše kromě poznámky
   const canProceed = (s: number) => {
     if (s === 1) return !!formData.service;
     if (s === 2) return !!(formData.date && formData.time);
-    if (s === 3) return !!(formData.name && formData.email && formData.phone);
+    if (s === 3) {
+      return !!(
+        formData.name.trim()
+        && EMAIL.test(formData.email.trim())
+        && formData.phone.replace(/\D/g, '').length >= 9
+        && formData.car.trim()
+        && formData.wheelSize
+      );
+    }
     return false;
   };
 
@@ -284,12 +299,30 @@ export default function BookingPageContent() {
                     <label className="form-label">Telefon *</label>
                     <input type="tel" value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} className="form-input" placeholder="+420 602 299 090" required />
                   </div>
-                  <div>
-                    <label className="form-label">Značka a model vozu</label>
-                    <input type="text" value={formData.car} onChange={(e) => setFormData({ ...formData, car: e.target.value })} className="form-input" placeholder="Škoda Octavia" />
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    <div>
+                      <label className="form-label" htmlFor="booking-car">Značka a model vozu *</label>
+                      <input id="booking-car" type="text" value={formData.car} onChange={(e) => setFormData({ ...formData, car: e.target.value })} className="form-input" placeholder="Škoda Octavia" required />
+                    </div>
+                    <div>
+                      <label className="form-label" htmlFor="booking-wheel">Rozměr kola *</label>
+                      <select
+                        id="booking-wheel"
+                        value={formData.wheelSize}
+                        onChange={(e) => setFormData({ ...formData, wheelSize: e.target.value })}
+                        className="form-input"
+                        required
+                      >
+                        <option value="" disabled>Vyberte rozměr</option>
+                        {WHEEL_SIZE_OPTIONS.map((size) => (
+                          <option key={size} value={size}>{size}</option>
+                        ))}
+                      </select>
+                      <p className="text-theme-muted text-xs mt-1.5">Číslo za „R“ najdete na boku pneumatiky, např. 205/55 R16.</p>
+                    </div>
                   </div>
                   <div>
-                    <label className="form-label">Poznámka</label>
+                    <label className="form-label">Poznámka (nepovinné)</label>
                     <textarea value={formData.note} onChange={(e) => setFormData({ ...formData, note: e.target.value })} rows={3} className="form-input resize-none" placeholder="Jakékoliv speciální požadavky..." />
                   </div>
                 </div>
@@ -307,7 +340,8 @@ export default function BookingPageContent() {
                       { label: 'Jméno', value: formData.name },
                       { label: 'E-mail', value: formData.email },
                       { label: 'Telefon', value: formData.phone },
-                      ...(formData.car ? [{ label: 'Vozidlo', value: formData.car }] : []),
+                      { label: 'Vozidlo', value: formData.car },
+                      { label: 'Rozměr kola', value: formData.wheelSize },
                     ].map(({ label, value }) => (
                       <div key={label} className="flex justify-between items-start border-b border-theme pb-3 last:border-0 last:pb-0">
                         <span className="text-theme-muted text-sm font-semibold">{label}:</span>

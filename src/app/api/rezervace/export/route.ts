@@ -20,13 +20,14 @@ export async function GET(request: NextRequest) {
     Telefon: r.phone,
     Email: r.email,
     Vozidlo: r.car,
+    'Rozměr kola': r.wheelSize,
     Poznámka: r.note,
     Stav: STATUS_LABEL[r.status] ?? r.status,
     Vytvořeno: new Date(r.createdAt).toLocaleString('cs-CZ', { timeZone: 'Europe/Prague' }),
   }));
 
   const sheet = XLSX.utils.json_to_sheet(rows);
-  sheet['!cols'] = [10, 6, 22, 20, 15, 26, 18, 40, 11, 18].map((wch) => ({ wch }));
+  sheet['!cols'] = [10, 6, 22, 20, 15, 26, 18, 12, 40, 11, 18].map((wch) => ({ wch }));
   const book = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(book, sheet, 'Rezervace');
   const buffer = XLSX.write(book, { type: 'buffer', bookType: 'xlsx' }) as Buffer;

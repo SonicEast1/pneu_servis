@@ -94,10 +94,32 @@ export function db(): DatabaseSync {
   const connection = new DatabaseSync(path.join(DATA_DIR, 'pneuservis.db'));
   connection.exec('PRAGMA journal_mode = WAL; PRAGMA busy_timeout = 5000; PRAGMA foreign_keys = ON;');
   connection.exec(SCHEMA);
+  migrate(connection);
   seedOnce(connection);
 
   globalForDb.vmkDb = connection;
   return connection;
+}
+
+/* ─── Doplnění sloupců do už existující databáze (bez ztráty dat) ─── */
+
+function hasColumn(connection: DatabaseSync, table: string, column: string): boolean {
+  const rows = connection.prepare(`PRAGMA table_info(${table})`).all() as { name: string }[];
+  return rows.some((row) => row.name === column);
+}
+
+function migrate(connection: DatabaseSync) {
+  if (!hasColumn(connection, 'reservations', 'wheel_size')) {
+    connection.exec("ALTER TABLE reservations ADD COLUMN wheel_size TEXT NOT NULL DEFAULT ''");
+  }
+  if (!hasColumn(connection, 'gallery', 'description')) {
+    connection.exec("ALTER TABLE gallery ADD COLUMN description TEXT NOT NULL DEFAULT ''");
+  }
+  if (!hasColumn(connection, 'gallery', 'categories')) {
+    // Fotka může mít víc kategorií → JSON pole; původní jedna kategorie se převezme
+    connection.exec("ALTER TABLE gallery ADD COLUMN categories TEXT NOT NULL DEFAULT '[]'");
+    connection.exec("UPDATE gallery SET categories = json_array(category) WHERE category != ''");
+  }
 }
 
 /** Spustí `work` v transakci; při chybě vrátí vše zpět. */

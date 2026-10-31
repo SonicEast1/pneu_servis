@@ -10,7 +10,7 @@ import {
   type ReservationStatus,
 } from '@/lib/content';
 import { pragueDate } from '@/lib/openingHours';
-import { RESERVATIONS_ENABLED } from '@/constants/reservation';
+import { RESERVATIONS_ENABLED, WHEEL_SIZE_OPTIONS } from '@/constants/reservation';
 
 export const dynamic = 'force-dynamic';
 
@@ -36,10 +36,6 @@ export async function POST(request: NextRequest) {
       { status: 503 },
     );
   }
-  if (!allowed(request)) {
-    return NextResponse.json({ error: 'Příliš mnoho pokusů. Zavolejte nám prosím.' }, { status: 429 });
-  }
-
   const body = await request.json().catch(() => ({}));
   const input = {
     service: clip(body.service, 60),
@@ -49,11 +45,23 @@ export async function POST(request: NextRequest) {
     email: clip(body.email, 120),
     phone: clip(body.phone, 30),
     car: clip(body.car, 80),
+    wheelSize: clip(body.wheelSize, 40),
     note: clip(body.note, 500),
   };
 
-  if (!input.service || !input.date || !input.time || !input.name || !input.email || !input.phone) {
-    return NextResponse.json({ error: 'Všechna povinná pole musí být vyplněna.' }, { status: 400 });
+  // Povinné je vše kromě poznámky
+  const required = [input.service, input.date, input.time, input.name, input.email, input.phone, input.car, input.wheelSize];
+  if (required.some((value) => !value)) {
+    return NextResponse.json({ error: 'Vyplňte prosím všechna povinná pole.' }, { status: 400 });
+  }
+  if (!WHEEL_SIZE_OPTIONS.includes(input.wheelSize)) {
+    return NextResponse.json({ error: 'Vyberte prosím rozměr kola ze seznamu.' }, { status: 400 });
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.email)) {
+    return NextResponse.json({ error: 'Zkontrolujte prosím e-mail.' }, { status: 400 });
+  }
+  if (input.phone.replace(/\D/g, '').length < 9) {
+    return NextResponse.json({ error: 'Zkontrolujte prosím telefon (aspoň 9 číslic).' }, { status: 400 });
   }
   if (!/^\d{4}-\d{2}-\d{2}$/.test(input.date) || input.date < pragueDate()) {
     return NextResponse.json({ error: 'Vyberte prosím datum od dneška dál.' }, { status: 400 });
@@ -63,6 +71,10 @@ export async function POST(request: NextRequest) {
   }
   if (takenTimes(input.date).includes(input.time)) {
     return NextResponse.json({ error: 'Tento čas už je obsazený. Vyberte prosím jiný.' }, { status: 409 });
+  }
+  // Limit počítá jen platné rezervace — překlep ve formuláři zákazníka nezablokuje
+  if (!allowed(request)) {
+    return NextResponse.json({ error: 'Příliš mnoho rezervací najednou. Zavolejte nám prosím.' }, { status: 429 });
   }
 
   // Ukládáme název služby, ne id — rezervace zůstane čitelná i po smazání služby

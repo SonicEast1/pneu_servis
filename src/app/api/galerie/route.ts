@@ -17,6 +17,12 @@ export const dynamic = 'force-dynamic';
 const MAX_BYTES = 12 * 1024 * 1024;
 const clip = (value: unknown, max: number) => String(value ?? '').trim().slice(0, max);
 
+/** Kategorie fotky: max. 6, každá max. 40 znaků, bez duplicit. */
+function cleanCategories(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  return Array.from(new Set(value.map((item) => clip(item, 40)).filter(Boolean))).slice(0, 6);
+}
+
 /** Typ obrázku podle obsahu souboru (ne podle přípony, tu jde podvrhnout). */
 function imageExtension(bytes: Buffer): string | null {
   if (bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff) return 'jpg';
@@ -33,7 +39,7 @@ export async function GET(request: NextRequest) {
   );
 }
 
-/** Nahrání fotky: multipart s polem `file`, volitelně `title` a `category`. */
+/** Nahrání fotky: multipart s polem `file`, volitelně `title`. */
 export async function POST(request: NextRequest) {
   const denied = denyUnlessAdmin(request);
   if (denied) return denied;
@@ -55,11 +61,11 @@ export async function POST(request: NextRequest) {
 
   const fileName = `${randomUUID()}.${extension}`;
   await writeFile(path.join(UPLOAD_DIR, fileName), bytes);
-  const image = addGalleryImage(fileName, clip(form?.get('title'), 120), clip(form?.get('category'), 40));
+  const image = addGalleryImage(fileName, clip(form?.get('title'), 80), []);
   return NextResponse.json({ image });
 }
 
-/** Úprava popisku/kategorie/viditelnosti ({ id, … }) nebo nové pořadí ({ order }). */
+/** Úprava názvu, popisu, kategorií a viditelnosti ({ id, … }) nebo nové pořadí ({ order }). */
 export async function PATCH(request: NextRequest) {
   const denied = denyUnlessAdmin(request);
   if (denied) return denied;
@@ -72,8 +78,9 @@ export async function PATCH(request: NextRequest) {
 
   const image = typeof body.id === 'string'
     ? updateGalleryImage(body.id, {
-      title: body.title === undefined ? undefined : clip(body.title, 120),
-      category: body.category === undefined ? undefined : clip(body.category, 40),
+      title: body.title === undefined ? undefined : clip(body.title, 80),
+      description: body.description === undefined ? undefined : clip(body.description, 600),
+      categories: body.categories === undefined ? undefined : cleanCategories(body.categories),
       visible: typeof body.visible === 'boolean' ? body.visible : undefined,
     })
     : null;

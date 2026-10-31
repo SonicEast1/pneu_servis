@@ -82,8 +82,15 @@ function RankList({ items, empty, unit }: { items: RankedItem[]; empty: string; 
   );
 }
 
+function visitsLabel(count: number): string {
+  if (count === 1) return '1 návštěva';
+  if (count >= 2 && count <= 4) return `${count} návštěvy`;
+  return `${count} návštěv`;
+}
+
+/** Graf jen z návštěv (otevření webu) — zobrazení a kliknutí se do něj nemíchají. */
 function DayChart({ points }: { points: DailyPoint[] }) {
-  const max = Math.max(1, ...points.map((p) => p.pageviews));
+  const max = Math.max(1, ...points.map((p) => p.sessions));
   const dense = points.length > 14;
   if (points.length === 0) {
     return <p className="text-theme-muted text-sm">Zatím žádný průběh.</p>;
@@ -92,9 +99,9 @@ function DayChart({ points }: { points: DailyPoint[] }) {
   return (
     <div className={`stats-chart ${dense ? 'stats-chart-dense' : ''}`} role="img" aria-label="Návštěvy po dnech">
       {points.map((point, index) => {
-        const empty = point.pageviews === 0;
+        const empty = point.sessions === 0;
         const showLabel = !dense || index === 0 || index === points.length - 1 || index % 5 === 0;
-        const height = empty ? 0 : Math.max(8, (point.pageviews / max) * 100);
+        const height = empty ? 0 : Math.max(8, (point.sessions / max) * 100);
         return (
           <div
             key={point.date}
@@ -106,11 +113,7 @@ function DayChart({ points }: { points: DailyPoint[] }) {
             <span className={showLabel ? undefined : 'is-faded'}>{formatDay(point.date)}</span>
             <Tip
               title={formatDayLong(point.date)}
-              lines={[
-                `${point.pageviews} zobrazení`,
-                `${point.sessions} návštěv`,
-                `${point.clicks} kliknutí`,
-              ]}
+              lines={[visitsLabel(point.sessions)]}
             />
           </div>
         );

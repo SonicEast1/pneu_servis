@@ -16,6 +16,7 @@ interface Reservation {
   email: string;
   phone: string;
   car: string;
+  wheelSize: string;
   note: string;
   status: Status;
   createdAt: string;
@@ -138,7 +139,9 @@ export default function AdminReservationsPage() {
                       <span className="font-display font-semibold text-theme">{item.name}</span>
                       <span className="admin-pill" data-tone={STATUS_TONE[item.status]}>{STATUS_LABEL[item.status]}</span>
                     </div>
-                    <p className="text-theme-secondary text-sm">{item.service}{item.car ? ` · ${item.car}` : ''}</p>
+                    <p className="text-theme-secondary text-sm">
+                      {[item.service, item.car, item.wheelSize && `kola ${item.wheelSize}`].filter(Boolean).join(' · ')}
+                    </p>
                     <p className="text-sm">
                       <a href={`tel:${item.phone.replace(/\s/g, '')}`} className="text-accent font-semibold">{item.phone}</a>
                       <span className="text-theme-muted"> · </span>
