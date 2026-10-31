@@ -3,7 +3,7 @@
   "short_name": "PneuservisVMK",
   "description": "Pneuservis v Jaroměři: přezutí, výměna pneumatik, vyvážení kol a uskladnění pneu.",
   "start_url": "/",
-  "display": "standalone",
+  "display": "browser",
   "background_color": "#1a0808",
   "theme_color": "#e84d00",
   "lang": "cs",
