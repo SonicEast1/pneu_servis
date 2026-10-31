@@ -29,6 +29,9 @@ export function shopBrief(facts: ShopFacts): string {
   ].join('\n');
   const packages = pricing.packages.map((row) => priceRow(row.name, row.description, row.prices)).join('\n');
   const extras = pricing.additional.map((row) => priceRow(row.name, row.description, row.prices)).join('\n');
+  const storage = pricing.storage
+    .map((row) => `${row.name} ${row.price} Kč${row.note ? ` (${row.note})` : ''}`)
+    .join(', ');
   const extras2 = pricing.supplementary.map((row) => {
     const note = row.note ? `, ${row.note}` : '';
     return `${row.name}: ${row.price} Kč / ${row.unit}${note}`;
@@ -45,7 +48,7 @@ export function shopBrief(facts: ShopFacts): string {
     `E-mail: ${CONTACT_INFO.email.display}.`,
     `Fakturace: ${CONTACT_INFO.billing.company}, IČO ${CONTACT_INFO.billing.ico}, ${CONTACT_INFO.billing.street}, ${CONTACT_INFO.billing.zip} ${CONTACT_INFO.billing.city}.`,
     booking,
-    `Teď nenabízíme: ${facts.unavailable.join(', ') || 'vše běží'}. Přezutí, výměna kol, vyvážení, opravy a uskladnění pneumatik jedou dál. Uskladnění na sezónu: 600 Kč osobní auto, 800 Kč SUV nebo dodávka. Suché prostory, označení, evidence, pojištění a mytí před uskladněním. Kompletní přezutí v ceníku není totéž co kompletní servis. Geometrii náprav a brzdy neděláme. Když auto táhne, umíme tlak, opotřebení, vyvážení a opravu pláště.`,
+    `Teď nenabízíme: ${facts.unavailable.join(', ') || 'vše běží'}. Přezutí, výměna kol, vyvážení, opravy a uskladnění pneumatik jedou dál. Uskladnění (1 sada na 1 sezónu): ${storage || 'cena podle ceníku'}. Suché prostory, označení, evidence, pojištění a mytí před uskladněním. Kompletní přezutí v ceníku není totéž co kompletní servis. Geometrii náprav a brzdy neděláme. Když auto táhne, umíme tlak, opotřebení, vyvážení a opravu pláště.`,
     'Přezutí děláme na počkání. Čas záleží na frontě.',
     `${pricing.meta.perUnitNote} ${pricing.meta.vatNote} Platnost od ${pricing.meta.validFrom}. Platba hotově nebo kartou.`,
     `Balíčky:\n${packages}`,

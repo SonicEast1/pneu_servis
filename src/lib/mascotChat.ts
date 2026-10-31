@@ -176,8 +176,11 @@ export function answerMascot(message: string, facts: ShopFacts): ChatReply {
   }
 
   if (has(text, ['usklad', 'skladov', 'ulozen', 'pirelli hotel', 'hotel pneu'])) {
+    const prices = facts.pricing.storage.map((row) => `${row.name} ${row.price} Kč`).join(', ');
     return {
-      text: 'Uskladnění pneumatik děláme. Sezóna stojí 600 Kč u osobního auta a 800 Kč u SUV nebo dodávky. Kola máme v suchu, označená a evidovaná.',
+      text: prices
+        ? `Uskladnění pneumatik děláme, cena je za sadu na sezónu: ${prices}. Kola máme v suchu, označená a evidovaná.`
+        : 'Uskladnění pneumatik děláme. Kola máme v suchu, označená a evidovaná. Cenu najdete v ceníku.',
     };
   }
 

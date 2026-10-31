@@ -23,7 +23,14 @@ const emptySized = (): SizedPriceRow => ({
   prices: Object.fromEntries(SIZE_COLUMNS.map((col) => [col.key, 0])) as SizedPriceRow['prices'],
 });
 
-const emptySupplementary = (): SupplementaryPriceRow => ({ name: '', unit: '1 ks', note: '', price: 0 });
+type SimpleKey = 'supplementary' | 'storage';
+
+const SIMPLE_SECTIONS: { key: SimpleKey; title: string; hint: string; unit: string }[] = [
+  { key: 'supplementary', title: 'Ostatní doplňkové služby', hint: 'Jedna cena, např. oprava pneu nebo TPMS.', unit: '1 ks' },
+  { key: 'storage', title: 'Uskladnění', hint: 'Cena za uskladnění sady pneumatik na jednu sezónu.', unit: '1 sezona, 1 sada' },
+];
+
+const emptySupplementary = (unit = '1 ks'): SupplementaryPriceRow => ({ name: '', unit, note: '', price: 0 });
 
 function move<T>(rows: T[], index: number, delta: number): T[] {
   const next = [...rows];
@@ -82,7 +89,7 @@ export default function AdminPricingPage() {
 
   const setMeta = (patch: Partial<Pricing['meta']>) => setPricing({ ...pricing, meta: { ...pricing.meta, ...patch } });
   const setSized = (key: SizedKey, rows: SizedPriceRow[]) => setPricing({ ...pricing, [key]: rows });
-  const setSupplementary = (rows: SupplementaryPriceRow[]) => setPricing({ ...pricing, supplementary: rows });
+  const setSimple = (key: SimpleKey, rows: SupplementaryPriceRow[]) => setPricing({ ...pricing, [key]: rows });
 
   const updateSized = (key: SizedKey, index: number, patch: Partial<SizedPriceRow>) => {
     setSized(key, pricing[key].map((row, i) => (i === index ? { ...row, ...patch } : row)));
@@ -189,42 +196,45 @@ export default function AdminPricingPage() {
         </section>
       ))}
 
-      <section className="admin-card mb-6">
-        <div className="admin-section-head">
-          <div>
-            <h2>Ostatní doplňkové služby</h2>
-            <p className="text-theme-secondary text-sm">Jedna cena, např. oprava pneu nebo TPMS.</p>
+      {SIMPLE_SECTIONS.map((section) => (
+        <section key={section.key} className="admin-card mb-6">
+          <div className="admin-section-head">
+            <div>
+              <h2>{section.title}</h2>
+              <p className="text-theme-secondary text-sm">{section.hint}</p>
+            </div>
+            <button type="button" className="btn-tech-secondary btn-compact" onClick={() => setSimple(section.key, [...pricing[section.key], emptySupplementary(section.unit)])}>
+              + Přidat řádek
+            </button>
           </div>
-          <button type="button" className="btn-tech-secondary btn-compact" onClick={() => setSupplementary([...pricing.supplementary, emptySupplementary()])}>
-            + Přidat řádek
-          </button>
-        </div>
 
-        <ul className="admin-price-rows">
-          {pricing.supplementary.map((row, index) => {
-            const update = (patch: Partial<SupplementaryPriceRow>) =>
-              setSupplementary(pricing.supplementary.map((item, i) => (i === index ? { ...item, ...patch } : item)));
-            return (
-              <li key={index} className="admin-price-row admin-supp-row">
-                <input className="form-input" value={row.name} placeholder="Název" onChange={(e) => update({ name: e.target.value })} aria-label="Název" />
-                <input className="form-input" value={row.unit} placeholder="1 ks" onChange={(e) => update({ unit: e.target.value })} aria-label="Jednotka" />
-                <input className="form-input" value={row.note ?? ''} placeholder="Poznámka (nepovinné)" onChange={(e) => update({ note: e.target.value })} aria-label="Poznámka" />
-                <label className="admin-price-cell">
-                  <span>Kč</span>
-                  <input className="form-input" type="number" inputMode="numeric" min={0} value={row.price} onChange={(e) => update({ price: Number(e.target.value) })} />
-                </label>
-                <RowTools
-                  index={index}
-                  count={pricing.supplementary.length}
-                  name={row.name}
-                  onMove={(delta) => setSupplementary(move(pricing.supplementary, index, delta))}
-                  onRemove={() => setSupplementary(pricing.supplementary.filter((_, i) => i !== index))}
-                />
-              </li>
-            );
-          })}
-        </ul>
-      </section>
+          <ul className="admin-price-rows">
+            {pricing[section.key].map((row, index) => {
+              const rows = pricing[section.key];
+              const update = (patch: Partial<SupplementaryPriceRow>) =>
+                setSimple(section.key, rows.map((item, i) => (i === index ? { ...item, ...patch } : item)));
+              return (
+                <li key={index} className="admin-price-row admin-supp-row">
+                  <input className="form-input" value={row.name} placeholder="Název" onChange={(e) => update({ name: e.target.value })} aria-label="Název" />
+                  <input className="form-input" value={row.unit} placeholder={section.unit} onChange={(e) => update({ unit: e.target.value })} aria-label="Jednotka" />
+                  <input className="form-input" value={row.note ?? ''} placeholder="Poznámka (nepovinné)" onChange={(e) => update({ note: e.target.value })} aria-label="Poznámka" />
+                  <label className="admin-price-cell">
+                    <span>Kč</span>
+                    <input className="form-input" type="number" inputMode="numeric" min={0} value={row.price} onChange={(e) => update({ price: Number(e.target.value) })} />
+                  </label>
+                  <RowTools
+                    index={index}
+                    count={rows.length}
+                    name={row.name}
+                    onMove={(delta) => setSimple(section.key, move(rows, index, delta))}
+                    onRemove={() => setSimple(section.key, rows.filter((_, i) => i !== index))}
+                  />
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      ))}
 
       <SaveBar dirty={dirty} saving={saving} onSave={save} onReset={() => setPricing(saved)} />
     </>

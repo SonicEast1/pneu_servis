@@ -510,6 +510,11 @@ h2 {
   overflow: hidden;
 }
 
+/* Pás je tmavý i ve světlém režimu → nadpis bílý (globální h2 by ho jinak obarvil tmavě) */
+.cta-band h2 {
+  color: #fff;
+}
+
 .dark .cta-band {
   background: linear-gradient(135deg, #100e08 0%, #1e1a10 50%, #100e08 100%);
   border-top: 1px solid var(--border);

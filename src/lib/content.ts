@@ -3,7 +3,7 @@ import { unlink } from 'fs/promises';
 import path from 'path';
 import { db, newId, transaction, UPLOAD_DIR } from '@/lib/db';
 import { WEEK_DAYS, pragueDate, type OpeningHour, type SpecialDay } from '@/lib/openingHours';
-import { DEFAULT_PRICING, type Pricing } from '@/constants/pricing';
+import { DEFAULT_PRICING, withStorageSection, type Pricing } from '@/constants/pricing';
 import type { Service } from '@/constants/services';
 
 type Row = Record<string, unknown>;
@@ -106,7 +106,7 @@ export function getPricing(): Pricing {
   const row = db().prepare("SELECT value FROM content WHERE key = 'pricing'").get() as Row | undefined;
   if (!row) return DEFAULT_PRICING;
   try {
-    return { ...DEFAULT_PRICING, ...(JSON.parse(str(row.value)) as Pricing) };
+    return withStorageSection({ ...DEFAULT_PRICING, storage: undefined, ...(JSON.parse(str(row.value)) as Partial<Pricing>) });
   } catch {
     return DEFAULT_PRICING;
   }

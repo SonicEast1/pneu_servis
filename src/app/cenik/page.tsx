@@ -96,8 +96,22 @@ export default function CenikPage() {
         </div>
       </section>
 
+      {/* Uskladnění */}
+      {pricing.storage.length > 0 && (
+        <section className="border-t border-theme bg-surface-alt py-16 lg:py-20">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="mb-8">
+              <p className="section-tag">Uskladnění</p>
+              <h2 className="section-title text-3xl sm:text-4xl font-bold mb-2">Uskladnění pneumatik</h2>
+              <p className="text-theme-secondary text-sm">Cena za 1 sadu na 1 sezónu v Kč včetně DPH.</p>
+            </div>
+            <SupplementaryServicesTable rows={pricing.storage} />
+          </div>
+        </section>
+      )}
+
       {/* Note */}
-      <section className="border-t border-theme bg-surface-alt py-10">
+      <section className="border-t border-theme py-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="tech-panel max-w-3xl">
             <p className="font-mono-tech text-[0.7rem] text-tech tracking-widest uppercase mb-2">Poznámka</p>

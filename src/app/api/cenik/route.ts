@@ -58,6 +58,7 @@ export async function PUT(request: NextRequest) {
     packages: cleanSized(input.packages),
     additional: cleanSized(input.additional),
     supplementary: cleanSupplementary(input.supplementary),
+    storage: cleanSupplementary(input.storage),
   };
   savePricing(pricing);
   return NextResponse.json({ pricing });

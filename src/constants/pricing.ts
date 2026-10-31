@@ -120,7 +120,17 @@ export interface Pricing {
   packages: SizedPriceRow[];
   additional: SizedPriceRow[];
   supplementary: SupplementaryPriceRow[];
+  /** Uskladnění pneumatik — vlastní sekce ceníku */
+  storage: SupplementaryPriceRow[];
 }
+
+const STORAGE_NOTE = '4x4, SUV, XL a zesílené 94+ (index nosnosti) plus 20% ceny';
+
+const STORAGE_SERVICES: SupplementaryPriceRow[] = [
+  { name: 'Uskladnění pneu 13"-17"', unit: '1 sezona, 1 sada', note: STORAGE_NOTE, price: 1000 },
+  { name: 'Uskladnění pneu 17" +', unit: '1 sezona, 1 sada', note: STORAGE_NOTE, price: 1200 },
+  { name: 'Uskladnění pneu dodávky', unit: '1 sezona, 1 sada', price: 1500 },
+];
 
 /** Výchozí ceník — naplní databázi při prvním spuštění. */
 export const DEFAULT_PRICING: Pricing = {
@@ -128,7 +138,23 @@ export const DEFAULT_PRICING: Pricing = {
   packages: SERVICE_PACKAGES,
   additional: ADDITIONAL_SERVICES,
   supplementary: SUPPLEMENTARY_SERVICES,
+  storage: STORAGE_SERVICES,
 };
+
+/**
+ * Starší uložené ceníky neměly sekci uskladnění — řádky „Uskladnění…" byly
+ * mezi doplňkovými službami. Přesuneme je do vlastní sekce (beze změny cen).
+ */
+export function withStorageSection(pricing: Omit<Pricing, 'storage'> & { storage?: SupplementaryPriceRow[] }): Pricing {
+  if (Array.isArray(pricing.storage)) return pricing as Pricing;
+  const isStorage = (row: SupplementaryPriceRow) => /^uskladn/i.test(row.name.trim());
+  const moved = pricing.supplementary.filter(isStorage);
+  return {
+    ...pricing,
+    supplementary: pricing.supplementary.filter((row) => !isStorage(row)),
+    storage: moved.length > 0 ? moved : STORAGE_SERVICES,
+  };
+}
 
 export function formatPrice(amount: number): string {
   return `${amount} Kč`;
