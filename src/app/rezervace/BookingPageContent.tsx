@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import TechBackground from '@/components/TechBackground';
 import { CONTACT_INFO } from '@/constants/contact';
@@ -43,6 +43,14 @@ export default function BookingPageContent() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [done, setDone] = useState(false);
+  const progressRef = useRef<HTMLDivElement>(null);
+
+  // Po odeslání posunout na kroky + potvrzení — formulář byl delší, jinak by zůstalo prázdno
+  useEffect(() => {
+    if (!done) return;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    progressRef.current?.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+  }, [done]);
 
   useEffect(() => {
     fetch('/api/sluzby')
@@ -146,7 +154,7 @@ export default function BookingPageContent() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
 
           {/* Progress Steps */}
-          <div className="mb-10">
+          <div className="mb-10 scroll-mt-[calc(var(--header-h)+1.5rem)]" ref={progressRef}>
             <div className="flex items-center justify-center gap-0">
               {[1, 2, 3, 4].map((s, index) => (
                 <div key={s} className="flex items-center">
@@ -155,10 +163,10 @@ export default function BookingPageContent() {
                       ? 'bg-accent border-accent text-white'
                       : 'bg-transparent border-[var(--border-strong)] text-theme-muted'
                   }`}>
-                    {step > s ? '✓' : s}
+                    {step > s || done ? '✓' : s}
                   </div>
                   {index < 3 && (
-                    <div className={`w-12 md:w-20 h-0.5 transition-colors duration-200 ${step > s ? 'bg-accent' : 'bg-[var(--border-strong)]'}`} />
+                    <div className={`w-12 md:w-20 h-0.5 transition-colors duration-200 ${step > s || done ? 'bg-accent' : 'bg-[var(--border-strong)]'}`} />
                   )}
                 </div>
               ))}
@@ -174,14 +182,15 @@ export default function BookingPageContent() {
 
           {/* Form Card */}
           {done ? (
-            <div className="tech-panel animate-fadeInUp text-center py-10">
+            // Bez animate-fadeInUp: panel vzniká až po odeslání a scroll-reveal by ho mohl nechat skrytý
+            <div className="tech-panel booking-done text-center py-10" role="status">
               <div className="icon-tile icon-tile-lg mx-auto mb-5">
                 <IconCheckCircle />
               </div>
-              <h2 className="font-display text-2xl font-bold text-theme mb-2">Rezervace odeslána</h2>
+              <h2 className="font-display text-2xl font-bold text-theme mb-2">Rezervace byla odeslána</h2>
               <p className="text-theme-secondary max-w-md mx-auto mb-6">
-                Děkujeme. Termín {new Date(formData.date).toLocaleDateString('cs-CZ')} v {formData.time} brzy potvrdíme
-                na telefonu {formData.phone} nebo e-mailem.
+                Vyčkejte prosím na potvrzení termínu {new Date(formData.date).toLocaleDateString('cs-CZ')} v {formData.time} telefonicky
+                nebo e-mailem.
               </p>
               <button type="button" onClick={startOver} className="btn-tech-secondary">
                 Nová rezervace
@@ -374,8 +383,11 @@ export default function BookingPageContent() {
                     Zpět
                   </button>
                 )}
+                {/* Různé key → React nepřepoužije stejné tlačítko. Jinak by se z „Pokračovat"
+                    během kliknutí stal submit a rezervace by se odeslala bez kroku Potvrzení. */}
                 {step < 4 ? (
                   <button
+                    key="next"
                     type="button"
                     onClick={() => setStep(step + 1)}
                     disabled={!canProceed(step)}
@@ -385,6 +397,7 @@ export default function BookingPageContent() {
                   </button>
                 ) : (
                   <button
+                    key="submit"
                     type="submit"
                     disabled={submitting}
                     className={`btn-tech-primary flex-1 ${submitting ? 'opacity-50 cursor-not-allowed' : ''}`}

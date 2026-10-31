@@ -3409,3 +3409,21 @@ html.reveal-ready .reveal-steps:not(.in-view) .process-step-line {
     .admin-toast { transform: none; }
   }
 }
+
+/* Potvrzení odeslané rezervace — vlastní jemný vstup (nezávislý na scroll-reveal) */
+.booking-done {
+  transition: opacity 320ms var(--ease-out-quint), transform 320ms var(--ease-out-quint);
+}
+
+@starting-style {
+  .booking-done {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @starting-style {
+    .booking-done { transform: none; }
+  }
+}
