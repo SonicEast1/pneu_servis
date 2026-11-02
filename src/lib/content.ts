@@ -296,14 +296,17 @@ export function takenTimes(date: string): string[] {
   return rows.map((row) => str(row.time));
 }
 
-export function createReservation(input: Omit<Reservation, 'id' | 'status' | 'createdAt'>): Reservation {
+export function createReservation(
+  input: Omit<Reservation, 'id' | 'status' | 'createdAt'>,
+  status: ReservationStatus = 'pending',
+): Reservation {
   const id = newId('RES');
   db().prepare(`
     INSERT INTO reservations (id, service, date, time, name, email, phone, car, wheel_size, wheel_count, note, status, created_at)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `).run(
     id, input.service, input.date, input.time, input.name, input.email, input.phone,
-    input.car, input.wheelSize, input.wheelCount, input.note, new Date().toISOString(),
+    input.car, input.wheelSize, input.wheelCount, input.note, status, new Date().toISOString(),
   );
   return toReservation(db().prepare('SELECT * FROM reservations WHERE id = ?').get(id) as Row);
 }

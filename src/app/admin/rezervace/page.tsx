@@ -3,7 +3,8 @@
 import { useCallback, useEffect, useState } from 'react';
 import { api, Loading, PageHeader, Segmented } from '@/components/admin/ui';
 import { useToast } from '@/components/admin/AdminShell';
-import { pragueDate } from '@/lib/openingHours';
+import ReservationForm from '@/components/admin/ReservationForm';
+import { getPragueParts, pragueDate } from '@/lib/openingHours';
 import { wheelCountLabel } from '@/constants/reservation';
 
 type Status = 'pending' | 'confirmed' | 'cancelled';
@@ -24,17 +25,25 @@ interface Reservation {
   createdAt: string;
 }
 
-type Filter = 'new' | 'upcoming' | 'past' | 'all';
+type Filter = 'upcoming' | 'new' | 'past' | 'all';
 
-const FILTERS: { value: Filter; label: string }[] = [
-  { value: 'new', label: 'Nové' },
-  { value: 'upcoming', label: 'Potvrzené' },
-  { value: 'past', label: 'Proběhlé a zrušené' },
-  { value: 'all', label: 'Vše' },
-];
+/** Termín jako „YYYY-MM-DD HH:MM“ — dá se porovnávat jako text. */
+const slotKey = (r: Pick<Reservation, 'date' | 'time'>) => `${r.date} ${r.time.padStart(5, '0')}`;
 
-const STATUS_LABEL: Record<Status, string> = { pending: 'Nová', confirmed: 'Potvrzená', cancelled: 'Zrušená' };
-const STATUS_TONE: Record<Status, string> = { pending: 'unavailable', confirmed: 'visible', cancelled: 'hidden' };
+function nowKey(): string {
+  const minutes = getPragueParts().minutes;
+  const clock = `${String(Math.floor(minutes / 60)).padStart(2, '0')}:${String(minutes % 60).padStart(2, '0')}`;
+  return `${pragueDate()} ${clock}`;
+}
+
+/** Stav k zobrazení: potvrzená rezervace, jejíž čas už nastal, je „Proběhlá“. */
+function displayStatus(r: Reservation, now: string): { label: string; tone: string } {
+  if (r.status === 'cancelled') return { label: 'Zrušená', tone: 'hidden' };
+  if (r.status === 'confirmed') {
+    return slotKey(r) <= now ? { label: 'Proběhlá', tone: 'done' } : { label: 'Potvrzená', tone: 'visible' };
+  }
+  return { label: 'Nová', tone: 'unavailable' };
+}
 
 function formatDay(iso: string): string {
   const [year, month, day] = iso.split('-').map(Number);
@@ -53,7 +62,16 @@ function formatDay(iso: string): string {
 export default function AdminReservationsPage() {
   const toast = useToast();
   const [reservations, setReservations] = useState<Reservation[] | null>(null);
-  const [filter, setFilter] = useState<Filter>('new');
+  // Potvrzené (nadcházející) jsou hlavní pohled
+  const [filter, setFilter] = useState<Filter>('upcoming');
+  const [adding, setAdding] = useState(false);
+  // Hodiny „tikají“ po minutě, aby se rezervace přepnula na Proběhlou i bez obnovení stránky
+  const [now, setNow] = useState(nowKey);
+
+  useEffect(() => {
+    const timer = window.setInterval(() => setNow(nowKey()), 60_000);
+    return () => window.clearInterval(timer);
+  }, []);
 
   const load = useCallback(() => {
     api<{ reservations: Reservation[] }>('/api/rezervace')
@@ -87,11 +105,19 @@ export default function AdminReservationsPage() {
   if (!reservations) return <Loading />;
 
   const today = pragueDate();
+  const isPast = (item: Reservation) => slotKey(item) <= now;
+  const newCount = reservations.filter((item) => item.status === 'pending' && !isPast(item)).length;
+  const filters: { value: Filter; label: string }[] = [
+    { value: 'upcoming', label: 'Potvrzené' },
+    { value: 'new', label: newCount > 0 ? `Nové (${newCount})` : 'Nové' },
+    { value: 'past', label: 'Proběhlé a zrušené' },
+    { value: 'all', label: 'Vše' },
+  ];
   const visible = reservations
     .filter((item) => {
-      if (filter === 'new') return item.status === 'pending';
-      if (filter === 'upcoming') return item.status === 'confirmed' && item.date >= today;
-      if (filter === 'past') return item.status === 'cancelled' || item.date < today;
+      if (filter === 'new') return item.status === 'pending' && !isPast(item);
+      if (filter === 'upcoming') return item.status === 'confirmed' && !isPast(item);
+      if (filter === 'past') return item.status === 'cancelled' || isPast(item);
       return true;
     })
     // Nadcházející od nejbližšího, minulé od nejnovějšího
@@ -109,21 +135,42 @@ export default function AdminReservationsPage() {
     <>
       <PageHeader
         title="Rezervace"
-        description="Rezervace z webu. Zákazníkovi potvrďte termín telefonem nebo e-mailem a pak klikněte na Potvrdit."
+        description="Rezervace z webu i po telefonu. Potvrzená rezervace se po uplynutí svého času sama přesune mezi proběhlé."
         action={
-          <a href="/api/rezervace/export" className="btn-tech-secondary btn-compact">
-            Stáhnout Excel
-          </a>
+          <div className="flex flex-wrap gap-2">
+            <button type="button" className="btn-tech-primary btn-compact" onClick={() => setAdding((open) => !open)}>
+              {adding ? 'Zavřít' : '+ Nová rezervace'}
+            </button>
+            <a href="/api/rezervace/export" className="btn-tech-secondary btn-compact">
+              Stáhnout Excel
+            </a>
+          </div>
         }
       />
 
+      {adding && (
+        <ReservationForm
+          onCancel={() => setAdding(false)}
+          onSaved={() => {
+            setAdding(false);
+            setFilter('upcoming');
+            toast({ text: 'Rezervace uložena jako potvrzená.', tone: 'ok' });
+            load();
+          }}
+        />
+      )}
+
       <div className="mb-5">
-        <Segmented label="Filtr rezervací" value={filter} options={FILTERS} onChange={setFilter} />
+        <Segmented label="Filtr rezervací" value={filter} options={filters} onChange={setFilter} />
       </div>
 
       {visible.length === 0 ? (
         <p className="admin-card text-theme-secondary text-sm">
-          {filter === 'new' ? 'Žádné nové rezervace. Až někdo pošle rezervaci z webu, objeví se tady.' : 'Nic k zobrazení.'}
+          {filter === 'new'
+            ? 'Žádné nové rezervace. Až někdo pošle rezervaci z webu, objeví se tady.'
+            : filter === 'upcoming'
+              ? 'Žádné nadcházející potvrzené rezervace. Objednávku po telefonu přidáte tlačítkem Nová rezervace.'
+              : 'Nic k zobrazení.'}
         </p>
       ) : (
         Object.entries(groups).map(([date, items]) => (
@@ -133,13 +180,16 @@ export default function AdminReservationsPage() {
               {date === today && <span className="admin-pill" data-tone="visible">Dnes</span>}
             </h2>
             <ul className="admin-list">
-              {items.map((item) => (
-                <li key={item.id} className="admin-card admin-booking" data-muted={item.status === 'cancelled'}>
+              {items.map((item) => {
+                const shown = displayStatus(item, now);
+                const past = isPast(item);
+                return (
+                <li key={item.id} className="admin-card admin-booking" data-muted={item.status === 'cancelled' || past}>
                   <div className="admin-booking-time">{item.time}</div>
                   <div className="admin-booking-main">
                     <div className="flex flex-wrap items-center gap-2">
                       <span className="font-display font-semibold text-theme">{item.name}</span>
-                      <span className="admin-pill" data-tone={STATUS_TONE[item.status]}>{STATUS_LABEL[item.status]}</span>
+                      <span className="admin-pill" data-tone={shown.tone}>{shown.label}</span>
                     </div>
                     <p className="text-theme-secondary text-sm">
                       {[
@@ -151,18 +201,22 @@ export default function AdminReservationsPage() {
                     </p>
                     <p className="text-sm">
                       <a href={`tel:${item.phone.replace(/\s/g, '')}`} className="text-accent font-semibold">{item.phone}</a>
-                      <span className="text-theme-muted"> · </span>
-                      <a href={`mailto:${item.email}`} className="text-theme-secondary underline-offset-2 hover:underline">{item.email}</a>
+                      {item.email && (
+                        <>
+                          <span className="text-theme-muted"> · </span>
+                          <a href={`mailto:${item.email}`} className="text-theme-secondary underline-offset-2 hover:underline">{item.email}</a>
+                        </>
+                      )}
                     </p>
                     {item.note && <p className="admin-booking-note">{item.note}</p>}
                   </div>
                   <div className="admin-booking-actions">
-                    {item.status !== 'confirmed' && (
+                    {item.status !== 'confirmed' && !past && (
                       <button type="button" className="btn-tech-primary btn-compact" onClick={() => setStatus(item, 'confirmed')}>
                         Potvrdit
                       </button>
                     )}
-                    {item.status !== 'cancelled' && (
+                    {item.status !== 'cancelled' && !past && (
                       <button type="button" className="btn-tech-secondary btn-compact" onClick={() => setStatus(item, 'cancelled')}>
                         Zrušit
                       </button>
@@ -172,7 +226,8 @@ export default function AdminReservationsPage() {
                     </button>
                   </div>
                 </li>
-              ))}
+                );
+              })}
             </ul>
           </section>
         ))

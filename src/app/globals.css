@@ -2838,6 +2838,14 @@ html.reveal-ready .reveal-steps:not(.in-view) .process-step-line {
 .admin-pill[data-tone='visible'] { border-color: #15803d55; background: #15803d1a; color: #15803d; }
 .admin-pill[data-tone='unavailable'] { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
 .admin-pill[data-tone='hidden'] { background: var(--bg-surface-alt); color: var(--text-muted); }
+.admin-pill[data-tone='done'] { background: var(--bg-surface-alt); color: var(--text-secondary); }
+.admin-pill[data-tone='done']::before { content: '✓ '; }
+
+.admin-chip:disabled {
+  opacity: 0.35;
+  text-decoration: line-through;
+  cursor: not-allowed;
+}
 .dark .admin-pill[data-tone='visible'] { color: #4ade80; border-color: #4ade8055; background: #4ade801a; }
 
 /* Seznamy (služby, recenze, rezervace) */

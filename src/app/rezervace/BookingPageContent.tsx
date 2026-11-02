@@ -7,7 +7,7 @@ import { CONTACT_INFO } from '@/constants/contact';
 import MascotCTA from '@/components/MascotCTA';
 import { IconCheckCircle, IconPhone } from '@/components/Icons';
 import type { Service } from '@/constants/services';
-import { BOOKING_EARLIEST, BOOKING_SLOT_MINUTES, WHEEL_SIZE_OPTIONS, wheelCountLabel } from '@/constants/reservation';
+import { BOOKING_AFTER_OPENING_MINUTES, BOOKING_SLOT_MINUTES, WHEEL_SIZE_OPTIONS, wheelCountLabel } from '@/constants/reservation';
 import WheelCountPicker from '@/components/WheelCountPicker';
 import {
   bookingSlots,
@@ -86,7 +86,7 @@ export default function BookingPageContent() {
 
   // Časy podle otevírací doby (včetně mimořádných dnů), ne natvrdo
   const timeSlots = formData.date
-    ? bookingSlots(hours, specials, formData.date, BOOKING_SLOT_MINUTES).filter((time) => time >= BOOKING_EARLIEST)
+    ? bookingSlots(hours, specials, formData.date, BOOKING_SLOT_MINUTES, new Date(), BOOKING_AFTER_OPENING_MINUTES)
     : [];
 
   const handleSubmit = async (e: React.FormEvent) => {

@@ -15,8 +15,8 @@ export const BOOKING_CTA_LABEL_ONLINE = RESERVATIONS_ENABLED ? 'Rezervovat onlin
 /** Délka jednoho termínu v minutách — rezervace se nabízí po celých hodinách. */
 export const BOOKING_SLOT_MINUTES = 60;
 
-/** Nejdřívější čas rezervace (i když se otevírá dřív) — HH:MM. */
-export const BOOKING_EARLIEST = '09:00';
+/** První termín dne je až hodinu po otevření (ráno je čas na přípravu). */
+export const BOOKING_AFTER_OPENING_MINUTES = 60;
 
 /** Možnosti pro „Rozměr kola" ve formuláři (stejné rozměry jako v ceníku). */
 /** Kolik kol se bude měnit: 1–4 přímo, větší počet přes „5+“. */

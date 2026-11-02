@@ -131,6 +131,7 @@ export function hoursForDate(hours: OpeningHour[], specials: SpecialDay[], isoDa
 /**
  * Časy pro rezervaci v daný den po `step` minutách. Poslední začíná
  * `step` minut před zavřením. Dnes jen časy, které ještě nenastaly.
+ * `afterOpening` odsune první termín dne (např. o hodinu po otevření).
  */
 export function bookingSlots(
   hours: OpeningHour[],
@@ -138,14 +139,17 @@ export function bookingSlots(
   isoDate: string,
   step = 30,
   at: Date = new Date(),
+  afterOpening = 0,
 ): string[] {
   const now = pragueDate(at) === isoDate ? getPragueParts(at).minutes : -1;
   const slots: string[] = [];
-  for (const range of parseRanges(hoursForDate(hours, specials, isoDate))) {
-    for (let minute = range.start; minute + step <= range.end; minute += step) {
+  parseRanges(hoursForDate(hours, specials, isoDate)).forEach((range, index) => {
+    // Odsazení jen od ranního otevření, ne po polední pauze
+    const first = range.start + (index === 0 ? afterOpening : 0);
+    for (let minute = first; minute + step <= range.end; minute += step) {
       if (minute > now) slots.push(formatClock(minute).padStart(5, '0'));
     }
-  }
+  });
   return slots;
 }
 

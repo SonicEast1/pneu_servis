@@ -1,16 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { denyUnlessAdmin } from '@/lib/adminAuth';
+import { denyUnlessAdmin, isAdminRequest } from '@/lib/adminAuth';
 import {
   createReservation,
   deleteReservation,
+  getOpeningHours,
+  getSpecialDays,
   listReservations,
   listServices,
   setReservationStatus,
   takenTimes,
   type ReservationStatus,
 } from '@/lib/content';
-import { pragueDate } from '@/lib/openingHours';
-import { BOOKING_EARLIEST, RESERVATIONS_ENABLED, WHEEL_COUNT_OPTIONS, WHEEL_SIZE_OPTIONS } from '@/constants/reservation';
+import { bookingSlots, pragueDate } from '@/lib/openingHours';
+import {
+  BOOKING_AFTER_OPENING_MINUTES,
+  BOOKING_SLOT_MINUTES,
+  RESERVATIONS_ENABLED,
+  WHEEL_COUNT_OPTIONS,
+  WHEEL_SIZE_OPTIONS,
+} from '@/constants/reservation';
 
 export const dynamic = 'force-dynamic';
 
@@ -28,8 +36,13 @@ function allowed(request: NextRequest): boolean {
   return true;
 }
 
-/** Veřejné: nová rezervace z formuláře. */
+/**
+ * Nová rezervace. Z webu (zákazník) i z adminu (objednávka po telefonu):
+ * admin nemusí mít e-mail, čas může zadat libovolně a rezervace je rovnou potvrzená.
+ */
 export async function POST(request: NextRequest) {
+  if (isAdminRequest(request)) return createFromAdmin(request);
+
   if (!RESERVATIONS_ENABLED) {
     return NextResponse.json(
       { error: 'Online rezervace jsou dočasně nedostupné. Kontaktujte nás prosím telefonicky nebo e-mailem.' },
@@ -73,8 +86,12 @@ export async function POST(request: NextRequest) {
   if (!/^\d{1,2}:\d{2}$/.test(input.time)) {
     return NextResponse.json({ error: 'Vyberte prosím čas.' }, { status: 400 });
   }
-  if (input.time.padStart(5, '0') < BOOKING_EARLIEST) {
-    return NextResponse.json({ error: `Rezervovat jde nejdřív od ${BOOKING_EARLIEST.replace(/^0/, '')}.` }, { status: 400 });
+  // Jen časy, které formulář opravdu nabízí (otevírací doba, hodinu po otevření, po hodinách)
+  const slots = bookingSlots(
+    getOpeningHours(), getSpecialDays(), input.date, BOOKING_SLOT_MINUTES, new Date(), BOOKING_AFTER_OPENING_MINUTES,
+  );
+  if (!slots.includes(input.time.padStart(5, '0'))) {
+    return NextResponse.json({ error: 'Tento čas není k dispozici. Vyberte prosím jiný.' }, { status: 400 });
   }
   if (takenTimes(input.date).includes(input.time)) {
     return NextResponse.json({ error: 'Tento čas už je obsazený. Vyberte prosím jiný.' }, { status: 409 });
@@ -88,6 +105,39 @@ export async function POST(request: NextRequest) {
   const service = listServices().find((item) => item.id === input.service);
   const reservation = createReservation({ ...input, service: service?.nazev ?? input.service });
   return NextResponse.json({ success: true, reservation: { id: reservation.id } });
+}
+
+async function createFromAdmin(request: NextRequest) {
+  const body = await request.json().catch(() => ({}));
+  const input = {
+    service: clip(body.service, 60),
+    date: clip(body.date, 10),
+    time: clip(body.time, 5),
+    name: clip(body.name, 80),
+    email: clip(body.email, 120),
+    phone: clip(body.phone, 30),
+    car: clip(body.car, 80),
+    wheelSize: clip(body.wheelSize, 40),
+    wheelCount: clip(body.wheelCount, 20),
+    note: clip(body.note, 500),
+  };
+
+  if (!input.service || !input.name || !input.phone || !input.date || !input.time) {
+    return NextResponse.json({ error: 'Vyplňte službu, jméno, telefon, datum a čas.' }, { status: 400 });
+  }
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(input.date) || !/^\d{1,2}:\d{2}$/.test(input.time)) {
+    return NextResponse.json({ error: 'Zkontrolujte datum a čas.' }, { status: 400 });
+  }
+  if (takenTimes(input.date).includes(input.time.padStart(5, '0'))) {
+    return NextResponse.json({ error: 'V tento čas už je jiná rezervace.' }, { status: 409 });
+  }
+
+  const service = listServices().find((item) => item.id === input.service);
+  const reservation = createReservation(
+    { ...input, time: input.time.padStart(5, '0'), service: service?.nazev ?? input.service },
+    'confirmed',
+  );
+  return NextResponse.json({ success: true, reservation });
 }
 
 export async function GET(request: NextRequest) {
