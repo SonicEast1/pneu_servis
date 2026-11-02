@@ -259,6 +259,7 @@ export interface Reservation {
   phone: string;
   car: string;
   wheelSize: string;
+  wheelCount: string;
   note: string;
   status: ReservationStatus;
   createdAt: string;
@@ -275,6 +276,7 @@ function toReservation(row: Row): Reservation {
     phone: str(row.phone),
     car: str(row.car),
     wheelSize: str(row.wheel_size),
+    wheelCount: str(row.wheel_count),
     note: str(row.note),
     status: str(row.status) as ReservationStatus,
     createdAt: str(row.created_at),
@@ -297,11 +299,11 @@ export function takenTimes(date: string): string[] {
 export function createReservation(input: Omit<Reservation, 'id' | 'status' | 'createdAt'>): Reservation {
   const id = newId('RES');
   db().prepare(`
-    INSERT INTO reservations (id, service, date, time, name, email, phone, car, wheel_size, note, status, created_at)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?)
+    INSERT INTO reservations (id, service, date, time, name, email, phone, car, wheel_size, wheel_count, note, status, created_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?)
   `).run(
     id, input.service, input.date, input.time, input.name, input.email, input.phone,
-    input.car, input.wheelSize, input.note, new Date().toISOString(),
+    input.car, input.wheelSize, input.wheelCount, input.note, new Date().toISOString(),
   );
   return toReservation(db().prepare('SELECT * FROM reservations WHERE id = ?').get(id) as Row);
 }

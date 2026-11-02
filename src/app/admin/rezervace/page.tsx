@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { api, Loading, PageHeader, Segmented } from '@/components/admin/ui';
 import { useToast } from '@/components/admin/AdminShell';
 import { pragueDate } from '@/lib/openingHours';
+import { wheelCountLabel } from '@/constants/reservation';
 
 type Status = 'pending' | 'confirmed' | 'cancelled';
 
@@ -17,6 +18,7 @@ interface Reservation {
   phone: string;
   car: string;
   wheelSize: string;
+  wheelCount: string;
   note: string;
   status: Status;
   createdAt: string;
@@ -140,7 +142,12 @@ export default function AdminReservationsPage() {
                       <span className="admin-pill" data-tone={STATUS_TONE[item.status]}>{STATUS_LABEL[item.status]}</span>
                     </div>
                     <p className="text-theme-secondary text-sm">
-                      {[item.service, item.car, item.wheelSize && `kola ${item.wheelSize}`].filter(Boolean).join(' · ')}
+                      {[
+                        item.service,
+                        item.car,
+                        item.wheelCount && wheelCountLabel(item.wheelCount),
+                        item.wheelSize && `rozměr ${item.wheelSize}`,
+                      ].filter(Boolean).join(' · ')}
                     </p>
                     <p className="text-sm">
                       <a href={`tel:${item.phone.replace(/\s/g, '')}`} className="text-accent font-semibold">{item.phone}</a>

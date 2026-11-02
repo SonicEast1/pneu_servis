@@ -112,6 +112,9 @@ function migrate(connection: DatabaseSync) {
   if (!hasColumn(connection, 'reservations', 'wheel_size')) {
     connection.exec("ALTER TABLE reservations ADD COLUMN wheel_size TEXT NOT NULL DEFAULT ''");
   }
+  if (!hasColumn(connection, 'reservations', 'wheel_count')) {
+    connection.exec("ALTER TABLE reservations ADD COLUMN wheel_count TEXT NOT NULL DEFAULT ''");
+  }
   if (!hasColumn(connection, 'gallery', 'description')) {
     connection.exec("ALTER TABLE gallery ADD COLUMN description TEXT NOT NULL DEFAULT ''");
   }

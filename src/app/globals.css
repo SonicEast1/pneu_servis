@@ -3432,3 +3432,149 @@ html.reveal-ready .reveal-steps:not(.in-view) .process-step-line {
     .booking-done { transform: none; }
   }
 }
+
+/* ─── Výběr počtu kol: „pneumatiky“ ───
+   Guma s dezénem (::before) + ráfek s číslem. Po výběru se ráfek obarví
+   a dezén se pootočí — kolo „se rozjede“ a je jasné, že volba platí. */
+/* Kola rozprostřená přes celý řádek; samotná kola mají strop velikosti */
+.tire-picker {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  justify-items: center;
+  gap: 0.6rem;
+  margin-top: 0.35rem;
+}
+
+.tire-option {
+  --tire-rubber: #24211b;
+  position: relative;
+  width: 100%;
+  max-width: 4.75rem;
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: radial-gradient(circle, #2e2a22 0 58%, var(--tire-rubber) 59%);
+  box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.35), 0 2px 6px rgba(0, 0, 0, 0.18);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform var(--dur-press) var(--ease-out-quint), box-shadow 200ms ease;
+}
+
+/* Dezén: drážky po obvodu, maska nechá jen prstenec gumy */
+.tire-option::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: repeating-conic-gradient(rgba(255, 255, 255, 0.13) 0deg 7deg, transparent 7deg 20deg);
+  -webkit-mask: radial-gradient(circle, transparent 0 66%, #000 67% 93%, transparent 94%);
+  mask: radial-gradient(circle, transparent 0 66%, #000 67% 93%, transparent 94%);
+  transition: transform 320ms var(--ease-out-quint);
+}
+
+.tire-rim {
+  position: relative;
+  width: 60%;
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #f4f1ea, #c9c4b9);
+  box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.18);
+  color: #1e1b14;
+  font-family: var(--font-display), sans-serif;
+  font-size: clamp(0.85rem, 3.4vw, 1.05rem);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  transition: background-color 150ms ease, color 150ms ease, box-shadow 150ms ease;
+}
+
+.tire-option:active {
+  transform: scale(0.95);
+}
+
+/* Na tmavém pozadí by guma splynula — jemný světlý okraj pneumatiky */
+.dark .tire-option {
+  box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.14), 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.tire-option[aria-checked='true'],
+.dark .tire-option[aria-checked='true'] {
+  box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.35), 0 0 0 3px var(--accent-soft), 0 6px 16px var(--accent-glow);
+}
+
+.tire-option[aria-checked='true']::before {
+  transform: rotate(40deg);
+}
+
+.tire-option[aria-checked='true'] .tire-rim {
+  background: radial-gradient(circle at 35% 30%, #ff8a4c, var(--accent));
+  color: #fff;
+  box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.15);
+}
+
+.tire-option:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .tire-option:not([aria-checked='true']):hover .tire-rim {
+    box-shadow: inset 0 0 0 2px var(--accent);
+  }
+}
+
+/* Řada 5–10: vyroste od tlačítka „5+“ (vpravo nahoře) */
+.tire-more {
+  margin-top: 0.75rem;
+  padding: 0.75rem;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: var(--bg-surface-alt);
+  transform-origin: 90% 0;
+  transition: opacity 200ms var(--ease-out-quint), transform 200ms var(--ease-out-quint);
+}
+
+@starting-style {
+  .tire-more {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.97);
+  }
+}
+
+.tire-more-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-family: var(--font-display), sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.tire-more-options {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  justify-items: center;
+  gap: 0.45rem;
+}
+
+.tire-option.is-small {
+  max-width: 3.75rem;
+}
+
+.tire-option.is-small .tire-rim {
+  font-size: clamp(0.75rem, 2.8vw, 0.9rem);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tire-option:active,
+  .tire-option[aria-checked='true']::before {
+    transform: none;
+  }
+
+  @starting-style {
+    .tire-more { transform: none; }
+  }
+}

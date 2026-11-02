@@ -7,7 +7,8 @@ import { CONTACT_INFO } from '@/constants/contact';
 import MascotCTA from '@/components/MascotCTA';
 import { IconCheckCircle, IconPhone } from '@/components/Icons';
 import type { Service } from '@/constants/services';
-import { BOOKING_SLOT_MINUTES, WHEEL_SIZE_OPTIONS } from '@/constants/reservation';
+import { BOOKING_EARLIEST, BOOKING_SLOT_MINUTES, WHEEL_SIZE_OPTIONS, wheelCountLabel } from '@/constants/reservation';
+import WheelCountPicker from '@/components/WheelCountPicker';
 import {
   bookingSlots,
   DEFAULT_OPENING_HOURS,
@@ -27,6 +28,7 @@ const EMPTY_FORM = {
   phone: '',
   car: '',
   wheelSize: '',
+  wheelCount: '',
   note: '',
 };
 
@@ -83,7 +85,9 @@ export default function BookingPageContent() {
   }, [formData.date]);
 
   // Časy podle otevírací doby (včetně mimořádných dnů), ne natvrdo
-  const timeSlots = formData.date ? bookingSlots(hours, specials, formData.date, BOOKING_SLOT_MINUTES) : [];
+  const timeSlots = formData.date
+    ? bookingSlots(hours, specials, formData.date, BOOKING_SLOT_MINUTES).filter((time) => time >= BOOKING_EARLIEST)
+    : [];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -125,6 +129,7 @@ export default function BookingPageContent() {
         && formData.phone.replace(/\D/g, '').length >= 9
         && formData.car.trim()
         && formData.wheelSize
+        && formData.wheelCount
       );
     }
     return false;
@@ -308,6 +313,14 @@ export default function BookingPageContent() {
                     <label className="form-label">Telefon *</label>
                     <input type="tel" value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} className="form-input" placeholder="+420 602 299 090" required />
                   </div>
+                  <div>
+                    <span className="form-label" id="booking-count-label">Počet kol k výměně *</span>
+                    <WheelCountPicker
+                      labelId="booking-count-label"
+                      value={formData.wheelCount}
+                      onChange={(wheelCount) => setFormData({ ...formData, wheelCount })}
+                    />
+                  </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     <div>
                       <label className="form-label" htmlFor="booking-car">Značka a model vozu *</label>
@@ -350,6 +363,7 @@ export default function BookingPageContent() {
                       { label: 'E-mail', value: formData.email },
                       { label: 'Telefon', value: formData.phone },
                       { label: 'Vozidlo', value: formData.car },
+                      { label: 'Počet kol', value: formData.wheelCount && wheelCountLabel(formData.wheelCount) },
                       { label: 'Rozměr kola', value: formData.wheelSize },
                     ].map(({ label, value }) => (
                       <div key={label} className="flex justify-between items-start border-b border-theme pb-3 last:border-0 last:pb-0">

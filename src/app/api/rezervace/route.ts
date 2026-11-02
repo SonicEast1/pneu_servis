@@ -10,7 +10,7 @@ import {
   type ReservationStatus,
 } from '@/lib/content';
 import { pragueDate } from '@/lib/openingHours';
-import { RESERVATIONS_ENABLED, WHEEL_SIZE_OPTIONS } from '@/constants/reservation';
+import { BOOKING_EARLIEST, RESERVATIONS_ENABLED, WHEEL_COUNT_OPTIONS, WHEEL_SIZE_OPTIONS } from '@/constants/reservation';
 
 export const dynamic = 'force-dynamic';
 
@@ -46,13 +46,17 @@ export async function POST(request: NextRequest) {
     phone: clip(body.phone, 30),
     car: clip(body.car, 80),
     wheelSize: clip(body.wheelSize, 40),
+    wheelCount: clip(body.wheelCount, 20),
     note: clip(body.note, 500),
   };
 
   // Povinné je vše kromě poznámky
-  const required = [input.service, input.date, input.time, input.name, input.email, input.phone, input.car, input.wheelSize];
+  const required = [input.service, input.date, input.time, input.name, input.email, input.phone, input.car, input.wheelSize, input.wheelCount];
   if (required.some((value) => !value)) {
     return NextResponse.json({ error: 'Vyplňte prosím všechna povinná pole.' }, { status: 400 });
+  }
+  if (!WHEEL_COUNT_OPTIONS.includes(input.wheelCount)) {
+    return NextResponse.json({ error: 'Vyberte prosím počet kol.' }, { status: 400 });
   }
   if (!WHEEL_SIZE_OPTIONS.includes(input.wheelSize)) {
     return NextResponse.json({ error: 'Vyberte prosím rozměr kola ze seznamu.' }, { status: 400 });
@@ -68,6 +72,9 @@ export async function POST(request: NextRequest) {
   }
   if (!/^\d{1,2}:\d{2}$/.test(input.time)) {
     return NextResponse.json({ error: 'Vyberte prosím čas.' }, { status: 400 });
+  }
+  if (input.time.padStart(5, '0') < BOOKING_EARLIEST) {
+    return NextResponse.json({ error: `Rezervovat jde nejdřív od ${BOOKING_EARLIEST.replace(/^0/, '')}.` }, { status: 400 });
   }
   if (takenTimes(input.date).includes(input.time)) {
     return NextResponse.json({ error: 'Tento čas už je obsazený. Vyberte prosím jiný.' }, { status: 409 });
